@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcola il Tuo Impianto Fotovoltaico</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --dark-color: #1f2937;
+            --light-color: #f3f4f6;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .step-container {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .step-container.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin-bottom: 20px;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: white;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #059669;
+        }
+        
+        .btn-back {
+            background-color: #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .btn-back:hover {
+            background-color: #d1d5db;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: width 0.3s;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .step {
+            width: 30%;
+            text-align: center;
+            position: relative;
+            color: #9ca3af;
+        }
+        
+        .step.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .step.completed {
+            color: var(--secondary-color);
+        }
+        
+        .help-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        .result-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .savings-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .result-card {
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: white;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .savings-card {
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: white;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .highlight {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            background-color: var(--primary-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 1s;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            width: 40px;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .chart-comparison {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            background-color: var(--accent-color);
+            border-radius: 4px 4px 0 0;
+            transition: height 1s;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-label {
+            font-weight: 500;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .roi-chart {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        
+        .roi-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--secondary-color) 0% var(--percentage), #e5e7eb var(--percentage) 100%);
+        }
+        
+        .roi-inner-circle {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: white;
+            top: 15px;
+            left: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .roi-years {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .roi-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Calcola il Tuo Impianto Fotovoltaico</h1>
+            <p class="text-lg text-gray-600">Scopri quanto potresti risparmiare con l'energia solare</p>
+        </div>
+        
+        <div class="step-indicator">
+            <div class="step active" id="step-indicator-1">1. Dati Casa</div>
+            <div class="step" id="step-indicator-2">2. Consumo Energetico</div>
+            <div class="step" id="step-indicator-3">3. Impianto Fotovoltaico</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" style="width: 33.33%;"></div>
+        </div>
+        
+        <!-- Step 1: Dati Casa -->
+        <div class="step-container active" id="step1">
+            <div class="card">
+                <h2 class="text-xl font-semibold mb-6">Informazioni sulla tua abitazione</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Regione</label>
+                    <select id="regione" class="form-select">
+                        <option value="nord">Nord Italia</option>
+                        <option value="centro">Centro Italia</option>
+                        <option value="sud">Sud Italia e Isole</option>
+                    </select>
+                    <p class="help-text">La posizione geografica influisce sulla produzione di energia solare</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo di tetto</label>
+                    <select id="tipoTetto" class="form-select">
+                        <option value="inclinato">Tetto inclinato</option>
+                        <option value="piano">Tetto piano</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Esposizione del tetto</label>
+                    <select id="esposizione" class="form-select">
+                        <option value="sud">Sud (ottimale)</option>
+                        <option value="sudest">Sud-Est/Sud-Ovest (molto buona)</option>
+                        <option value="est">Est/Ovest (buona)</option>
+                        <option value="nordest">Nord-Est/Nord-Ovest (sufficiente)</option>
+                        <option value="nord">Nord (sconsigliata)</option>
+                    </select>
+                    <p class="help-text">L'orientamento del tetto determina l'efficienza dell'impianto</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Superficie disponibile per i pannelli (m²)</label>
+                    <input type="number" id="superficie" class="form-input" min="10" max="500" value="30">
+                    <p class="help-text">Un pannello standard occupa circa 1,7 m²</p>
+                </div>
+                
+                <div class="mt-8 flex justify-end">
+                    <button id="nextToStep2" class="btn btn-primary">Continua</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Consumo Energetico -->
+        <div class="step-container" id="step2">
+            <div class="card">
+                <h2 class="text-xl font-semibold mb-6">Il tuo consumo energetico</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Consumo annuo di energia elettrica (kWh)</label>
+                    <input type="number" id="consumoAnnuo" class="form-input" min="1000" max="15000" value="3500">
+                    <p class="help-text">Puoi trovare questo dato sulla bolletta elettrica (una famiglia media consuma 2500-4500 kWh/anno)</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Numero di persone in casa</label>
+                    <select id="numeroPersone" class="form-select">
+                        <option value="1">1 persona</option>
+                        <option value="2">2 persone</option>
+                        <option value="3">3 persone</option>
+                        <option value="4" selected>4 persone</option>
+                        <option value="5">5 o più persone</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Prezzo attuale dell'energia (€/kWh)</label>
+                    <input type="number" id="prezzoEnergia" class="form-input" step="0.01" min="0.1" max="0.5" value="0.25">
+                    <p class="help-text">Il prezzo medio in Italia è di circa 0,25 €/kWh</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Sistema di riscaldamento principale</label>
+                    <select id="riscaldamento" class="form-select">
+                        <option value="gas">Caldaia a gas</option>
+                        <option value="pompa">Pompa di calore</option>
+                        <option value="elettrico">Riscaldamento elettrico</option>
+                        <option value="altro">Altro</option>
+                    </select>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button id="backToStep1" class="btn btn-back">Indietro</button>
+                    <button id="nextToStep3" class="btn btn-primary">Continua</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: Impianto Fotovoltaico -->
+        <div class="step-container" id="step3">
+            <div class="card">
+                <h2 class="text-xl font-semibold mb-6">Il tuo impianto fotovoltaico</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Potenza consigliata dell'impianto</label>
+                    <div class="flex items-center">
+                        <div class="flex-grow">
+                            <input type="range" id="potenzaImpianto" class="w-full" min="1" max="10" step="0.5" value="3">
+                        </div>
+                        <div class="ml-4 w-16 text-center">
+                            <span id="potenzaImpiantoValue" class="font-semibold text-lg">3</span> kWp
+                        </div>
+                    </div>
+                    <p class="help-text">In base ai tuoi consumi, ti consigliamo un impianto da <span id="potenzaConsigliata">3</span> kWp</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Desideri includere un sistema di accumulo (batterie)?</label>
+                    <select id="accumulatore" class="form-select">
+                        <option value="no">No, solo impianto fotovoltaico</option>
+                        <option value="small">Sì, accumulo piccolo (3-5 kWh)</option>
+                        <option value="medium">Sì, accumulo medio (5-10 kWh)</option>
+                        <option value="large">Sì, accumulo grande (>10 kWh)</option>
+                    </select>
+                    <p class="help-text">Le batterie permettono di conservare l'energia prodotta durante il giorno per utilizzarla di sera</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Desideri una wallbox per ricaricare un'auto elettrica?</label>
+                    <select id="wallbox" class="form-select">
+                        <option value="no">No</option>
+                        <option value="si">Sì</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo di pannelli solari</label>
+                    <select id="tipoPannelli" class="form-select">
+                        <option value="standard">Standard (buon rapporto qualità/prezzo)</option>
+                        <option value="premium">Premium (alta efficienza)</option>
+                        <option value="economici">Economici (prezzo ridotto)</option>
+                    </select>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button id="backToStep2" class="btn btn-back">Indietro</button>
+                    <button id="calcolaRisultati" class="btn btn-secondary">Calcola Risultati</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Risultati -->
+        <div class="step-container" id="risultati">
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-8 text-center">I tuoi risultati</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="result-card">
+                        <h3 class="font-semibold text-lg mb-3">Impianto Fotovoltaico Consigliato</h3>
+                        <div class="summary-item">
+                            <span class="summary-label">Potenza impianto:</span>
+                            <span class="summary-value"><span id="risultatoPotenza">3</span> kWp</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Numero pannelli:</span>
+                            <span class="summary-value"><span id="risultatoNumPannelli">8</span></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Superficie occupata:</span>
+                            <span class="summary-value"><span id="risultatoSuperficie">13.6</span> m²</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Produzione annua stimata:</span>
+                            <span class="summary-value"><span id="risultatoProduzione">3900</span> kWh</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Autoconsumo stimato:</span>
+                            <span class="summary-value"><span id="risultatoAutoconsumo">70</span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="savings-card">
+                        <h3 class="font-semibold text-lg mb-3">Risparmio Economico</h3>
+                        <div class="summary-item">
+                            <span class="summary-label">Costo indicativo:</span>
+                            <span class="summary-value">€ <span id="risultatoCosto">7500</span></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Risparmio annuo stimato:</span>
+                            <span class="summary-value">€ <span id="risultatoRisparmioAnnuo">850</span></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Risparmio in 25 anni:</span>
+                            <span class="summary-value">€ <span id="risultatoRisparmio25">21250</span></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Tempo di ritorno dell'investimento:</span>
+                            <span class="summary-value"><span id="risultatoROI">9</span> anni</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="font-semibold text-lg mb-4">Produzione Energetica Mensile Stimata</h3>
+                    <div class="chart-container">
+                        <div id="chartMonthly"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-semibold text-lg mb-4">Analisi Economica</h3>
+                        <div class="highlight">
+                            <p class="mb-2"><strong>Copertura dei consumi:</strong> <span id="copertura">65</span>% del tuo fabbisogno energetico</p>
+                            <p><strong>Riduzione bolletta:</strong> da € <span id="bollettaAttuale">875</span> a € <span id="bollettaFutura">306</span> all'anno</p>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <p class="mb-4"><strong>Tempo di ritorno dell'investimento</strong></p>
+                            <div class="roi-chart">
+                                <div class="roi-circle" style="--percentage: 60%"></div>
+                                <div class="roi-inner-circle">
+                                    <div class="roi-years"><span id="roiAnni">9</span></div>
+                                    <div class="roi-label">anni</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-lg mb-4">Impatto Ambientale</h3>
+                        <div class="highlight">
+                            <p class="mb-2"><strong>Riduzione CO₂:</strong> <span id="riduzioneEmissioni">1.85</span> tonnellate all'anno</p>
+                            <p><strong>Equivalente a:</strong> piantare <span id="alberiEquivalenti">92</span> alberi</p>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <p><strong>Benefici addizionali:</strong></p>
+                            <ul class="list-disc ml-6 mt-2 space-y-1">
+                                <li>Aumento del valore dell'immobile</li>
+                                <li>Indipendenza energetica</li>
+                                <li>Protezione contro l'aumento dei prezzi dell'energia</li>
+                                <li>Contributo alla transizione energetica</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-10">
+                    <h3 class="font-semibold text-lg mb-4">Incentivi e Detrazioni</h3>
+                    <p>Per un impianto fotovoltaico da <span id="potenzaIncentivi">3</span> kWp:</p>
+                    <ul class="list-disc ml-6 mt-2 space-y-1">
+                        <li>Detrazione fiscale del 50% in 10 anni: € <span id="detrazione">3750</span></li>
+                        <li>Scambio sul posto o ritiro dedicato dell'energia immessa in rete</li>
+                        <li>Possibilità di ammortamento per le imprese</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-10 bg-blue-50 p-6 rounded-lg">
+                    <h3 class="font-semibold text-lg mb-3">Prossimi passi</h3>
+                    <p class="mb-4">Questi calcoli sono indicativi. Per un preventivo dettagliato e personalizzato, ti consigliamo di:</p>
+                    <ul class="list-disc ml-6 space-y-1">
+                        <li>Contattare un installatore qualificato per un sopralluogo</li>
+                        <li>Richiedere più preventivi per confrontare le offerte</li>
+                        <li>Verificare la disponibilità di incentivi locali</li>
+                        <li>Controllare eventuali vincoli urbanistici o condominiali</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8 flex justify-center">
+                    <button id="ricomincia" class="btn btn-primary">Ricalcola con nuovi dati</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Variabili globali
+        let currentStep = 1;
+        
+        // Valori dei coefficienti per i calcoli
+        const coeffRegione = {
+            nord: 1050,
+            centro: 1300,
+            sud: 1500
+        };
+        
+        const coeffEsposizione = {
+            sud: 1.0,
+            sudest: 0.9,
+            est: 0.8,
+            nordest: 0.7,
+            nord: 0.6
+        };
+        
+        const coeffTipoPannelli = {
+            standard: 1.0,
+            premium: 1.2,
+            economici: 0.8
+        };
+        
+        const costoKw = {
+            standard: 2500,
+            premium: 3000,
+            economici: 2000
+        };
+        
+        const costoAccumulatore = {
+            no: 0,
+            small: 4000,
+            medium: 7000,
+            large: 10000
+        };
+        
+        const coefficienteAutoconsumo = {
+            no: 0.3,
+            small: 0.5,
+            medium: 0.7,
+            large: 0.8
+        };
+        
+        const costoWallbox = {
+            no: 0,
+            si: 1500
+        };
+        
+        // Funzioni di navigazione
+        function showStep(step) {
+            document.querySelectorAll('.step-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.step').forEach(stepIndicator => {
+                stepIndicator.classList.remove('active', 'completed');
+            });
+            
+            for (let i = 1; i <= step; i++) {
+                const indicator = document.getElementById(`step-indicator-${i}`);
+                if (indicator) {
+                    if (i < step) {
+                        indicator.classList.add('completed');
+                    } else if (i === step) {
+                        indicator.classList.add('active');
+                    }
+                }
+            }
+            
+            if (step <= 3) {
+                const stepContainer = document.getElementById(`step${step}`);
+                if (stepContainer) {
+                    stepContainer.classList.add('active');
+                }
+                const progressBar = document.querySelector('.progress');
+                if (progressBar) {
+                    progressBar.style.width = `${33.33 * step}%`;
+                }
+                currentStep = step;
+            } else {
+                // Risultati
+                const risultatiContainer = document.getElementById('risultati');
+                if (risultatiContainer) {
+                    risultatiContainer.classList.add('active');
+                }
+                const progressBar = document.querySelector('.progress');
+                if (progressBar) {
+                    progressBar.style.width = '100%';
+                }
+                // Aggiornare i risultati
+                calcolaRisultati();
+                // Generare il grafico
+                generaGraficoMensile();
+            }
+        }
+        
+        // Calcoli risultati
+        function calcolaRisultati() {
+            // Raccogliere i dati inseriti
+            const regione = document.getElementById('regione').value;
+            const esposizione = document.getElementById('esposizione').value;
+            const superficie = parseFloat(document.getElementById('superficie').value);
+            const consumoAnnuo = parseFloat(document.getElementById('consumoAnnuo').value);
+            const prezzoEnergia = parseFloat(document.getElementById('prezzoEnergia').value);
+            const potenzaImpianto = parseFloat(document.getElementById('potenzaImpianto').value);
+            const accumulatore = document.getElementById('accumulatore').value;
+            const wallbox = document.getElementById('wallbox').value;
+            const tipoPannelli = document.getElementById('tipoPannelli').value;
+            
+            // Calcoli base
+            const numPannelli = Math.floor(potenzaImpianto / 0.4); // Assumendo pannelli da 400W
+            const superficieOccupata = numPannelli * 1.7; // m²
+            const produzioneAnnua = potenzaImpianto * coeffRegione[regione] * coeffEsposizione[esposizione] * coeffTipoPannelli[tipoPannelli];
+            
+            const costoImpianto = potenzaImpianto * costoKw[tipoPannelli] + costoAccumulatore[accumulatore] + costoWallbox[wallbox];
+            
+            const autoconsumo = coefficienteAutoconsumo[accumulatore];
+            const energiaAutoconsumata = produzioneAnnua * autoconsumo;
+            const energiaImmessa = produzioneAnnua * (1 - autoconsumo);
+            
+            const risparmioAutoconsumo = energiaAutoconsumata * prezzoEnergia;
+            const guadagnoImmissione = energiaImmessa * prezzoEnergia * 0.7; // Valore di vendita energia alla rete è circa il 70% del prezzo d'acquisto
+            
+            const risparmioAnnuo = risparmioAutoconsumo + guadagnoImmissione;
+            const risparmio25Anni = risparmioAnnuo * 25; // Durata media pannelli
+            
+            const tempoRitorno = Math.round(costoImpianto / risparmioAnnuo);
+            
+            // Calcoli ambientali
+            const riduzioneEmissioni = produzioneAnnua * 0.000476; // Tonnellate di CO2 (media italiana)
+            const alberiEquivalenti = riduzioneEmissioni * 50; // Approssimazione: 50 alberi per tonnellata di CO2
+            
+            // Percentuale copertura consumi
+            const percentualeCopertura = Math.min(100, Math.round((energiaAutoconsumata / consumoAnnuo) * 100));
+            
+            // Bolletta attuale vs futura
+            const bollettaAttuale = consumoAnnuo * prezzoEnergia;
+            const bollettaFutura = bollettaAttuale - risparmioAnnuo;
+            
+            // Detrazione fiscale
+            const detrazione = costoImpianto * 0.5; // 50% di detrazione
+            
+            // Aggiornamento UI con i risultati - con controlli di sicurezza
+            function updateElementText(id, value) {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            }
+            
+            updateElementText('risultatoPotenza', potenzaImpianto);
+            updateElementText('risultatoNumPannelli', numPannelli);
+            updateElementText('risultatoSuperficie', superficieOccupata.toFixed(1));
+            updateElementText('risultatoProduzione', Math.round(produzioneAnnua));
+            updateElementText('risultatoAutoconsumo', Math.round(autoconsumo * 100));
+            
+            updateElementText('risultatoCosto', Math.round(costoImpianto).toLocaleString());
+            updateElementText('risultatoRisparmioAnnuo', Math.round(risparmioAnnuo).toLocaleString());
+            updateElementText('risultatoRisparmio25', Math.round(risparmio25Anni).toLocaleString());
+            updateElementText('risultatoROI', tempoRitorno);
+            
+            updateElementText('copertura', percentualeCopertura);
+            updateElementText('bollettaAttuale', Math.round(bollettaAttuale).toLocaleString());
+            updateElementText('bollettaFutura', Math.round(bollettaFutura).toLocaleString());
+            
+            updateElementText('roiAnni', tempoRitorno);
+            
+            const roiCircle = document.querySelector('.roi-circle');
+            if (roiCircle) {
+                roiCircle.style.setProperty('--percentage', `${Math.min(100, (tempoRitorno/25)*100)}%`);
+            }
+            
+            updateElementText('riduzioneEmissioni', riduzioneEmissioni.toFixed(2));
+            updateElementText('alberiEquivalenti', Math.round(alberiEquivalenti));
+            
+            updateElementText('potenzaIncentivi', potenzaImpianto);
+            updateElementText('detrazione', Math.round(detrazione).toLocaleString());
+        }
+        
+        // Generazione grafico produzione mensile
+        function generaGraficoMensile() {
+            const regioneSelect = document.getElementById('regione');
+            const esposizioneSelect = document.getElementById('esposizione');
+            const potenzaImpiantoInput = document.getElementById('potenzaImpianto');
+            const tipoPannelliSelect = document.getElementById('tipoPannelli');
+            
+            if (!regioneSelect || !esposizioneSelect || !potenzaImpiantoInput || !tipoPannelliSelect) {
+                console.error("Elementi del form non trovati");
+                return;
+            }
+            
+            const regione = regioneSelect.value;
+            const esposizione = esposizioneSelect.value;
+            const potenzaImpianto = parseFloat(potenzaImpiantoInput.value);
+            const tipoPannelli = tipoPannelliSelect.value;
+            
+            // Coefficienti mensili (percentuale di produzione di ogni mese rispetto al totale annuo)
+            const coefficientiMensili = {
+                nord: [0.04, 0.05, 0.08, 0.09, 0.11, 0.12, 0.13, 0.12, 0.09, 0.07, 0.05, 0.04],
+                centro: [0.05, 0.06, 0.08, 0.09, 0.11, 0.12, 0.13, 0.12, 0.08, 0.07, 0.05, 0.04],
+                sud: [0.06, 0.07, 0.09, 0.1, 0.11, 0.12, 0.13, 0.12, 0.08, 0.06, 0.04, 0.03]
+            };
+            
+            const produzioneAnnua = potenzaImpianto * coeffRegione[regione] * coeffEsposizione[esposizione] * coeffTipoPannelli[tipoPannelli];
+            const produzioniMensili = coefficientiMensili[regione].map(coeff => Math.round(produzioneAnnua * coeff));
+            
+            const chartContainer = document.getElementById('chartMonthly');
+            if (!chartContainer) {
+                console.error("Container del grafico non trovato");
+                return;
+            }
+            
+            chartContainer.innerHTML = '';
+            
+            const mesi = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+            const maxProduzione = Math.max(...produzioniMensili);
+            
+            // Creare le barre del grafico
+            for (let i = 0; i < 12; i++) {
+                const barContainer = document.createElement('div');
+                barContainer.style.position = 'absolute';
+                barContainer.style.left = `${i * (100/12)}%`;
+                barContainer.style.width = `${100/12}%`;
+                barContainer.style.bottom = '0';
+                barContainer.style.height = '100%';
+                barContainer.style.display = 'flex';
+                barContainer.style.flexDirection = 'column';
+                barContainer.style.alignItems = 'center';
+                barContainer.style.justifyContent = 'flex-end';
+                
+                const bar = document.createElement('div');
+                const height = `${(produzioniMensili[i] / maxProduzione) * 80}%`;
+                bar.className = 'chart-bar';
+                bar.style.height = '0';
+                bar.style.width = '70%';
+                bar.setAttribute('data-value', produzioniMensili[i]);
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = mesi[i];
+                
+                const valueLabel = document.createElement('div');
+                valueLabel.style.position = 'absolute';
+                valueLabel.style.fontSize = '10px';
+                valueLabel.style.top = '0';
+                valueLabel.style.transform = 'translateY(-100%)';
+                valueLabel.textContent = produzioniMensili[i] + ' kWh';
+                
+                barContainer.appendChild(bar);
+                barContainer.appendChild(label);
+                bar.appendChild(valueLabel);
+                chartContainer.appendChild(barContainer);
+                
+                // Animazione per le barre (in un try-catch per evitare problemi)
+                try {
+                    setTimeout(() => {
+                        bar.style.height = height;
+                    }, 100 + i * 100);
+                } catch (e) {
+                    console.warn("Errore nell'animazione della barra", e);
+                    bar.style.height = height; // Impostazione immediata senza animazione
+                }
+            }
+        }
+        
+        // Calcolo potenza consigliata in base ai consumi
+        function calcolaPotenzaConsigliata() {
+            const consumoAnnuoElement = document.getElementById('consumoAnnuo');
+            const regioneElement = document.getElementById('regione');
+            const esposizioneElement = document.getElementById('esposizione');
+            
+            if (!consumoAnnuoElement || !regioneElement || !esposizioneElement) {
+                console.error("Elementi necessari per il calcolo non trovati");
+                return 3; // Valore di default se gli elementi non sono trovati
+            }
+            
+            const consumoAnnuo = parseFloat(consumoAnnuoElement.value);
+            const regione = regioneElement.value;
+            const esposizione = esposizioneElement.value;
+            
+            if (isNaN(consumoAnnuo) || !regione || !esposizione) {
+                console.warn("Valori non validi per il calcolo della potenza");
+                return 3; // Valore di default se i valori non sono validi
+            }
+            
+            try {
+                // Calcolo approssimativo: consumi annui / producibilità media per kW nell'area
+                let potenzaConsigliata = consumoAnnuo / (coeffRegione[regione] * coeffEsposizione[esposizione]);
+                
+                // Arrotondamento a 0.5 kW più vicino
+                potenzaConsigliata = Math.round(potenzaConsigliata * 2) / 2;
+                
+                // Limiti di potenza ragionevoli
+                potenzaConsigliata = Math.max(1.5, Math.min(10, potenzaConsigliata));
+                
+                return potenzaConsigliata;
+            } catch (e) {
+                console.error("Errore nel calcolo della potenza:", e);
+                return 3; // Valore di default in caso di errore
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Funzione di supporto per aggiungere event listener in modo sicuro
+            function addSafeEventListener(elementId, eventType, handler) {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.addEventListener(eventType, handler);
+                } else {
+                    console.warn(`Elemento con ID '${elementId}' non trovato per l'event listener '${eventType}'`);
+                }
+            }
+            
+            // Pulsanti di navigazione
+            addSafeEventListener('nextToStep2', 'click', () => showStep(2));
+            addSafeEventListener('backToStep1', 'click', () => showStep(1));
+            
+            addSafeEventListener('nextToStep3', 'click', () => {
+                // Calcola e imposta la potenza consigliata quando si passa allo step 3
+                const potenza = calcolaPotenzaConsigliata();
+                
+                const potenzaImpiantoElement = document.getElementById('potenzaImpianto');
+                const potenzaImpiantoValueElement = document.getElementById('potenzaImpiantoValue');
+                const potenzaConsigliatElement = document.getElementById('potenzaConsigliata');
+                
+                if (potenzaImpiantoElement) potenzaImpiantoElement.value = potenza;
+                if (potenzaImpiantoValueElement) potenzaImpiantoValueElement.textContent = potenza;
+                if (potenzaConsigliatElement) potenzaConsigliatElement.textContent = potenza;
+                
+                showStep(3);
+            });
+            
+            addSafeEventListener('backToStep2', 'click', () => showStep(2));
+            addSafeEventListener('calcolaRisultati', 'click', () => showStep(4));
+            addSafeEventListener('ricomincia', 'click', () => showStep(1));
+            
+            // Aggiornamento del valore visualizzato del range slider
+            addSafeEventListener('potenzaImpianto', 'input', function() {
+                const valueElement = document.getElementById('potenzaImpiantoValue');
+                if (valueElement) valueElement.textContent = this.value;
+            });
+            
+            // Aggiornamento automatico dei consumi energetici in base al numero di persone
+            addSafeEventListener('numeroPersone', 'change', function() {
+                const persone = parseInt(this.value);
+                const consumiMedi = {
+                    1: 2000,
+                    2: 2800,
+                    3: 3500,
+                    4: 4200,
+                    5: 5000
+                };
+                
+                const consumoAnnuoElement = document.getElementById('consumoAnnuo');
+                if (consumoAnnuoElement && persone in consumiMedi) {
+                    consumoAnnuoElement.value = consumiMedi[persone];
+                }
+            });
+            
+            // Aggiornamento della superficie disponibile in base al tipo di tetto
+            addSafeEventListener('tipoTetto', 'change', function() {
+                if (this.value === 'piano') {
+                    // Con un tetto piano si può ottimizzare meglio la disposizione
+                    const superficieElement = document.getElementById('superficie');
+                    if (superficieElement) {
+                        const superficieAttuale = parseInt(superficieElement.value);
+                        if (superficieAttuale < 50) {
+                            superficieElement.value = Math.min(50, superficieAttuale * 1.5);
+                        }
+                    }
+                }
+            });
+            
+            // Limita la superficie massima in base all'input
+            addSafeEventListener('superficie', 'change', function() {
+                const max = parseInt(this.getAttribute('max'));
+                const min = parseInt(this.getAttribute('min'));
+                if (!isNaN(max) && !isNaN(min)) {
+                    if (this.value > max) this.value = max;
+                    if (this.value < min) this.value = min;
+                }
+            });
+            
+            // Limita il consumo annuo in base all'input
+            addSafeEventListener('consumoAnnuo', 'change', function() {
+                const max = parseInt(this.getAttribute('max'));
+                const min = parseInt(this.getAttribute('min'));
+                if (!isNaN(max) && !isNaN(min)) {
+                    if (this.value > max) this.value = max;
+                    if (this.value < min) this.value = min;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
