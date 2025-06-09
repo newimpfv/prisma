@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRISMA 3.34</title>
+    <title>PRISMA 3.37</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="https://i.imgur.com/enKOWs3.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -272,6 +272,19 @@
                             <div class="form-group">
                                 <select id="inverter" class="form-select hidden">
                                     <option value="none">Nessun Inverter</option>
+
+                                    <optgroup label="X1-MICRO - Micro Inverter">
+                                        <option value="x1-micro-800" data-potenza="800" data-prezzo="106">X1-Micro 800 - 0.8kW (€106/cad)</option>
+                                        <option value="x1-micro-900" data-potenza="900" data-prezzo="112">X1-Micro 900 - 0.9kW (€112/cad)</option>
+                                        <option value="x1-micro-1000" data-potenza="1000" data-prezzo="123">X1-Micro 1000 - 1.0kW (€123/cad)</option>
+                                        <option value="x1-micro-1200" data-potenza="1200" data-prezzo="135">X1-Micro 1200 - 1.2kW (€135/cad)</option>
+                                        <option value="x1-micro-1300" data-potenza="1300" data-prezzo="187">X1-Micro 1300 - 1.3kW (€187/cad)</option>
+                                        <option value="x1-micro-1500" data-potenza="1500" data-prezzo="193">X1-Micro 1500 - 1.5kW (€193/cad)</option>
+                                        <option value="x1-micro-1600" data-potenza="1600" data-prezzo="199">X1-Micro 1600 - 1.6kW (€199/cad)</option>
+                                        <option value="x1-micro-1800" data-potenza="1800" data-prezzo="212">X1-Micro 1800 - 1.8kW (€212/cad)</option>
+                                        <option value="x1-micro-2000" data-potenza="2000" data-prezzo="229">X1-Micro 2000 - 2.0kW (€229/cad)</option>
+                                        <option value="x1-micro-2200" data-potenza="2200" data-prezzo="258">X1-Micro 2200 - 2.2kW (€258/cad)</option>
+                                    </optgroup>
                                     
                                     <optgroup label="X1-MINI G2 - Monofase 1 MPPT singolo">
                                         <option value="x1-07-s-d" data-potenza="700" data-prezzo="251">X1-0.7-S-D - 0.7kW (€251/cad)</option>
@@ -284,6 +297,17 @@
                                         <option value="x1-36-s-d" data-potenza="3600" data-prezzo="423">X1-3.6-S-D - 3.6kW (€423/cad)</option>
                                     </optgroup>
 
+                                    <optgroup label="X1-MINI G4 - Monofase 1 MPPT singolo">
+                                        <option value="x1-mini-06-g4" data-potenza="600" data-prezzo="206">X1-MINI-0.6K-G4 - 0.6kW (€206/cad)</option>
+                                        <option value="x1-mini-07-g4" data-potenza="700" data-prezzo="217">X1-MINI-0.7K-G4 - 0.7kW (€217/cad)</option>
+                                        <option value="x1-mini-11-g4" data-potenza="1100" data-prezzo="228">X1-MINI-1.1K-G4 - 1.1kW (€228/cad)</option>
+                                        <option value="x1-mini-15-g4" data-potenza="1500" data-prezzo="244">X1-MINI-1.5K-G4 - 1.5kW (€244/cad)</option>
+                                        <option value="x1-mini-20-g4" data-potenza="2000" data-prezzo="267">X1-MINI-2.0K-G4 - 2.0kW (€267/cad)</option>
+                                        <option value="x1-mini-25-g4" data-potenza="2500" data-prezzo="300">X1-MINI-2.5K-G4 - 2.5kW (€300/cad)</option>
+                                        <option value="x1-mini-30-g4" data-potenza="3000" data-prezzo="325">X1-MINI-3.0K-G4 - 3.0kW (€325/cad)</option>
+                                        <option value="x1-mini-33-g4" data-potenza="3300" data-prezzo="343">X1-MINI-3.3K-G4 - 3.3kW (€343/cad)</option>
+                                    </optgroup>
+
                                     <optgroup label="X1-BOOST G2 - Monofase 2 MPPT singoli">
                                         <option value="x1-30-t-d" data-potenza="3000" data-prezzo="458">X1-3.0-T-D - 3.0kW (€458/cad)</option>
                                         <option value="x1-33-t-d" data-potenza="3300" data-prezzo="491">X1-3.3-T-D - 3.3kW (€491/cad)</option>
@@ -293,11 +317,25 @@
                                         <option value="x1-60-t-d" data-potenza="6000" data-prezzo="668">X1-6.0-T-D - 6.0kW (€668/cad)</option>
                                     </optgroup>
 
+                                    <optgroup label="X1-BOOST G4 - Monofase 2 MPPT singoli">
+                                        <option value="x1-boost-25-g4" data-potenza="2500" data-prezzo="384">X1-BOOST-2.5K-G4 - 2.5kW (€384/cad)</option>
+                                        <option value="x1-boost-30-g4" data-potenza="3000" data-prezzo="389">X1-BOOST-3K-G4 - 3.0kW (€389/cad)</option>
+                                        <option value="x1-boost-33-g4" data-potenza="3300" data-prezzo="393">X1-BOOST-3.3K-G4 - 3.3kW (€393/cad)</option>
+                                        <option value="x1-boost-36-g4" data-potenza="3600" data-prezzo="413">X1-BOOST-3.6K-G4 - 3.6kW (€413/cad)</option>
+                                        <option value="x1-boost-42-g4" data-potenza="4200" data-prezzo="429">X1-BOOST-4.2K-G4 - 4.2kW (€429/cad)</option>
+                                        <option value="x1-boost-50-g4" data-potenza="5000" data-prezzo="481">X1-BOOST-5K-G4 - 5.0kW (€481/cad)</option>
+                                        <option value="x1-boost-60-g4" data-potenza="6000" data-prezzo="515">X1-BOOST-6K-G4 - 6.0kW (€515/cad)</option>
+                                    </optgroup>
+
                                     <optgroup label="X3-PRO-G2 - Trifase 2 MPPT doppi">
-                                        <option value="x3-pro-80" data-potenza="8000" data-prezzo="1097">X3-PRO-8.0 - 8.0kW (€1.097/cad)</option>
-                                        <option value="x3-pro-100" data-potenza="10000" data-prezzo="1137">X3-PRO-10.0 - 10.0kW (€1.137/cad)</option>
-                                        <option value="x3-pro-120" data-potenza="12000" data-prezzo="1176">X3-PRO-12.0 - 12.0kW (€1.176/cad)</option>
-                                        <option value="x3-pro-150" data-potenza="15000" data-prezzo="1229">X3-PRO-15.0 - 15.0kW (€1.229/cad)</option>
+                                        <option value="x3-pro-80-g2" data-potenza="8000" data-prezzo="827">X3-PRO-8K-G2 - 8.0kW (€827/cad)</option>
+                                        <option value="x3-pro-100-g2" data-potenza="10000" data-prezzo="856">X3-PRO-10K-G2 - 10.0kW (€856/cad)</option>
+                                        <option value="x3-pro-120-g2" data-potenza="12000" data-prezzo="891">X3-PRO-12K-G2 - 12.0kW (€891/cad)</option>
+                                        <option value="x3-pro-150-g2" data-potenza="15000" data-prezzo="933">X3-PRO-15K-G2 - 15.0kW (€933/cad)</option>
+                                        <option value="x3-pro-170-g2" data-potenza="17000" data-prezzo="964">X3-PRO-17K-G2 - 17.0kW (€964/cad)</option>
+                                        <option value="x3-pro-200-g2" data-potenza="20000" data-prezzo="1098">X3-PRO-20K-G2 - 20.0kW (€1.098/cad)</option>
+                                        <option value="x3-pro-250-g2" data-potenza="25000" data-prezzo="1147">X3-PRO-25K-G2 - 25.0kW (€1.147/cad)</option>
+                                        <option value="x3-pro-300-g2" data-potenza="30000" data-prezzo="1201">X3-PRO-30K-G2 - 30.0kW (€1.201/cad)</option>
                                     </optgroup>
 
                                     <optgroup label="X3-PRO-G2 - Trifase 3 MPPT doppi">
@@ -308,11 +346,13 @@
                                     </optgroup>
 
                                     <optgroup label="X3-MIC-G2 - Trifase 2 MPPT singoli">
-                                        <option value="x3-mic-40-t-d" data-potenza="4000" data-prezzo="793">X3-MIC-4.0-T-D - 4.0kW (€793/cad)</option>
-                                        <option value="x3-mic-50-t-d" data-potenza="5000" data-prezzo="819">X3-MIC-5.0-T-D - 5.0kW (€819/cad)</option>
-                                        <option value="x3-mic-60-t-d" data-potenza="6000" data-prezzo="878">X3-MIC-6.0-T-D - 6.0kW (€878/cad)</option>
-                                        <option value="x3-mic-80-t-d" data-potenza="8000" data-prezzo="971">X3-MIC-8.0-T-D - 8.0kW (€971/cad)</option>
-                                        <option value="x3-mic-100-t-d" data-potenza="10000" data-prezzo="1063">X3-MIC-10.0-T-D - 10.0kW (€1.063/cad)</option>
+                                       <option value="x3-mic-40-g2" data-potenza="4000" data-prezzo="574">X3-MIC-4K-G2 - 4.0kW (€574/cad)</option>
+                                        <option value="x3-mic-50-g2" data-potenza="5000" data-prezzo="596">X3-MIC-5K-G2 - 5.0kW (€596/cad)</option>
+                                        <option value="x3-mic-60-g2" data-potenza="6000" data-prezzo="622">X3-MIC-6K-G2 - 6.0kW (€622/cad)</option>
+                                        <option value="x3-mic-80-g2" data-potenza="8000" data-prezzo="662">X3-MIC-8K-G2 - 8.0kW (€662/cad)</option>
+                                        <option value="x3-mic-100-g2" data-potenza="10000" data-prezzo="692">X3-MIC-10K-G2 - 10.0kW (€692/cad)</option>
+                                        <option value="x3-mic-120-g2" data-potenza="12000" data-prezzo="903">X3-MIC-12K-G2 - 12.0kW (€903/cad)</option>
+                                        <option value="x3-mic-150-g2" data-potenza="15000" data-prezzo="956">X3-MIC-15K-G2 - 15.0kW (€956/cad)</option>
                                     </optgroup>
 
                                     <optgroup label="X3-MIC-G2 - Trifase 2 MPPT (uno doppio)">
@@ -321,15 +361,24 @@
                                     </optgroup>
 
                                     <optgroup label="X3-MEGA-G2 - Trifase 5 MPPT doppi">
-                                        <option value="x3-40k-5x" data-potenza="40000" data-prezzo="1990">X3-40K-5X - 40.0kW (€1.990/cad)</option>
-                                        <option value="x3-50k-5x" data-potenza="50000" data-prezzo="2045">X3-50K-5X - 50.0kW (€2.045/cad)</option>
-                                        <option value="x3-60k-6x" data-potenza="60000" data-prezzo="2251">X3-60K-6X - 60.0kW (€2.251/cad)</option>
+                                        <option value="x3-40k-5x" data-potenza="40000" data-prezzo="1553">X3-40K-5X - 40.0kW (€1.553/cad)</option>
+                                        <option value="x3-50k-5x" data-potenza="50000" data-prezzo="1668">X3-50K-5X - 50.0kW (€1.668/cad)</option>
+                                        <option value="x3-60k-6x" data-potenza="60000" data-prezzo="1725">X3-60K-6X - 60.0kW (€1.725/cad)</option>
+                                    </optgroup>
+
+                                    <optgroup label="X3-GRAND - Inverter di grande potenza">
+                                        <option value="x3-grd-300k-hv" data-potenza="300000" data-prezzo="6498">X3-GRD-300K-HV - 300.0kW (€6.498/cad)</option>
+                                        <option value="x3-grd-320k-hv" data-potenza="320000" data-prezzo="6613">X3-GRD-320K-HV - 320.0kW (€6.613/cad)</option>
+                                        <option value="x3-grd-333k-hv" data-potenza="333000" data-prezzo="6728">X3-GRD-333K-HV - 333.0kW (€6.728/cad)</option>
+                                        <option value="x3-grd-350k-hv" data-potenza="350000" data-prezzo="6843">X3-GRD-350K-HV - 350.0kW (€6.843/cad)</option>
                                     </optgroup>
 
                                     <optgroup label="X3-FORTH - Trifase 9 MPPT doppi">
-                                        <option value="x3-80k" data-potenza="80000" data-prezzo="3644">X3-80K - 80.0kW (€3.644/cad)</option>
-                                        <option value="x3-100k" data-potenza="100000" data-prezzo="3737">X3-100K - 100.0kW (€3.737/cad)</option>
-                                        <option value="x3-110k" data-potenza="110000" data-prezzo="3852">X3-110K - 110.0kW (€3.852/cad)</option>
+                                        <option value="x3-80k" data-potenza="80000" data-prezzo="2472">X3-80K - 80.0kW (€2.472/cad)</option>
+                                        <option value="x3-100k" data-potenza="100000" data-prezzo="2530">X3-100K - 100.0kW (€2.530/cad)</option>
+                                        <option value="x3-110k" data-potenza="110000" data-prezzo="2587">X3-110K - 110.0kW (€2.587/cad)</option>
+                                        <option value="x3-120k" data-potenza="120000" data-prezzo="2645">X3-120K - 120.0kW (€2.645/cad)</option>
+                                        <option value="x3-125k" data-potenza="125000" data-prezzo="2695">X3-125K - 125.0kW (€2.695/cad)</option>
                                     </optgroup>
                                     
                                     <optgroup label="X3-FORTH - Trifase 12 MPPT doppi">
@@ -342,63 +391,63 @@
                                     </optgroup>
 
                                     <optgroup label="X1 ESS G4 HYBRID">
-                                        <option value="x1-hybrid-30d-g4" data-potenza="3000" data-prezzo="972">X1-Hybrid-3.0D G4 - 3.0kW (€972/cad)</option>
-                                        <option value="x1-hybrid-37d-g4" data-potenza="3700" data-prezzo="1012">X1-Hybrid-3.7D G4 - 3.7kW (€1.012/cad)</option>
-                                        <option value="x1-hybrid-50d-g4" data-potenza="5000" data-prezzo="1059">X1-Hybrid-5.0D G4 - 5.0kW (€1.059/cad)</option>
-                                        <option value="x1-hybrid-60d-g4" data-potenza="6000" data-prezzo="1122">X1-Hybrid-6.0D G4 - 6.0kW (€1.122/cad)</option>
-                                        <option value="x1-hybrid-75d-g4" data-potenza="7500" data-prezzo="1178">X1-Hybrid-7.5D G4 - 7.5kW (€1.178/cad)</option>
+                                        <option value="x1-hybrid-30d-g4" data-potenza="3000" data-prezzo="794">X1-Hybrid-3.0D G4 - 3.0kW (€794/cad)</option>
+                                        <option value="x1-hybrid-37d-g4" data-potenza="3700" data-prezzo="826">X1-Hybrid-3.7D G4 - 3.7kW (€826/cad)</option>
+                                        <option value="x1-hybrid-50d-g4" data-potenza="5000" data-prezzo="863">X1-Hybrid-5.0D G4 - 5.0kW (€863/cad)</option>
+                                        <option value="x1-hybrid-60d-g4" data-potenza="6000" data-prezzo="911">X1-Hybrid-6.0D G4 - 6.0kW (€911/cad)</option>
+                                        <option value="x1-hybrid-75d-g4" data-potenza="7500" data-prezzo="953">X1-Hybrid-7.5D G4 - 7.5kW (€953/cad)</option>
                                     </optgroup>
                                     
                                     <optgroup label="X3-ULTRA HYBRID">
-                                        <option value="x3-ult-15k" data-potenza="15000" data-prezzo="2299">X3-ULT-15K - 15kW (€2.299/cad)</option>
-                                        <option value="x3-ult-199k" data-potenza="19900" data-prezzo="2421">X3-ULT-19.9K - 19.9kW (€2.421/cad)</option>
-                                        <option value="x3-ult-20k" data-potenza="20000" data-prezzo="2421">X3-ULT-20K - 20kW (€2.421/cad)</option>
-                                        <option value="x3-ult-25k" data-potenza="25000" data-prezzo="2524">X3-ULT-25K - 25kW (€2.524/cad)</option>
-                                        <option value="x3-ult-30k" data-potenza="30000" data-prezzo="2645">X3-ULT-30K - 30kW (€2.645/cad)</option>
+                                        <option value="x3-ult-15k" data-potenza="15000" data-prezzo="2006">X3-ULT-15K - 15kW (€2.006/cad)</option>
+                                        <option value="x3-ult-199k" data-potenza="19900" data-prezzo="2110">X3-ULT-19.9K - 19.9kW (€2.110/cad)</option>
+                                        <option value="x3-ult-20k" data-potenza="20000" data-prezzo="2110">X3-ULT-20K - 20kW (€2.110/cad)</option>
+                                        <option value="x3-ult-25k" data-potenza="25000" data-prezzo="2196">X3-ULT-25K - 25kW (€2.196/cad)</option>
+                                        <option value="x3-ult-30k" data-potenza="30000" data-prezzo="2305">X3-ULT-30K - 30kW (€2.305/cad)</option>
                                     </optgroup>
                                     
                                     <optgroup label="X3 ESS G4 HYBRID">
-                                        <option value="x3-hybrid-50d-g4" data-potenza="5000" data-prezzo="1539">X3-Hybrid-5.0D G4 - 5.0kW (€1.539/cad)</option>
-                                        <option value="x3-hybrid-60d-g4" data-potenza="6000" data-prezzo="1599">X3-Hybrid-6.0D G4 - 6.0kW (€1.599/cad)</option>
-                                        <option value="x3-hybrid-80d-g4" data-potenza="8000" data-prezzo="1661">X3-Hybrid-8.0D G4 - 8.0kW (€1.661/cad)</option>
-                                        <option value="x3-hybrid-100d-g4" data-potenza="10000" data-prezzo="1846">X3-Hybrid-10.0D G4 - 10.0kW (€1.846/cad)</option>
-                                        <option value="x3-hybrid-120d-g4" data-potenza="12000" data-prezzo="1870">X3-Hybrid-12.0D G4 - 12.0kW (€1.870/cad)</option>
-                                        <option value="x3-hybrid-150d-g4" data-potenza="15000" data-prezzo="1936">X3-Hybrid-15.0D G4 - 15.0kW (€1.936/cad)</option>
+                                        <option value="x3-hybrid-50d-g4" data-potenza="5000" data-prezzo="1114">X3-Hybrid-5.0D G4 - 5.0kW (€1.114/cad)</option>
+                                        <option value="x3-hybrid-60d-g4" data-potenza="6000" data-prezzo="1264">X3-Hybrid-6.0D G4 - 6.0kW (€1.264/cad)</option>
+                                        <option value="x3-hybrid-80d-g4" data-potenza="8000" data-prezzo="1329">X3-Hybrid-8.0D G4 - 8.0kW (€1.329/cad)</option>
+                                        <option value="x3-hybrid-100d-g4" data-potenza="10000" data-prezzo="1458">X3-Hybrid-10.0D G4 - 10.0kW (€1.458/cad)</option>
+                                        <option value="x3-hybrid-120d-g4" data-potenza="12000" data-prezzo="1521">X3-Hybrid-12.0D G4 - 12.0kW (€1.521/cad)</option>
+                                        <option value="x3-hybrid-150d-g4" data-potenza="15000" data-prezzo="1569">X3-Hybrid-15.0D G4 - 15.0kW (€1.569/cad)</option>
                                     </optgroup>
                     
                                     <optgroup label="X1-IES Alta Gamma">
-                                        <option value="x1-ies-3k" data-potenza="3000" data-prezzo="1106">X1-IES-3K - 3kW (€1.106/cad)</option>
-                                        <option value="x1-ies-37k" data-potenza="3700" data-prezzo="1177">X1-IES-3.7K - 3.7kW (€1.177/cad)</option>
-                                        <option value="x1-ies-5k" data-potenza="5000" data-prezzo="1227">X1-IES-5K - 5kW (€1.227/cad)</option>
-                                        <option value="x1-ies-6k" data-potenza="6000" data-prezzo="1356">X1-IES-6K - 6kW (€1.356/cad)</option>
-                                        <option value="x1-ies-8k" data-potenza="8000" data-prezzo="1420">X1-IES-8K - 8kW (€1.420/cad)</option>
+                                        <option value="x1-ies-3k" data-potenza="3000" data-prezzo="857">X1-IES-3K - 3kW (€857/cad)</option>
+                                        <option value="x1-ies-37k" data-potenza="3700" data-prezzo="891">X1-IES-3.7K - 3.7kW (€891/cad)</option>
+                                        <option value="x1-ies-5k" data-potenza="5000" data-prezzo="930">X1-IES-5K - 5kW (€930/cad)</option>
+                                        <option value="x1-ies-6k" data-potenza="6000" data-prezzo="983">X1-IES-6K - 6kW (€983/cad)</option>
+                                        <option value="x1-ies-8k" data-potenza="8000" data-prezzo="1030">X1-IES-8K - 8kW (€1.030/cad)</option>
                                     </optgroup>
                     
                                     <optgroup label="X3-IES Alta Gamma">
-                                        <option value="x3-ies-5k" data-potenza="5000" data-prezzo="1806">X3-IES-5K - 5kW (€1.806/cad)</option>
-                                        <option value="x3-ies-6k" data-potenza="6000" data-prezzo="1875">X3-IES-6K - 6kW (€1.875/cad)</option>
-                                        <option value="x3-ies-8k" data-potenza="8000" data-prezzo="1941">X3-IES-8K - 8kW (€1.941/cad)</option>
-                                        <option value="x3-ies-10k" data-potenza="10000" data-prezzo="2106">X3-IES-10K - 10kW (€2.106/cad)</option>
-                                        <option value="x3-ies-12k" data-potenza="12000" data-prezzo="2174">X3-IES-12K - 12kW (€2.174/cad)</option>
-                                        <option value="x3-ies-15k" data-potenza="15000" data-prezzo="2249">X3-IES-15K - 15kW (€2.249/cad)</option>
+                                        <option value="x3-ies-5k" data-potenza="5000" data-prezzo="1191">X3-IES-5K - 5kW (€1.191/cad)</option>
+                                        <option value="x3-ies-6k" data-potenza="6000" data-prezzo="1351">X3-IES-6K - 6kW (€1.351/cad)</option>
+                                        <option value="x3-ies-8k" data-potenza="8000" data-prezzo="1417">X3-IES-8K - 8kW (€1.417/cad)</option>
+                                        <option value="x3-ies-10k" data-potenza="10000" data-prezzo="1551">X3-IES-10K - 10kW (€1.551/cad)</option>
+                                        <option value="x3-ies-12k" data-potenza="12000" data-prezzo="1628">X3-IES-12K - 12kW (€1.628/cad)</option>
+                                        <option value="x3-ies-15k" data-potenza="15000" data-prezzo="1678">X3-IES-15K - 15kW (€1.678/cad)</option>
                                     </optgroup>
                     
                                     <optgroup label="X1-Hybrid-LV Entry Level">
-                                        <option value="x1-hyb-30-lv" data-potenza="3000" data-prezzo="940">X1-HYB-3.0-LV - 3kW (€940/cad)</option>
-                                        <option value="x1-hyb-37-lv" data-potenza="3700" data-prezzo="953">X1-HYB-3.7-LV - 3.7kW (€953/cad)</option>
-                                        <option value="x1-hyb-40-lv" data-potenza="4000" data-prezzo="966">X1-HYB-4.0-LV - 4kW (€966/cad)</option>
-                                        <option value="x1-hyb-46-lv" data-potenza="4600" data-prezzo="981">X1-HYB-4.6-LV - 4.6kW (€981/cad)</option>
-                                        <option value="x1-hyb-50-lv" data-potenza="5000" data-prezzo="1022">X1-HYB-5.0-LV - 5kW (€1.022/cad)</option>
-                                        <option value="x1-hyb-60-lv" data-potenza="6000" data-prezzo="1035">X1-HYB-6.0-LV - 6kW (€1.035/cad)</option>
+                                        <option value="x1-hyb-30-lv" data-potenza="3000" data-prezzo="810">X1-HYB-3.0-LV - 3kW (€810/cad)</option>
+                                        <option value="x1-hyb-37-lv" data-potenza="3700" data-prezzo="821">X1-HYB-3.7-LV - 3.7kW (€821/cad)</option>
+                                        <option value="x1-hyb-40-lv" data-potenza="4000" data-prezzo="833">X1-HYB-4.0-LV - 4kW (€833/cad)</option>
+                                        <option value="x1-hyb-46-lv" data-potenza="4600" data-prezzo="844">X1-HYB-4.6-LV - 4.6kW (€844/cad)</option>
+                                        <option value="x1-hyb-50-lv" data-potenza="5000" data-prezzo="880">X1-HYB-5.0-LV - 5kW (€880/cad)</option>
+                                        <option value="x1-hyb-60-lv" data-potenza="6000" data-prezzo="891">X1-HYB-6.0-LV - 6kW (€891/cad)</option>
                                     </optgroup>
 
                                     <optgroup label="T-BAT-SYS-HV-S50E (Batteria per IES)">
-                                        <option value="x1-matebox-g2-ies" data-prezzo="613">X1-Matebox G2(IES) (€613/cad)</option>
-                                        <option value="x3-matebox-g2-ies" data-prezzo="681">X3-Matebox G2(IES) (€681/cad)</option>
-                                        <option value="tbms" data-prezzo="583">TBMS- (€583/cad)</option>
-                                        <option value="tp-hs50e" data-prezzo="1975">TP-HS50E (€1.975/cad)</option>
-                                        <option value="series" data-prezzo="544">Series (€544/cad)</option>
-                                        <option value="wall-configuration" data-prezzo="163">Wall configuration (€163/cad)</option>
+                                        <option value="x1-matebox-g2-ies" data-prezzo="528">X1-Matebox G2(IES) (€528/cad)</option>
+                                        <option value="x3-matebox-g2-ies" data-prezzo="587">X3-Matebox G2(IES) (€587/cad)</option>
+                                        <option value="tbms-mcs0800e" data-prezzo="469">TBMS-MCS0800E(with base) (€469/cad)</option>
+                                        <option value="tp-hs50e" data-prezzo="1408">TP-HS50E (€1.408/cad)</option>
+                                        <option value="series-box-ths50e" data-prezzo="469">Series box(THS50E)(with base) (€469/cad)</option>
+                                        <option value="wall-configuration" data-prezzo="140">Wall configuration package (€140/cad)</option>
                                     </optgroup>
                     
                                     <optgroup label="AC Charger">
@@ -435,19 +484,26 @@
                                     <!-- Template per la selezione delle batterie (nascosto) -->
                                     <select id="batterieTipo" class="form-select hidden">
                                         <option value="none">Nessuna Batteria</option>
+                                        
                                         <optgroup label="Batterie Standard">
-                                            <option value="t58-master-v2" data-prezzo="2103">T58 Master V2 - 5.8kW con BMS (€2.103/cad)</option>
-                                            <option value="t58-slave-v2" data-prezzo="1851">T58 Slave V2 - 5.8kW (€1.851/cad)</option>
-                                            <option value="t58-parallel-bms" data-prezzo="573">T58 Parallel BMS - per raddoppiare le batterie T58 su ESS G4 (€573/cad)</option>
-                                            <option value="t30-battery" data-prezzo="1047">T30 Battery - 3kW a colonna (€1.047/cad)</option>
-                                            <option value="t30-bms" data-prezzo="538">T30 BMS - a colonna (€538/cad)</option>
-                                            <option value="tbms-mcs0800" data-prezzo="573">TBMS-MCS0800 - per batterie serie HS (€573/cad)</option>
-                                            <option value="tp-hs36" data-prezzo="1303">TP-HS36 - Modulo batterie HS3.6 (€1.303/cad)</option>
-                                            <option value="tp-hs25" data-prezzo="1003">TP-HS25 - Modulo batteria HS2.5 (€1.003/cad)</option>
-                                            <option value="series-box" data-prezzo="363">Series Box - per splittare le colonne di batterie (€363/cad)</option>
+                                            <option value="t58-master-v2" data-prezzo="1668">T58 Master V2 - 5.8kW con BMS (€1.668/cad)</option>
+                                            <option value="t58-slave-v2" data-prezzo="1438">T58 Slave V2 - 5.8kW (€1.438/cad)</option>
+                                            <option value="t30-battery" data-prezzo="739">T30 Battery - 3kW a colonna (€739/cad)</option>
+                                            <option value="t30-bms" data-prezzo="440">T30 BMS - a colonna (€440/cad)</option>
+                                            <option value="tbms-mcs0800" data-prezzo="469">TBMS-MCS0800 - per batterie serie HS (€469/cad)</option>
+                                            <option value="tp-hs36" data-prezzo="899">TP-HS36 - Modulo batterie HS3.6 (€899/cad)</option>
+                                            <option value="tp-hs25" data-prezzo="649">TP-HS25 - Modulo batteria HS2.5 (€649/cad)</option>
+                                            <option value="series-box" data-prezzo="305">Series Box - per splittare le colonne di batterie (€305/cad)</option>
                                         </optgroup>
+
                                         <optgroup label="Batterie IES">
-                                            <option value="tp-ld53" data-prezzo="1334">TP-LD53 - 5kWh LV (€1.334/cad)</option>
+                                            <option value="tp-ld53" data-prezzo="899">TP-LD53 - 5kWh LV (€899/cad)</option>
+                                        </optgroup>
+
+                                        <optgroup label="Batterie Rack">
+                                            <option value="tb-hr140" data-prezzo="2760">TB-HR140 - Batteria Rack (€2.760/cad)</option>
+                                            <option value="tbms-r15" data-prezzo="1150">TBMS-R15 - BMS per batterie rack (€1.150/cad)</option>
+                                            <option value="battery-rack-cabinet" data-prezzo="748">Battery Rack Cabinet - Cabinato 7 posti (€748/cad)</option>
                                         </optgroup>
                                     </select>
                                 </div>
@@ -471,6 +527,10 @@
                                             <option value="aelio-p60b200" data-prezzo="58491">AELIO-P60B200 (€58.491/cad)</option>
                                             <option value="aelio-p65b100" data-prezzo="45809">AELIO-P65B100 (€45.809/cad)</option>
                                             <option value="aelio-p65b200" data-prezzo="58750">AELIO-P65B200 (€58.750/cad)</option>
+                                            <option value="aelio-b100" data-prezzo="27025">AELIO-B100 (€27.025/cad)</option>
+                                            <option value="aelio-b200" data-prezzo="42909">AELIO-B200 (€42.909/cad)</option>
+                                            <option value="x3-aelio-50k" data-potenza="50000" data-prezzo="4916">X3-AELIO-50K - 50.0kW (€4.916/cad)</option>
+                                            <option value="x3-aelio-60k" data-potenza="60000" data-prezzo="5189">X3-AELIO-60K - 60.0kW (€5.189/cad)</option>
                                         </optgroup>
                                         <optgroup label="Trene AC Couple BESS Cabinet">
                                             <option value="trene-p100b215-i" data-prezzo="71173">TRENE-P100B215-I (€71.173/cad)</option>
@@ -499,8 +559,12 @@
                                     </label>
                                     <select id="parallelBox" class="form-select">
                                         <option value="none">Nessuna Parallel box</option>
-                                        <option value="bsm58v2" data-prezzo="550">Parallel Box BSM T58 V2 (€550/cad)</option>
-                                        <option value="tc-pbox70" data-prezzo="229">TC-PBOX70 - Parallel Box triplo per batterie HS (€229/cad)</option>
+                                        <option value="bsm58v2" data-prezzo="598">Parallel Box BMS T58 V2 (€598/cad)</option>
+                                        <option value="tc-pbox70" data-prezzo="187">TC-PBOX70 - Parallel Box triplo per batterie HS (€187/cad)</option>
+                                        <option value="x3-pbox-60kw-g2" data-prezzo="959">X3-PBOX-60KW G2 - Backup Parallelo 3/5 macchine (€959/cad)</option>
+                                        <option value="x3-pbox-150kw-g2" data-prezzo="1576">X3-PBOX-150KW G2 - Backup Parallelo 5/10 macchine (€1.576/cad)</option>
+                                        <option value="adapter-box" data-prezzo="33">Adapter Box - Per pompe di calore (€33/cad)</option>
+                                        <option value="adapter-box-g2" data-prezzo="52">Adapter Box G2 - Per pompe di calore (€52/cad)</option>
                                     </select>
                                 </div>
                                 <div class="form-group" id="numeroParallelBoxContainer">
@@ -528,9 +592,9 @@
                                 <label class="form-label">Tipo Caricatore EV</label>
                                 <select id="evCharger" class="form-select">
                                     <option value="none">Nessun Caricatore</option>
-                                    <option value="x1-ae-72-sxh" data-prezzo="401">X1-AE-7.2 (SXH) - 7kW Monofase (€401/cad)</option>
-                                    <option value="x1-ae-72k-pxh" data-prezzo="441">X1-AE-7.2K(PXH) - 7kW Monofase con gomma (€441/cad)</option>
-                                    <option value="x3-ae-110-sxh" data-prezzo="491">X3-AE-11.0 (SXH) - 11kW Trifase (€491/cad)</option>
+                                    <option value="x1-ae-72-sxh" data-prezzo="347">X1-AE-7.2 (SXH) - 7kW Monofase (€347/cad)</option>
+                                    <option value="x1-ae-72k-pxh" data-prezzo="382">X1-AE-7.2K(PXH) - 7kW Monofase con gomma (€382/cad)</option>
+                                    <option value="x3-ae-110-sxh" data-prezzo="424">X3-AE-11.0 (SXH) - 11kW Trifase (€424/cad)</option>
                                 </select>
                             </div>
                             <div class="form-group" id="numeroEvChargerContainer">
@@ -561,9 +625,12 @@
                                 <select id="connettivita" class="form-select">
                                     <option value="none">Nessuna Connettività</option>
                                     <optgroup label="Wi-Fi Standard">
-                                        <option value="pocket-wifi-3" data-prezzo="19">Pocket WiFi 3.0 - WiFi Base (€19/cad)</option>
-                                        <option value="pocket-wifi-plus" data-prezzo="22">Pocket WiFi Plus - WiFi Potenziato (€22/cad)</option>
-                                        <option value="wifi-mag" data-prezzo="19">WiFi MAG - Per Serie Mega/Forth (€19/cad)</option>
+                                        <option value="pocket-wifi-3" data-prezzo="15">Pocket WiFi 3.0 - WiFi Base (€15/cad)</option>
+                                        <option value="pocket-wifi-plus" data-prezzo="21">Pocket WiFi Plus - WiFi Potenziato (€21/cad)</option>
+                                        <option value="pocket-lan-3" data-prezzo="19">Pocket LAN 3.0 - Solo LAN (€19/cad)</option>
+                                        <option value="pocket-wifi-plus-lm" data-prezzo="23">Pocket WiFi Plus 3.0 LM - WiFi+ Monitoraggio (€23/cad)</option>
+                                        <option value="pocket-wifi-lan" data-prezzo="35">Pocket WiFi+LAN - Dual Connection (€35/cad)</option>
+                                        <option value="pocket-4g-v3" data-prezzo="32">Pocket 4G V3 - Con Slot SIM (€32/cad)</option>
                                     </optgroup>
                                     <optgroup label="Connettività Avanzata">
                                         <option value="pocket-lan-3" data-prezzo="22">Pocket LAN 3.0 - Solo LAN (€22/cad)</option>
@@ -596,9 +663,13 @@
                                 <select id="backupControllo" class="form-select">
                                     <option value="none">Nessun Backup/Controllo</option>
                                     <optgroup label="Backup">
-                                        <option value="x1-eps-box" data-prezzo="195">X1-EPS Box - Backup Monofase (€195/cad)</option>
-                                        <option value="x3-eps-box" data-prezzo="317">X3-EPS Box - Backup Trifase (€317/cad)</option>
-                                        <option value="x3-eps-box-p5-e" data-prezzo="1406">X3-EPS-BOX-P5-E - Backup Parallelo (€1.406/cad)</option>
+                                        <option value="x1-eps-box" data-prezzo="184">X1-EPS Box - Backup Monofase (€184/cad)</option>
+                                        <option value="x3-eps-box" data-prezzo="242">X3-EPS Box - Backup Trifase (€242/cad)</option>
+                                        <option value="x3-eps-box-p5-e" data-prezzo="1389">X3-EPS-BOX-P5-E - Backup Parallelo (€1.389/cad)</option>
+                                        <option value="x1-mate-box" data-prezzo="507">X1 Mate Box - Monofase (€507/cad)</option>
+                                        <option value="x3-mate-box" data-prezzo="942">X3 Mate Box - Trifase (€942/cad)</option>
+                                        <option value="heat-box-g2" data-prezzo="52">Heat Box G2 - Per Pompe Calore (€52/cad)</option>
+                                        <option value="datahub" data-prezzo="330">DATAHUB - Controllo Multiplo (€330/cad)</option>
                                     </optgroup>
                                     <optgroup label="Quadri Comando">
                                         <option value="x1-mate-box" data-prezzo="588">X1 Mate Box - Monofase (€588/cad)</option>
@@ -633,9 +704,14 @@
                                 <select id="meterCT" class="form-select">
                                     <option value="none">Nessun Meter/CT</option>
                                     <optgroup label="Meter Standard">
-                                        <option value="ddsu666-d" data-prezzo="62">DDSU666-D - Meter Monofase (€62/cad)</option>
-                                        <option value="dtsu666-d" data-prezzo="84">DTSU666-D - Meter Trifase (€84/cad)</option>
-                                        <option value="dtsu666-d-ct" data-prezzo="142">DTSU666-D-CT - Meter Trifase con CT (€142/cad)</option>
+                                        <option value="ddsu666-d" data-prezzo="54">DDSU666-D - Meter Monofase (€54/cad)</option>
+                                        <option value="dtsu666-d" data-prezzo="72">DTSU666-D - Meter Trifase (€72/cad)</option>
+                                        <option value="dtsu666-d-ct" data-prezzo="117">DTSU666-D-CT - Meter Trifase con CT (€117/cad)</option>
+                                        <option value="ct-200" data-prezzo="15">CT 200A (€15/cad)</option>
+                                        <option value="ct-1500" data-prezzo="62">CT 1500A (€62/cad)</option>
+                                        <option value="ddsu666-d-ct" data-prezzo="71">DDSU666-D-CT - Meter Monofase con CT (€71/cad)</option>
+                                        <option value="ct-600" data-prezzo="30">CT 600A (€30/cad)</option>
+                                        <option value="wi-br" data-prezzo="54">Wi-BR - Ponte Wireless per Meter (€54/cad)</option>
                                     </optgroup>
                                     <optgroup label="Meter Eastron">
                                         <option value="sdm630m-ct-v2" data-prezzo="125">SDM630M-CT V2 - Trifase (€125/cad)</option>
@@ -669,16 +745,33 @@
                                 </label>
                                 <select id="caviAccessori" class="form-select">
                                     <option value="none">Nessun Cavo/Accessorio</option>
+
                                     <optgroup label="Cavi di Alimentazione">
                                         <option value="power-cable-12" data-prezzo="36">Cavo Alimentazione 1.2m (€36/cad)</option>
                                         <option value="power-cable-18" data-prezzo="39">Cavo Alimentazione 1.8m (€39/cad)</option>
                                     </optgroup>
+
                                     <optgroup label="Cavi di Comunicazione">
                                         <option value="comm-cable-12" data-prezzo="9">Cavo Comunicazione 1.2m (€9/cad)</option>
                                         <option value="comm-cable-18" data-prezzo="10">Cavo Comunicazione 1.8m (€10/cad)</option>
                                     </optgroup>
+
                                     <optgroup label="Kit Installazione">
-                                        <option value="accessory-pack-t30" data-prezzo="167">Accessory Pack T30 - Kit ESS G4 a "L" (€167/cad)</option>
+                                        <option value="accessory-pack-t30" data-prezzo="138">Accessory Pack T30 - Kit ESS G4 a "L" (€138/cad)</option>
+                                    </optgroup>
+
+                                    <optgroup label="Accessori Micro Inverter">
+                                        <option value="ac-trunk-end-cap" data-prezzo="2">AC Trunk End Cap (€2/cad)</option>
+                                        <option value="ac-trunk-connector" data-prezzo="5">AC Trunk Connector (€5/cad)</option>
+                                        <option value="ac-trunk-disconnect" data-prezzo="5">AC Trunk Port Disconnect (€5/cad)</option>
+                                        <option value="ac-trunk-cable-10awg" data-prezzo="23">AC Trunk Cable 2.4m 10AWG (€23/cad)</option>
+                                        <option value="ac-trunk-cable-12awg" data-prezzo="29">AC Trunk Cable 2.4m 12AWG (€29/cad)</option>
+                                        <option value="ac-end-cable-m" data-prezzo="2">AC End Cable-M (€2/cad)</option>
+                                        <option value="dc-extension-cable" data-prezzo="6">DC Extension Cable al metro (€6/cad)</option>
+                                    </optgroup>
+
+                                    <optgroup label="Carica Batterie">
+                                        <option value="triple-power-charge-box" data-prezzo="874">Triple Power Charge Box (€874/cad)</option>
                                     </optgroup>
                                 </select>
                             </div>
@@ -1083,7 +1176,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
 
     <script>
         // Definizione della versione corrente dell'applicazione
-        const CURRENT_APP_VERSION = "3.34";  // La versione attuale di PRISMA
+        const CURRENT_APP_VERSION = "3.37";  // La versione attuale di PRISMA
         const FORMATO_FILE = "2.0";  // La versione attuale del file .prisma
 
         let isPvgisDataAvailable = false;
@@ -1165,23 +1258,24 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                     <div style="margin-bottom: 20px;">
                         <p style="margin-bottom: 8px;"><strong>PRISMA Versione:</strong> ${CURRENT_APP_VERSION}</p>
                         <p style="margin-bottom: 8px;"><strong>Formato File:</strong> ${FORMATO_FILE}</p>
-                        <p style="margin-bottom: 0;"><strong>Data rilascio:</strong> 21 Marzo 2025</p>
+                        <p style="margin-bottom: 0;"><strong>Data rilascio:</strong> 9 Giugno 2025</p>
                     </div>
                     <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
                         <h3 style="margin-top: 0; font-size: 1rem; margin-bottom: 8px; color: #0F3460;">Note di rilascio</h3>
                         <ul style="margin: 0; padding-left: 20px;">
-                            <li>* Aggiunto bottone info versione</li>
-                            <li>* Aggiunto alcune note sotto ai campi</li>
-                            <li>* Aggiunto diciture inverter e batterie nel riepilogo prima del modello</li>
-                            <li>* Nel riepilogo quadri elettrici da 1 a "inclusi"</li>
-                            <li>* Nel riepilogo progettazione da 1 a "incluso"</li>
-                            <li>* Nel riepilogo installazione da 1 a "chiavi in mano"</li>
-                            <li>* Nel riepilogo sicurezza cantiere da 1 a "incluso" (se inserito un valore nel prisma)</li>
-                            <li>* Aggiunto mappa PVGIS</li>
-                            <li>* Aggiunto spiegazioni e link PVGIS</li>
-                            <li>* Aggiunto sistema controllo versione</li>
-                            <li>* Creato icona PRISMA</li>
-                            <li>* Aggiunto tipo di cessione a tendina</li>
+                            <li>* Aggiornato il listino prezzi.</li>
+                            <li>  - Aggiornati i prezzi.</li>
+                            <li>  - Aggiunto la categoria Accessori Micro Inverter.</li>
+                            <li>  - Aggiunto 4 Meter.</li>
+                            <li>  - Aggiunto Mate Box e Data Hub.</li>
+                            <li>  - Aggiunto 3 Pocket WiFi.</li>
+                            <li>  - Aggiunto Batterie Rack.</li>
+                            <li>  - Aggiunto X1-MICRO - Micro Inverter.</li>
+                            <li>  - Aggiunto X1-MINI G4 - Monofase 1 MPPT singolo.</li>
+                            <li>  - Aggiunto X1-BOOST G4 - Monofase 2 MPPT singoli.</li>
+                            <li>  - Aggiunto alcuni X3-PRO-G2 - Trifase 2 MPPT doppi.</li>
+                            <li>  - Aggiunti X3-GRAND - Inverter di grande potenza.</li>
+                            
                         </ul>
                     </div>
                 </div>
@@ -2739,6 +2833,59 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             return `PRV-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${String(new Date().getHours()).padStart(2, '0')}${String(new Date().getMinutes()).padStart(2, '0')}`;
         }
 
+        // Funzione avanzata per determinare il range di giorni di installazione
+        function calcolaGiorniInstallazione(potenzaTotale, tipoTetto, numeroBatterie, numeroInverter, altezzaCapannone, lunghezzaCapannone) {
+            // Valori base per tetto in lamiera
+            let giorniBase;
+            
+            // Calcolo giorni base in funzione della potenza
+            if (potenzaTotale <= 6) {
+                giorniBase = tipoTetto === 'lamiera' ? 3 : 5;
+            } else if (potenzaTotale <= 15) {
+                giorniBase = tipoTetto === 'lamiera' ? 5 : 8;
+            } else if (potenzaTotale <= 30) {
+                giorniBase = tipoTetto === 'lamiera' ? 10 : 15;
+            } else if (potenzaTotale <= 50) {
+                giorniBase = tipoTetto === 'lamiera' ? 15 : 25;
+            } else {
+                giorniBase = tipoTetto === 'lamiera' ? 25 : 35;
+            }
+
+            // Fattori di aggiustamento
+            let fattoreBatterie = 0;
+            if (numeroBatterie > 0) {
+                // Ogni batteria aggiunge tempo, ma con rendimenti di scala decrescenti
+                fattoreBatterie = Math.min(numeroBatterie * 0.5, 3); // Max 3 giorni extra per batterie
+            }
+
+            let fattoreInverter = 0;
+            if (numeroInverter > 1) {
+                // Inverter aggiuntivi richiedono più configurazione
+                fattoreInverter = (numeroInverter - 1) * 0.5; // 0.5 giorni per ogni inverter oltre il primo
+            }
+
+            // Fattore edificio: edifici più grandi richiedono più tempo per cablaggio e logistica
+            const fattoreEdificio = Math.sqrt(altezzaCapannone * lunghezzaCapannone) / 20; // Normalizzato
+
+            // Tolleranza per imprevisti (10-20% del tempo totale)
+            const tolleranzaMin = 0.1;
+            const tolleranzaMax = 0.2;
+
+            // Calcolo giorni totali
+            const giorniTotali = giorniBase + fattoreBatterie + fattoreInverter + fattoreEdificio;
+            
+            // Calcolo range con tolleranza
+            const giorniMin = Math.ceil(giorniTotali * (1 + tolleranzaMin));
+            const giorniMax = Math.ceil(giorniTotali * (1 + tolleranzaMax));
+
+            // Assicura che ci sia sempre una differenza di almeno 3 giorni tra min e max
+            if (giorniMax - giorniMin < 3) {
+                return { giorniMin, giorniMax: giorniMin + 3 };
+            }
+            
+            return { giorniMin, giorniMax };
+        }
+
         // Aggiungi event listener per il caricamento delle immagini
         document.getElementById('renderImage1').addEventListener('change', (e) => handleImageUpload(e, 0));
         document.getElementById('renderImage2').addEventListener('change', (e) => handleImageUpload(e, 1));
@@ -2815,6 +2962,25 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             
             // Cost calculations
             const costoManodoperaTotale = costoManodoperaKw * potenzaTotale;
+
+            // Calcolo range per montare l'impianto
+            const tipoTetto = document.getElementById('tipoTetto').value;
+            const lunghezzaCapannone = parseFloat(document.getElementById('profonditaCapannone').value) || 0;
+
+            // Conta il numero di batterie
+            const numeroBatterie = getBatterieData().reduce((total, batt) => total + parseInt(batt.quantita), 0);
+
+            // Conta il numero di inverter
+            const numeroInverter = getInvertersData().reduce((total, inv) => total + parseInt(inv.quantita), 0);
+
+            const { giorniMin, giorniMax } = calcolaGiorniInstallazione(
+                potenzaTotale, 
+                tipoTetto, 
+                numeroBatterie, 
+                numeroInverter, 
+                altezzaCapannone, 
+                lunghezzaCapannone
+            );
 
             // Prendi il tipo di cessione
             const tipoSessioneSelect = document.getElementById('tipoCessione');
@@ -4494,7 +4660,8 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                         ${detrazioniApplicabili 
                         ? `<li>Le detrazioni fiscali del ${percentualeDetrazione}% sono ripartite in ${anniDetrazione} anni come previsto dalla normativa vigente.</li>`
                         : ''}
-                        <li>I tempi di realizzazione dell'impianto sono stimati in 15-20 giorni lavorativi dalla data di conferma dell'ordine e dell'esito positivo delle verifiche tecniche preliminari.</li>
+                        <li>I tempi di realizzazione dell'impianto sono stimati in ${giorniMin}-${giorniMax} giorni lavorativi dalla data di conferma dell'ordine e dell'esito positivo delle verifiche tecniche preliminari.</li>
+                        <li>Le tempistiche sono da considerarsi valide in assenza di imprevisti non imputabili alla Sole Facile.</li>
                         <li>Nel preventivo sono inclusi tutti i materiali necessari per l'installazione, la manodopera specializzata e le pratiche amministrative di connessione alla rete.</li>
                         <li>Eventuali costi aggiuntivi potrebbero essere applicati in caso di particolari condizioni del sito di installazione rilevate durante il sopralluogo tecnico.</li>
                         <li>Sono esclusi dalla fornitura e dall'offerta:
@@ -4581,7 +4748,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                                 
                                 <div style="margin-bottom: 20px;">
                                     <strong>✓ Assistenza Continuativa</strong>
-                                    <div style="margin-top: 5px;">Supporto tecnico dedicato per 1 anno</div>
+                                    <div style="margin-top: 5px;">Supporto tecnico dedicato per 5 anni</div>
                                 </div>
                                 
                                 <div style="margin-bottom: 20px;">
@@ -4753,13 +4920,15 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             optionsContainer.id = 'download-options-container';
             optionsContainer.style.marginTop = '20px';
             optionsContainer.style.display = 'flex';
-            optionsContainer.style.justifyContent = 'center';
+            optionsContainer.style.flexDirection = 'column';
+            optionsContainer.style.alignItems = 'center';
             optionsContainer.style.gap = '15px';
+            optionsContainer.style.width = '100%';
             
             // Bottone per HTML
             const htmlButton = document.createElement('button');
             htmlButton.textContent = 'Scarica in HTML';
-            htmlButton.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-lg transition duration-300 flex items-center';
+            htmlButton.className = 'download-button';
             htmlButton.style.backgroundColor = '#2563eb';
             htmlButton.style.color = 'white';
             htmlButton.style.padding = '12px 24px';
@@ -4768,8 +4937,11 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             htmlButton.style.cursor = 'pointer';
             htmlButton.style.display = 'flex';
             htmlButton.style.alignItems = 'center';
+            htmlButton.style.justifyContent = 'center';
+            htmlButton.style.width = '100%';
+            htmlButton.style.maxWidth = '300px';
             htmlButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right: 8px;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 Scarica file HTML
@@ -4778,7 +4950,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             // Bottone per aprire in una nuova tab
             const newTabButton = document.createElement('button');
             newTabButton.textContent = 'Anteprima in una nuova tab';
-            newTabButton.className = 'bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-lg transition duration-300 flex items-center';
+            newTabButton.className = 'download-button';
             newTabButton.style.backgroundColor = '#16a34a';
             newTabButton.style.color = 'white';
             newTabButton.style.padding = '12px 24px';
@@ -4787,8 +4959,11 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             newTabButton.style.cursor = 'pointer';
             newTabButton.style.display = 'flex';
             newTabButton.style.alignItems = 'center';
+            newTabButton.style.justifyContent = 'center';
+            newTabButton.style.width = '100%';
+            newTabButton.style.maxWidth = '300px';
             newTabButton.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right: 8px;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
                 Anteprima in una nuova tab
@@ -4837,9 +5012,17 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             optionsContainer.appendChild(htmlButton);
             optionsContainer.appendChild(newTabButton);
             
-            // Aggiungi il container alla pagina dopo il pulsante "Genera Preventivo"
-            const generaButton = document.getElementById('generaPreventivo');
-            generaButton.parentNode.appendChild(optionsContainer);
+            // Trova il container del "Genera Preventivo" per aggiungervi i bottoni
+            const generateContainer = document.querySelector('.generate-container');
+            if (generateContainer) {
+                generateContainer.appendChild(optionsContainer);
+            } else {
+                // Fallback: aggiungi dopo il bottone "Genera Preventivo"
+                const generaButton = document.getElementById('generaPreventivo');
+                if (generaButton && generaButton.parentNode) {
+                    generaButton.parentNode.appendChild(optionsContainer);
+                }
+            }
         }
 
         // Variabile globale per memorizzare i dati PVGIS
@@ -5446,7 +5629,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
 
         // Funzione per aggiungere pulsanti di salvataggio/ripristino manuali
         function addManualControls() {
-            // Create container for the controls
+            // Mantieni la creazione del clearButton nel container superiore
             const controlsContainer = document.createElement('div');
             controlsContainer.className = 'save-controls';
             controlsContainer.style.display = 'flex';
@@ -5455,22 +5638,83 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             controlsContainer.style.marginTop = '10px';
             controlsContainer.style.width = '100%';
             
-            // Create Save File button with better styling
+            // Create Clear button with better styling
+            const clearButton = document.createElement('button');
+            clearButton.textContent = 'Cancella Dati Salvati';
+            clearButton.className = 'clear-button';
+            clearButton.style.padding = '8px 15px';
+            clearButton.style.backgroundColor = '#f8f9fa';
+            clearButton.style.color = '#e53e3e';
+            clearButton.style.border = '1px solid #e53e3e';
+            clearButton.style.borderRadius = '4px';
+            clearButton.style.cursor = 'pointer';
+            clearButton.style.display = 'flex';
+            clearButton.style.alignItems = 'center';
+            clearButton.style.gap = '5px';
+            clearButton.style.fontWeight = '500';
+            clearButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>Cancella tutti i dati di tutti i preventivi`;
+            clearButton.onclick = function() {
+                if (confirm('Sei sicuro di voler cancellare tutti i dati salvati?')) {
+                    // Cerca tutte le chiavi nel localStorage che iniziano con "prisma_autosave_"
+                    const keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.startsWith('prisma_autosave_')) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    
+                    // Rimuovi tutte le chiavi trovate
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+                    
+                    // Feedback all'utente
+                    const saveStatus = document.getElementById('saveStatus');
+                    saveStatus.textContent = `${keysToRemove.length} sessioni cancellate`;
+                    saveStatus.style.opacity = '1';
+                    setTimeout(() => {
+                        saveStatus.style.opacity = '0';
+                    }, 3000);
+                }
+            };
+            
+            // Add only clearButton to the top container
+            controlsContainer.appendChild(clearButton);
+            
+            // Insert top container in the header area
+            const header = document.querySelector('.max-w-4xl.mx-auto.bg-white.bg-opacity-50');
+            if (header) {
+                header.insertBefore(controlsContainer, header.querySelector('form'));
+            } else {
+                document.body.appendChild(controlsContainer);
+            }
+            
+            // Crea il bottone "Salva File"
             const saveButton = document.createElement('button');
             saveButton.textContent = 'Salva File';
             saveButton.className = 'save-button';
-            saveButton.style.padding = '8px 15px';
+            saveButton.type = 'button';
+            saveButton.style.padding = '12px 24px';
             saveButton.style.backgroundColor = '#0F3460';
             saveButton.style.color = 'white';
             saveButton.style.border = 'none';
-            saveButton.style.borderRadius = '4px';
+            saveButton.style.borderRadius = '8px';
+            saveButton.style.fontWeight = 'bold';
             saveButton.style.cursor = 'pointer';
             saveButton.style.display = 'flex';
             saveButton.style.alignItems = 'center';
-            saveButton.style.gap = '5px';
-            saveButton.style.fontWeight = '500';
-            saveButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Salva File`;
+            saveButton.style.justifyContent = 'center';
+            saveButton.style.width = '100%';
+            saveButton.style.maxWidth = '300px';
+            saveButton.style.margin = '0 auto';
+            saveButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>Salva File`;
             saveButton.onclick = function() {
+                // Prevent default behavior
+                if (event) {
+                    event.preventDefault();
+                }
+
                 // Prima salviamo nel localStorage
                 saveFormData();
                 
@@ -5577,57 +5821,58 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                 }, 3000);
             };
             
-            // Create Clear button with better styling
-            const clearButton = document.createElement('button');
-            clearButton.textContent = 'Cancella Dati Salvati';
-            clearButton.className = 'clear-button';
-            clearButton.style.padding = '8px 15px';
-            clearButton.style.backgroundColor = '#f8f9fa';
-            clearButton.style.color = '#e53e3e';
-            clearButton.style.border = '1px solid #e53e3e';
-            clearButton.style.borderRadius = '4px';
-            clearButton.style.cursor = 'pointer';
-            clearButton.style.display = 'flex';
-            clearButton.style.alignItems = 'center';
-            clearButton.style.gap = '5px';
-            clearButton.style.fontWeight = '500';
-            clearButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>Cancella tutti i dati di tutti i preventivi`;
-            clearButton.onclick = function() {
-                if (confirm('Sei sicuro di voler cancellare tutti i dati salvati?')) {
-                    // Cerca tutte le chiavi nel localStorage che iniziano con "prisma_autosave_"
-                    const keysToRemove = [];
-                    for (let i = 0; i < localStorage.length; i++) {
-                        const key = localStorage.key(i);
-                        if (key.startsWith('prisma_autosave_')) {
-                            keysToRemove.push(key);
+            // Trova il bottone "Genera Preventivo"
+            const generaButton = document.getElementById('generaPreventivo');
+            if (generaButton) {
+                // Crea un primo container per il pulsante "Salva File"
+                const saveFileContainer = document.createElement('div');
+                saveFileContainer.className = 'save-file-container';
+                saveFileContainer.style.display = 'flex';
+                saveFileContainer.style.justifyContent = 'center';
+                saveFileContainer.style.marginBottom = '20px';
+                
+                // Aggiungi il pulsante Salva File al suo container
+                saveFileContainer.appendChild(saveButton);
+                
+                // Crea un secondo container per il pulsante "Genera Preventivo"
+                const generateContainer = document.createElement('div');
+                generateContainer.className = 'generate-container';
+                generateContainer.style.display = 'flex';
+                generateContainer.style.flexDirection = 'column';
+                generateContainer.style.alignItems = 'center';
+                generateContainer.style.justifyContent = 'center';
+                
+                // Recupera il contenitore originale e il pulsante
+                const originalParent = generaButton.parentNode;
+                originalParent.removeChild(generaButton);
+                
+                // Stilizza il pulsante Genera Preventivo
+                generaButton.style.margin = '0 auto';
+                generaButton.style.width = '100%';
+                generaButton.style.maxWidth = '300px';
+                generaButton.style.justifyContent = 'center';
+                
+                // Aggiungi il pulsante Genera Preventivo al suo container
+                generateContainer.appendChild(generaButton);
+                
+                // Aggiungi i container uno dopo l'altro nel punto originale
+                originalParent.appendChild(saveFileContainer);
+                originalParent.appendChild(generateContainer);
+                
+                // Aggiungi media query per schermi più grandi
+                if (!document.getElementById('responsive-buttons-style')) {
+                    const mediaQuery = document.createElement('style');
+                    mediaQuery.id = 'responsive-buttons-style';
+                    mediaQuery.textContent = `
+                        @media (min-width: 768px) {
+                            .save-button, #generaPreventivo, .download-button {
+                                width: auto !important;
+                                max-width: none !important;
+                            }
                         }
-                    }
-                    
-                    // Rimuovi tutte le chiavi trovate
-                    keysToRemove.forEach(key => {
-                        localStorage.removeItem(key);
-                    });
-                    
-                    // Feedback all'utente
-                    const saveStatus = document.getElementById('saveStatus');
-                    saveStatus.textContent = `${keysToRemove.length} sessioni cancellate`;
-                    saveStatus.style.opacity = '1';
-                    setTimeout(() => {
-                        saveStatus.style.opacity = '0';
-                    }, 3000);
+                    `;
+                    document.head.appendChild(mediaQuery);
                 }
-            };
-            
-            // Add buttons to container
-            controlsContainer.appendChild(saveButton);
-            controlsContainer.appendChild(clearButton);
-            
-            // Insert in the header area
-            const header = document.querySelector('.max-w-4xl.mx-auto.bg-white.bg-opacity-50');
-            if (header) {
-                header.insertBefore(controlsContainer, header.querySelector('form'));
-            } else {
-                document.body.appendChild(controlsContainer);
             }
         }
 
