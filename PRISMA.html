@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRISMA 3.38</title>
+    <title>PRISMA 3.40</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="https://i.imgur.com/enKOWs3.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -1240,7 +1240,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
 
     <script>
         // Definizione della versione corrente dell'applicazione
-        const CURRENT_APP_VERSION = "3.38";  // La versione attuale di PRISMA
+        const CURRENT_APP_VERSION = "3.40";  // La versione attuale di PRISMA
         const FORMATO_FILE = "2.0";  // La versione attuale del file .prisma
 
         let isPvgisDataAvailable = false;
@@ -1322,14 +1322,12 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                     <div style="margin-bottom: 20px;">
                         <p style="margin-bottom: 8px;"><strong>PRISMA Versione:</strong> ${CURRENT_APP_VERSION}</p>
                         <p style="margin-bottom: 8px;"><strong>Formato File:</strong> ${FORMATO_FILE}</p>
-                        <p style="margin-bottom: 0;"><strong>Data rilascio:</strong> 14 Giugno 2025</p>
+                        <p style="margin-bottom: 0;"><strong>Data rilascio:</strong> 15 settembre 2025</p>
                     </div>
                     <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
                         <h3 style="margin-top: 0; font-size: 1rem; margin-bottom: 8px; color: #0F3460;">Note di rilascio</h3>
                         <ul style="margin: 0; padding-left: 20px;">
-                            <li>* Aggiornato il listino prezzi.</li>
-                            <li>  - Aggiornati i prezzi.</li>
-                            <li>  - Aggiornamento listino.</li>
+                            <li>aumentato i font</li>
                             
                         </ul>
                     </div>
@@ -2797,6 +2795,30 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             }
         });
 
+        // Event listeners per calcoli real-time
+            document.getElementById('consumoAnnuo').addEventListener('input', aggiornaSpesaEnergia);
+            document.getElementById('costoEnergiaAttuale').addEventListener('input', aggiornaSpesaEnergia);
+            document.getElementById('spesaAnnuaEnergia').addEventListener('input', calcolaPreventivoInRealTime);
+            document.getElementById('autoconsumoStimato').addEventListener('input', calcolaPreventivoInRealTime);
+
+            // Funzione per aggiornare automaticamente la spesa energetica
+            function aggiornaSpesaEnergia() {
+                const consumo = parseFloat(document.getElementById('consumoAnnuo').value) || 0;
+                const costo = parseFloat(document.getElementById('costoEnergiaAttuale').value) || 0;
+                
+                // Solo se l'utente non ha inserito un valore personalizzato
+                if ((!document.getElementById('spesaAnnuaEnergia').dataset.userModified) || (document.getElementById('spesaAnnuaEnergia') == 0)) {
+                    document.getElementById('spesaAnnuaEnergia').value = (consumo * costo).toFixed(2);
+                }
+                
+                calcolaPreventivoInRealTime();
+            }
+
+            // Flag per sapere se l'utente ha modificato manualmente la spesa
+            document.getElementById('spesaAnnuaEnergia').addEventListener('focus', function() {
+                this.dataset.userModified = 'true';
+            });
+
         // Array per memorizzare le immagini base64
         let renderImages = [null, null, null];
 
@@ -2999,14 +3021,20 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             const costoManodoperaKw = parseFloat(document.getElementById('costoManodopera').value) || 0;
             const costoFresia = parseFloat(document.getElementById('costoFresia').value) || 0;
             const costoSicurezza = parseFloat(document.getElementById('costoSicurezza').value) || 0;
+            
             // Energy consumption data
             const consumoAnnuo = parseFloat(document.getElementById('consumoAnnuo').value) || 0;
-            const spesaAnnuaEnergia = parseFloat(document.getElementById('spesaAnnuaEnergia').value) || 0;
+            let spesaAnnuaEnergia = parseFloat(document.getElementById('spesaAnnuaEnergia').value) || 0;
             const autoconsumoStimato = parseFloat(document.getElementById('autoconsumoStimato').value) || 0;
 
-            // Now calculate derived values
+            // If spesaAnnuaEnergia is 0, calculate it
+            if (spesaAnnuaEnergia === 0 && consumoAnnuo > 0) {
+                spesaAnnuaEnergia = consumoAnnuo * costoEnergiaAttuale;
+            }
+
+            // Calculate derived values
             const produzioneAnnua = potenzaTotale * produzioneAnnuaKw;
-            const energiaAutoconsumata = produzioneAnnua * (autoconsumoStimato / 100);
+            const energiaAutoconsumata = consumoAnnuo * (autoconsumoStimato / 100);
             const energiaImmessa = produzioneAnnua - energiaAutoconsumata;
             const risparmioAutoconsumo = energiaAutoconsumata * costoEnergiaAttuale;
             const risparmioScambioSulPosto = energiaImmessa * (costoEnergiaAttuale * 0.7); 
@@ -3182,29 +3210,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
             // Note personalizzate
             const notePersonalizzate = (document.getElementById('notePersonalizzate').value || '').replace(/\n/g, '<br>');
 
-            // Event listeners per calcoli real-time
-            document.getElementById('consumoAnnuo').addEventListener('input', aggiornaSpesaEnergia);
-            document.getElementById('costoEnergiaAttuale').addEventListener('input', aggiornaSpesaEnergia);
-            document.getElementById('spesaAnnuaEnergia').addEventListener('input', calcolaPreventivoInRealTime);
-            document.getElementById('autoconsumoStimato').addEventListener('input', calcolaPreventivoInRealTime);
-
-            // Funzione per aggiornare automaticamente la spesa energetica
-            function aggiornaSpesaEnergia() {
-                const consumo = parseFloat(document.getElementById('consumoAnnuo').value) || 0;
-                const costo = parseFloat(document.getElementById('costoEnergiaAttuale').value) || 0;
-                
-                // Solo se l'utente non ha inserito un valore personalizzato
-                if (!document.getElementById('spesaAnnuaEnergia').dataset.userModified) {
-                    document.getElementById('spesaAnnuaEnergia').value = (consumo * costo).toFixed(2);
-                }
-                
-                calcolaPreventivoInRealTime();
-            }
-
-            // Flag per sapere se l'utente ha modificato manualmente la spesa
-            document.getElementById('spesaAnnuaEnergia').addEventListener('focus', function() {
-                this.dataset.userModified = 'true';
-            });
+            
 
             // =========== Crea HTML del preventivo ===========
             const dataOdierna = new Date().toLocaleDateString('it-IT');
@@ -3496,7 +3502,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                         color: white;
                         font-weight: 500;
                         text-transform: uppercase;
-                        font-size: 12px;
+                        font-size: 18px;
                         letter-spacing: 1px;
                         padding: 14px 16px;
                         text-align: center;
@@ -3506,6 +3512,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                         padding: 12px 16px;
                         border-bottom: 1px solid #edf2f7;
                         text-align: center;
+                        font-size: 16px;
                     }
 
                     td:first-child {
@@ -3696,7 +3703,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                                 padding: 5mm;
                                 border-radius: 2mm;
                                 margin-bottom: 25mm;
-                                font-size: 8pt;
+                                font-size: 10pt;
                             }
                         }
 
@@ -3821,7 +3828,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                             text-align: right;
                             padding: 6px 10px;
                             margin-right: 5px;
-                            font-size: 11px;
+                            font-size: 12px;
                         }
                         
                         .contact-item svg {
@@ -3838,12 +3845,12 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                         }
 
                         .section-title, .info-label, .info-value {
-                            font-size: inherit;
+                            font-size: 16;
                             margin-bottom: initial;
                         }
                         
                         table {
-                            font-size: 12px;
+                            font-size: 16px;
                             background-color: transparent !important;
                         }
                         
@@ -3855,9 +3862,11 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                             color-adjust: exact !important;
                             forced-color-adjust: none !important;
                             text-align: center;
+                            font-size: 18px;
                         }
                         
                         td {
+                            font-size: 16px;
                             padding: 8px;
                         }
 
@@ -3868,6 +3877,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                         }
                         
                         .details-box {
+                            font-size: 14px;
                             page-break-inside: avoid;
                             background: transparent !important;
                             background-color: transparent !important;
@@ -3967,6 +3977,11 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                             page-break-inside: avoid !important;
                             break-inside: avoid !important;
                             margin-bottom: 15px;
+                        }
+
+                        .highlight-row {
+                            font-size: 12px;
+                            background-color: #f0f9ff !important;
                         }
 
                         .badge {
@@ -4228,9 +4243,11 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                     .price-saving {
                         color: var(--secondary-color);
                         font-weight: bold;
+                        font-size: 14px;
                     }
 
                     .highlight-row {
+                        font-size: 14px;
                         background-color: #f0f9ff !important;
                     }
 
