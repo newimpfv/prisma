@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRISMA 3.40</title>
+    <title>PRISMA 3.41</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/png" href="https://i.imgur.com/enKOWs3.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
@@ -268,588 +268,489 @@
                         </svg>
                         Aggiungi Inverter
                     </button>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <select id="inverter" class="form-select hidden">
-                                    <option value="none">Nessun Inverter</option>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <select id="inverter" class="form-select hidden">
+                                <option value="none">Nessun Inverter</option>
 
-                                    <optgroup label="X1-MICRO - Micro Inverter">
-                                        <option value="x1-micro-800" data-potenza="800" data-prezzo="106">X1-Micro 800 - 0.8kW (€106/cad)</option>
-                                        <option value="x1-micro-900" data-potenza="900" data-prezzo="112">X1-Micro 900 - 0.9kW (€112/cad)</option>
-                                        <option value="x1-micro-1000" data-potenza="1000" data-prezzo="123">X1-Micro 1000 - 1.0kW (€123/cad)</option>
-                                        <option value="x1-micro-1200" data-potenza="1200" data-prezzo="135">X1-Micro 1200 - 1.2kW (€135/cad)</option>
-                                        <option value="x1-micro-1300" data-potenza="1300" data-prezzo="187">X1-Micro 1300 - 1.3kW (€187/cad)</option>
-                                        <option value="x1-micro-1500" data-potenza="1500" data-prezzo="193">X1-Micro 1500 - 1.5kW (€193/cad)</option>
-                                        <option value="x1-micro-1600" data-potenza="1600" data-prezzo="199">X1-Micro 1600 - 1.6kW (€199/cad)</option>
-                                        <option value="x1-micro-1800" data-potenza="1800" data-prezzo="212">X1-Micro 1800 - 1.8kW (€212/cad)</option>
-                                        <option value="x1-micro-2000" data-potenza="2000" data-prezzo="229">X1-Micro 2000 - 2.0kW (€229/cad)</option>
-                                        <option value="x1-micro-2200" data-potenza="2200" data-prezzo="258">X1-Micro 2200 - 2.2kW (€258/cad)</option>
-                                    </optgroup>
-                                    
-                                    <optgroup label="X1-MINI G2 - Monofase 1 MPPT singolo">
-                                        <option value="x1-07-s-d" data-potenza="700" data-prezzo="251">X1-0.7-S-D - 0.7kW (€251/cad)</option>
-                                        <option value="x1-11-s-d" data-potenza="1100" data-prezzo="263">X1-1.1-S-D - 1.1kW (€263/cad)</option>
-                                        <option value="x1-15-s-d" data-potenza="1500" data-prezzo="290">X1-1.5-S-D - 1.5kW (€290/cad)</option>
-                                        <option value="x1-20-s-d" data-potenza="2000" data-prezzo="317">X1-2.0-S-D - 2.0kW (€317/cad)</option>
-                                        <option value="x1-25-s-d" data-potenza="2500" data-prezzo="340">X1-2.5-S-D - 2.5kW (€340/cad)</option>
-                                        <option value="x1-30-s-d" data-potenza="3000" data-prezzo="375">X1-3.0-S-D - 3.0kW (€375/cad)</option>
-                                        <option value="x1-33-s-d" data-potenza="3300" data-prezzo="396">X1-3.3-S-D - 3.3kW (€396/cad)</option>
-                                        <option value="x1-36-s-d" data-potenza="3600" data-prezzo="423">X1-3.6-S-D - 3.6kW (€423/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Micro Inverter">
+                                    <option value="x1-micro-800" data-prezzo="122">X1-Micro 800 - X1-Micro 800 0.8kw 2MPPT (€122/cad)</option>
+                                    <option value="x1-micro-900" data-prezzo="128">X1-Micro 900 - X1-Micro 900 0.9kw 2MPPT (€128/cad)</option>
+                                    <option value="x1-micro-1000" data-prezzo="142">X1-Micro 1000 - X1-Micro 1000 1.0kw 2MPPT (€142/cad)</option>
+                                    <option value="x1-micro-1200" data-prezzo="155">X1-Micro 1200 - X1-Micro 1200 0.12kw 2MPPT (€155/cad)</option>
+                                    <option value="x1-micro-1300" data-prezzo="215">X1-Micro 1300 - X1-Micro 1300 1.3kw 2MPPT (€215/cad)</option>
+                                    <option value="x1-micro-1500" data-prezzo="222">X1-Micro 1500 - X1-Micro 1500 1.5kw 2MPPT (€222/cad)</option>
+                                    <option value="x1-micro-1600" data-prezzo="229">X1-Micro 1600 - X1-Micro 1600 1.6kw 2MPPT (€229/cad)</option>
+                                    <option value="x1-micro-1800" data-prezzo="244">X1-Micro 1800 - X1-Micro 1800 1.8kw 2MPPT (€244/cad)</option>
+                                    <option value="x1-micro-2000" data-prezzo="263">X1-Micro 2000 - X1-Micro 2000 2.0kw 2MPPT (€263/cad)</option>
+                                    <option value="x1-micro-2200" data-prezzo="297">X1-Micro 2200 - X1-Micro 2200 2.2kw 2MPPT (€297/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X1-MINI G4 - Monofase 1 MPPT singolo">
-                                        <option value="x1-mini-06-g4" data-potenza="600" data-prezzo="206">X1-MINI-0.6K-G4 - 0.6kW (€206/cad)</option>
-                                        <option value="x1-mini-07-g4" data-potenza="700" data-prezzo="217">X1-MINI-0.7K-G4 - 0.7kW (€217/cad)</option>
-                                        <option value="x1-mini-11-g4" data-potenza="1100" data-prezzo="228">X1-MINI-1.1K-G4 - 1.1kW (€228/cad)</option>
-                                        <option value="x1-mini-15-g4" data-potenza="1500" data-prezzo="244">X1-MINI-1.5K-G4 - 1.5kW (€244/cad)</option>
-                                        <option value="x1-mini-20-g4" data-potenza="2000" data-prezzo="267">X1-MINI-2.0K-G4 - 2.0kW (€267/cad)</option>
-                                        <option value="x1-mini-25-g4" data-potenza="2500" data-prezzo="300">X1-MINI-2.5K-G4 - 2.5kW (€300/cad)</option>
-                                        <option value="x1-mini-30-g4" data-potenza="3000" data-prezzo="325">X1-MINI-3.0K-G4 - 3.0kW (€325/cad)</option>
-                                        <option value="x1-mini-33-g4" data-potenza="3300" data-prezzo="343">X1-MINI-3.3K-G4 - 3.3kW (€343/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Inverter Monofase">
+                                    <option value="x1-mini-0-6k-g4" data-potenza="600" data-prezzo="237">X1-MINI-0.6K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€237/cad)</option>
+                                    <option value="x1-mini-0-7k-g4" data-potenza="700" data-prezzo="250">X1-MINI-0.7K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€250/cad)</option>
+                                    <option value="x1-mini-1-1k-g4" data-potenza="1100" data-prezzo="262">X1-MINI-1.1K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€262/cad)</option>
+                                    <option value="x1-mini-1-5k-g4" data-potenza="1500" data-prezzo="280">X1-MINI-1.5K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€280/cad)</option>
+                                    <option value="x1-mini-2-0k-g4" data-potenza="2000" data-prezzo="307">X1-MINI-2.0K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€307/cad)</option>
+                                    <option value="x1-mini-2-5k-g4" data-potenza="2500" data-prezzo="345">X1-MINI-2.5K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€345/cad)</option>
+                                    <option value="x1-mini-3-0k-g4" data-potenza="3000" data-prezzo="374">X1-MINI-3.0K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€374/cad)</option>
+                                    <option value="x1-mini-3-3k-g4" data-potenza="3300" data-prezzo="394">X1-MINI-3.3K-G4 - Inverter monofase 1 MPPT singolo - quarta generazione (€394/cad)</option>
+                                    <option value="x1-boost-2-5k-g4" data-potenza="2500" data-prezzo="442">X1-BOOST-2.5K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€442/cad)</option>
+                                    <option value="x1-boost-3-0k-g4" data-potenza="3000" data-prezzo="447">X1-BOOST-3.0K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€447/cad)</option>
+                                    <option value="x1-boost-3-3k-g4" data-potenza="3300" data-prezzo="452">X1-BOOST-3.3K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€452/cad)</option>
+                                    <option value="x1-boost-3-6k-g4" data-potenza="3600" data-prezzo="475">X1-BOOST-3.6K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€475/cad)</option>
+                                    <option value="x1-boost-4-2k-g4" data-potenza="4200" data-prezzo="493">X1-BOOST-4.2K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€493/cad)</option>
+                                    <option value="x1-boost-5-0k-g4" data-potenza="5000" data-prezzo="553">X1-BOOST-5.0K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€553/cad)</option>
+                                    <option value="x1-boost-6-0k-g4" data-potenza="6000" data-prezzo="592">X1-BOOST-6.0K-G4 - Inverter monofase 2 MPPT singolo - quarta generazione (€592/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X1-BOOST G2 - Monofase 2 MPPT singoli">
-                                        <option value="x1-30-t-d" data-potenza="3000" data-prezzo="458">X1-3.0-T-D - 3.0kW (€458/cad)</option>
-                                        <option value="x1-33-t-d" data-potenza="3300" data-prezzo="491">X1-3.3-T-D - 3.3kW (€491/cad)</option>
-                                        <option value="x1-36-t-d" data-potenza="3600" data-prezzo="505">X1-3.6-T-D - 3.6kW (€505/cad)</option>
-                                        <option value="x1-42-t-d" data-potenza="4200" data-prezzo="529">X1-4.2-T-D - 4.2kW (€529/cad)</option>
-                                        <option value="x1-50-t-d" data-potenza="5000" data-prezzo="607">X1-5.0-T-D - 5.0kW (€607/cad)</option>
-                                        <option value="x1-60-t-d" data-potenza="6000" data-prezzo="668">X1-6.0-T-D - 6.0kW (€668/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Inverter Trifase">
+                                    <option value="x3-mic-4k-g2" data-potenza="4000" data-prezzo="660">X3-MIC-4K-G2 - Inverter trifase 2 MPPT singoli - seconda generazione (€660/cad)</option>
+                                    <option value="x3-mic-5k-g2" data-potenza="5000" data-prezzo="686">X3-MIC-5K-G2 - Inverter trifase 2 MPPT singoli - seconda generazione (€686/cad)</option>
+                                    <option value="x3-mic-6k-g2" data-potenza="6000" data-prezzo="715">X3-MIC-6K-G2 - Inverter trifase 2 MPPT singoli - seconda generazione (€715/cad)</option>
+                                    <option value="x3-mic-8k-g2" data-potenza="8000" data-prezzo="761">X3-MIC-8K-G2 - Inverter trifase 2 MPPT singoli - seconda generazione (€761/cad)</option>
+                                    <option value="x3-mic-10k-g2" data-potenza="10000" data-prezzo="796">X3-MIC-10K-G2 - Inverter trifase 2 MPPT singoli - seconda generazione (€796/cad)</option>
+                                    <option value="x3-pro-8k-g2" data-potenza="8000" data-prezzo="951">X3-PRO-8K-G2 - Inverter trifase 2 MPPT doppi - seconda generazione (€951/cad)</option>
+                                    <option value="x3-pro-10k-g2" data-potenza="10000" data-prezzo="984">X3-PRO-10K-G2 - Inverter trifase 2 MPPT doppi - seconda generazione (€984/cad)</option>
+                                    <option value="x3-pro-12k-g2" data-potenza="12000" data-prezzo="1025">X3-PRO-12K-G2 - Inverter trifase 2 MPPT doppi - seconda generazione (€1.025/cad)</option>
+                                    <option value="x3-pro-15k-g2" data-potenza="15000" data-prezzo="1073">X3-PRO-15K-G2 - Inverter trifase 2 MPPT doppi - seconda generazione (€1.073/cad)</option>
+                                    <option value="x3-pro-17k-g2" data-potenza="17000" data-prezzo="1109">X3-PRO-17K-G2 - Inverter trifase 2 MPPT doppi - seconda generazione (€1.109/cad)</option>
+                                    <option value="x3-pro-17-0" data-potenza="17000" data-prezzo="1460">X3-PRO-17.0 - Inverter trifase 3 MPPT doppi - seconda generazione (€1.460/cad)</option>
+                                    <option value="x3-pro-20-0" data-potenza="20000" data-prezzo="1656">X3-PRO-20.0 - Inverter trifase 3 MPPT doppi - seconda generazione (€1.656/cad)</option>
+                                    <option value="x3-pro-25-0" data-potenza="25000" data-prezzo="1809">X3-PRO-25.0 - Inverter trifase 3 MPPT doppi - seconda generazione (€1.809/cad)</option>
+                                    <option value="x3-pro-30-0" data-potenza="30000" data-prezzo="1961">X3-PRO-30.0 - Inverter trifase 3 MPPT doppi - seconda generazione (€1.961/cad)</option>
+                                    <option value="x3-pro-20k-g2" data-potenza="20000" data-prezzo="1263">X3-PRO-20K-G2 - Inverter trifase 2 MPPT doppi - seconda generazione (€1.263/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X1-BOOST G4 - Monofase 2 MPPT singoli">
-                                        <option value="x1-boost-25-g4" data-potenza="2500" data-prezzo="384">X1-BOOST-2.5K-G4 - 2.5kW (€384/cad)</option>
-                                        <option value="x1-boost-30-g4" data-potenza="3000" data-prezzo="389">X1-BOOST-3K-G4 - 3.0kW (€389/cad)</option>
-                                        <option value="x1-boost-33-g4" data-potenza="3300" data-prezzo="393">X1-BOOST-3.3K-G4 - 3.3kW (€393/cad)</option>
-                                        <option value="x1-boost-36-g4" data-potenza="3600" data-prezzo="413">X1-BOOST-3.6K-G4 - 3.6kW (€413/cad)</option>
-                                        <option value="x1-boost-42-g4" data-potenza="4200" data-prezzo="429">X1-BOOST-4.2K-G4 - 4.2kW (€429/cad)</option>
-                                        <option value="x1-boost-50-g4" data-potenza="5000" data-prezzo="481">X1-BOOST-5K-G4 - 5.0kW (€481/cad)</option>
-                                        <option value="x1-boost-60-g4" data-potenza="6000" data-prezzo="515">X1-BOOST-6K-G4 - 6.0kW (€515/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Inverter Mega">
+                                    <option value="x3-mga-40k-g2" data-potenza="40000" data-prezzo="1785">X3-MGA-40K-G2 - Inverter trifase 5 MPPT doppi - seconda generazione (€1.785/cad)</option>
+                                    <option value="x3-mga-50k-g2" data-potenza="50000" data-prezzo="1918">X3-MGA-50K-G2 - Inverter trifase 5 MPPT doppi - seconda generazione (€1.918/cad)</option>
+                                    <option value="x3-mga-60k-g2" data-potenza="60000" data-prezzo="1984">X3-MGA-60K-G2 - Inverter trifase 5 MPPT doppi - seconda generazione (€1.984/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-PRO-G2 - Trifase 2 MPPT doppi">
-                                        <option value="x3-pro-80-g2" data-potenza="8000" data-prezzo="827">X3-PRO-8K-G2 - 8.0kW (€827/cad)</option>
-                                        <option value="x3-pro-100-g2" data-potenza="10000" data-prezzo="856">X3-PRO-10K-G2 - 10.0kW (€856/cad)</option>
-                                        <option value="x3-pro-120-g2" data-potenza="12000" data-prezzo="891">X3-PRO-12K-G2 - 12.0kW (€891/cad)</option>
-                                        <option value="x3-pro-150-g2" data-potenza="15000" data-prezzo="933">X3-PRO-15K-G2 - 15.0kW (€933/cad)</option>
-                                        <option value="x3-pro-170-g2" data-potenza="17000" data-prezzo="964">X3-PRO-17K-G2 - 17.0kW (€964/cad)</option>
-                                        <option value="x3-pro-200-g2" data-potenza="20000" data-prezzo="1098">X3-PRO-20K-G2 - 20.0kW (€1.098/cad)</option>
-                                        <option value="x3-pro-250-g2" data-potenza="25000" data-prezzo="1147">X3-PRO-25K-G2 - 25.0kW (€1.147/cad)</option>
-                                        <option value="x3-pro-300-g2" data-potenza="30000" data-prezzo="1201">X3-PRO-30K-G2 - 30.0kW (€1.201/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Inverter Forth">
+                                    <option value="x3-80k" data-potenza="80000" data-prezzo="2843">X3-80K - Inverter trifase 9 MPPT doppi (€2.843/cad)</option>
+                                    <option value="x3-100k" data-potenza="100000" data-prezzo="2909">X3-100K - Inverter trifase 9 MPPT doppi (€2.909/cad)</option>
+                                    <option value="x3-110k" data-potenza="110000" data-prezzo="2975">X3-110K - Inverter trifase 9 MPPT doppi (€2.975/cad)</option>
+                                    <option value="x3-120k" data-potenza="120000" data-prezzo="3042">X3-120K - Inverter trifase 9 MPPT doppi (€3.042/cad)</option>
+                                    <option value="x3-125k" data-potenza="125000" data-prezzo="3099">X3-125K - Inverter trifase 9 MPPT doppi (€3.099/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-PRO-G2 - Trifase 3 MPPT doppi">
-                                        <option value="x3-pro-170" data-potenza="17000" data-prezzo="1269">X3-PRO-17.0 - 17.0kW (€1.269/cad)</option>
-                                        <option value="x3-pro-200" data-potenza="20000" data-prezzo="1440">X3-PRO-20.0 - 20.0kW (€1.440/cad)</option>
-                                        <option value="x3-pro-250" data-potenza="25000" data-prezzo="1573">X3-PRO-25.0 - 25.0kW (€1.573/cad)</option>
-                                        <option value="x3-pro-300" data-potenza="30000" data-prezzo="1705">X3-PRO-30.0 - 30.0kW (€1.705/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Inverter Aelio">
+                                    <option value="x3-aelio-50k" data-potenza="50000" data-prezzo="5653">X3-AELIO-50K - Inverter DC Couple BESS 50kW (€5.653/cad)</option>
+                                    <option value="x3-aelio-60k" data-potenza="60000" data-prezzo="5967">X3-AELIO-60K - Inverter DC Couple BESS 60kW (€5.967/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-MIC-G2 - Trifase 2 MPPT singoli">
-                                       <option value="x3-mic-40-g2" data-potenza="4000" data-prezzo="574">X3-MIC-4K-G2 - 4.0kW (€574/cad)</option>
-                                        <option value="x3-mic-50-g2" data-potenza="5000" data-prezzo="596">X3-MIC-5K-G2 - 5.0kW (€596/cad)</option>
-                                        <option value="x3-mic-60-g2" data-potenza="6000" data-prezzo="622">X3-MIC-6K-G2 - 6.0kW (€622/cad)</option>
-                                        <option value="x3-mic-80-g2" data-potenza="8000" data-prezzo="662">X3-MIC-8K-G2 - 8.0kW (€662/cad)</option>
-                                        <option value="x3-mic-100-g2" data-potenza="10000" data-prezzo="692">X3-MIC-10K-G2 - 10.0kW (€692/cad)</option>
-                                        <option value="x3-mic-120-g2" data-potenza="12000" data-prezzo="903">X3-MIC-12K-G2 - 12.0kW (€903/cad)</option>
-                                        <option value="x3-mic-150-g2" data-potenza="15000" data-prezzo="956">X3-MIC-15K-G2 - 15.0kW (€956/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Inverter Grand">
+                                    <option value="x3-grd-300k-hv" data-potenza="300000" data-prezzo="7472">X3-GRD-300K-HV - Inverter di grande potenza 300kW (€7.472/cad)</option>
+                                    <option value="x3-grd-320k-hv" data-potenza="320000" data-prezzo="7604">X3-GRD-320K-HV - Inverter di grande potenza 320kW (€7.604/cad)</option>
+                                    <option value="x3-grd-333k-hv" data-potenza="333000" data-prezzo="7737">X3-GRD-333K-HV - Inverter di grande potenza 333kW (€7.737/cad)</option>
+                                    <option value="x3-grd-350k-hv" data-potenza="350000" data-prezzo="7869">X3-GRD-350K-HV - Inverter di grande potenza 350kW (€7.869/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-MIC-G2 - Trifase 2 MPPT (uno doppio)">
-                                        <option value="x3-mic-120-t-d" data-potenza="12000" data-prezzo="1143">X3-MIC-12.0-T-D - 12.0kW (€1.143/cad)</option>
-                                        <option value="x3-mic-150-t-d" data-potenza="15000" data-prezzo="1209">X3-MIC-15.0-T-D - 15.0kW (€1.209/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Hybrid Low Voltage">
+                                    <option value="x1-hyb-3-0-lv" data-potenza="3000" data-prezzo="931">X1-HYB-3.0-LV - Inverter Hybrid LV Entry Level 3.0kW (€931/cad)</option>
+                                    <option value="x1-hyb-3-7-lv" data-potenza="3700" data-prezzo="944">X1-HYB-3.7-LV - Inverter Hybrid LV Entry Level 3.7kW (€944/cad)</option>
+                                    <option value="x1-hyb-4-0-lv" data-potenza="4000" data-prezzo="957">X1-HYB-4.0-LV - Inverter Hybrid LV Entry Level 4.0kW (€957/cad)</option>
+                                    <option value="x1-hyb-4-6-lv" data-potenza="4600" data-prezzo="971">X1-HYB-4.6-LV - Inverter Hybrid LV Entry Level 4.6kW (€971/cad)</option>
+                                    <option value="x1-hyb-5-0-lv" data-potenza="5000" data-prezzo="1012">X1-HYB-5.0-LV - Inverter Hybrid LV Entry Level 5.0kW (€1.012/cad)</option>
+                                    <option value="x1-hyb-6-0-lv" data-potenza="6000" data-prezzo="1025">X1-HYB-6.0-LV - Inverter Hybrid LV Entry Level 6.0kW (€1.025/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-MEGA-G2 - Trifase 5 MPPT doppi">
-                                        <option value="x3-40k-5x" data-potenza="40000" data-prezzo="1553">X3-40K-5X - 40.0kW (€1.553/cad)</option>
-                                        <option value="x3-50k-5x" data-potenza="50000" data-prezzo="1668">X3-50K-5X - 50.0kW (€1.668/cad)</option>
-                                        <option value="x3-60k-6x" data-potenza="60000" data-prezzo="1725">X3-60K-6X - 60.0kW (€1.725/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Hybrid G4 Monofase">
+                                    <option value="x1-hybrid-3-0d-g4" data-potenza="3000" data-prezzo="913">X1-Hybrid-3.0D G4 - Inverter Hybrid ESS G4 monofase 3.0kW (€913/cad)</option>
+                                    <option value="x1-hybrid-3-7d-g4" data-potenza="3700" data-prezzo="950">X1-Hybrid-3.7D G4 - Inverter Hybrid ESS G4 monofase 3.7kW (€950/cad)</option>
+                                    <option value="x1-hybrid-5-0d-g4" data-potenza="5000" data-prezzo="992">X1-Hybrid-5.0D G4 - Inverter Hybrid ESS G4 monofase 5.0kW (€992/cad)</option>
+                                    <option value="x1-hybrid-6-0d-g4" data-potenza="6000" data-prezzo="1048">X1-Hybrid-6.0D G4 - Inverter Hybrid ESS G4 monofase 6.0kW (€1.048/cad)</option>
+                                    <option value="x1-hybrid-7-5d-g4" data-potenza="7500" data-prezzo="1096">X1-Hybrid-7.5D G4 - Inverter Hybrid ESS G4 monofase 7.5kW (€1.096/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-FORTH - Trifase 9 MPPT doppi">
-                                        <option value="x3-80k" data-potenza="80000" data-prezzo="2472">X3-80K - 80.0kW (€2.472/cad)</option>
-                                        <option value="x3-100k" data-potenza="100000" data-prezzo="2530">X3-100K - 100.0kW (€2.530/cad)</option>
-                                        <option value="x3-110k" data-potenza="110000" data-prezzo="2587">X3-110K - 110.0kW (€2.587/cad)</option>
-                                        <option value="x3-120k" data-potenza="120000" data-prezzo="2645">X3-120K - 120.0kW (€2.645/cad)</option>
-                                        <option value="x3-125k" data-potenza="125000" data-prezzo="2695">X3-125K - 125.0kW (€2.695/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Hybrid G4 Trifase">
+                                    <option value="x3-hybrid-5-0d-g4" data-potenza="5000" data-prezzo="1281">X3-Hybrid-5.0D G4 - Inverter Hybrid ESS G4 trifase 5.0kW (€1.281/cad)</option>
+                                    <option value="x3-hybrid-6-0d-g4" data-potenza="6000" data-prezzo="1454">X3-Hybrid-6.0D G4 - Inverter Hybrid ESS G4 trifase 6.0kW (€1.454/cad)</option>
+                                    <option value="x3-hybrid-8-0d-g4" data-potenza="8000" data-prezzo="1528">X3-Hybrid-8.0D G4 - Inverter Hybrid ESS G4 trifase 8.0kW (€1.528/cad)</option>
+                                    <option value="x3-hybrid-10-0d-g4" data-potenza="10000" data-prezzo="1677">X3-Hybrid-10.0D G4 - Inverter Hybrid ESS G4 trifase 10.0kW (€1.677/cad)</option>
+                                    <option value="x3-hybrid-12-0d-g4" data-potenza="12000" data-prezzo="1749">X3-Hybrid-12.0D G4 - Inverter Hybrid ESS G4 trifase 12.0kW (€1.749/cad)</option>
+                                    <option value="x3-hybrid-15-0d-g4" data-potenza="15000" data-prezzo="1804">X3-Hybrid-15.0D G4 - Inverter Hybrid ESS G4 trifase 15.0kW (€1.804/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-MEGA-G2 - Trifase 5 MPPT doppi">
-                                        <option value="x3-mga-40k-g2" data-potenza="40000" data-prezzo="1552.50">X3-MGA-40K-G2 - 40.0kW (€1.552,50/cad)</option>
-                                        <option value="x3-mga-50k-g2" data-potenza="50000" data-prezzo="1667.50">X3-MGA-50K-G2 - 50.0kW (€1.667,50/cad)</option>
-                                        <option value="x3-mga-60k-g2" data-potenza="60000" data-prezzo="1725.00">X3-MGA-60K-G2 - 60.0kW (€1.725,00/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Ultra Serie">
+                                    <option value="x3-ult-15k" data-potenza="15000" data-prezzo="2307">X3-ULT-15K - Inverter Ultra Hybrid 15kW (€2.307/cad)</option>
+                                    <option value="x3-ult-19-9k" data-potenza="19900" data-prezzo="2426">X3-ULT-19.9K - Inverter Ultra Hybrid 19.9kW (€2.426/cad)</option>
+                                    <option value="x3-ult-20k" data-potenza="20000" data-prezzo="2426">X3-ULT-20K - Inverter Ultra Hybrid 20kW (€2.426/cad)</option>
+                                    <option value="x3-ult-25k" data-potenza="25000" data-prezzo="2525">X3-ULT-25K - Inverter Ultra Hybrid 25kW (€2.525/cad)</option>
+                                    <option value="x3-ult-30k" data-potenza="30000" data-prezzo="2651">X3-ULT-30K - Inverter Ultra Hybrid 30kW (€2.651/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X3-ULTRA HYBRID - solo con batterie HS">
-                                        <option value="x3-ult-15k" data-potenza="15000" data-prezzo="2006.00">X3-ULT-15K - 15kW (€2.006,00/cad)</option>
-                                        <option value="x3-ult-199k" data-potenza="19900" data-prezzo="2110.00">X3-ULT-19.9K - 19.9kW (€2.110,00/cad)</option>
-                                        <option value="x3-ult-20k" data-potenza="20000" data-prezzo="2110.00">X3-ULT-20K - 20kW (€2.110,00/cad)</option>
-                                        <option value="x3-ult-25k" data-potenza="25000" data-prezzo="2196.00">X3-ULT-25K - 25kW (€2.196,00/cad)</option>
-                                        <option value="x3-ult-30k" data-potenza="30000" data-prezzo="2305.00">X3-ULT-30K - 30kW (€2.305,00/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Sistema IES">
+                                    <option value="x1-ies-3k" data-potenza="3000" data-prezzo="986">X1-IES-3K - Sistema IES Alta Gamma 3.0kW (€986/cad)</option>
+                                    <option value="x1-ies-3-7k" data-potenza="3700" data-prezzo="1025">X1-IES-3.7K - Sistema IES Alta Gamma 3.7kW (€1.025/cad)</option>
+                                    <option value="x1-ies-5k" data-potenza="5000" data-prezzo="1070">X1-IES-5K - Sistema IES Alta Gamma 5.0kW (€1.070/cad)</option>
+                                    <option value="x1-ies-6k" data-potenza="6000" data-prezzo="1130">X1-IES-6K - Sistema IES Alta Gamma 6.0kW (€1.130/cad)</option>
+                                    <option value="x1-ies-8k" data-potenza="8000" data-prezzo="1185">X1-IES-8K - Sistema IES Alta Gamma 8.0kW (€1.185/cad)</option>
+                                    <option value="x3-ies-5k" data-potenza="5000" data-prezzo="1370">X3-IES-5K - Sistema IES Alta Gamma 5.0kW (€1.370/cad)</option>
+                                    <option value="x3-ies-6k" data-potenza="6000" data-prezzo="1554">X3-IES-6K - Sistema IES Alta Gamma 6.0kW (€1.554/cad)</option>
+                                    <option value="x3-ies-8k" data-potenza="8000" data-prezzo="1630">X3-IES-8K - Sistema IES Alta Gamma 8.0kW (€1.630/cad)</option>
+                                    <option value="x3-ies-10k" data-potenza="10000" data-prezzo="1784">X3-IES-10K - Sistema IES Alta Gamma 10.0kW (€1.784/cad)</option>
+                                    <option value="x3-ies-12k" data-potenza="12000" data-prezzo="1872">X3-IES-12K - Sistema IES Alta Gamma 12.0kW (€1.872/cad)</option>
+                                    <option value="x3-ies-15k" data-potenza="15000" data-prezzo="1930">X3-IES-15K - Sistema IES Alta Gamma 15.0kW (€1.930/cad)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-                                    <optgroup label="X3-GRAND - Inverter di grande potenza">
-                                        <option value="x3-grd-300k-hv" data-potenza="300000" data-prezzo="6497.50">X3-GRD-300K-HV - 300.0kW (€6.497,50/cad)</option>
-                                        <option value="x3-grd-320k-hv" data-potenza="320000" data-prezzo="6612.50">X3-GRD-320K-HV - 320.0kW (€6.612,50/cad)</option>
-                                        <option value="x3-grd-333k-hv" data-potenza="333000" data-prezzo="6727.50">X3-GRD-333K-HV - 333.0kW (€6.727,50/cad)</option>
-                                        <option value="x3-grd-350k-hv" data-potenza="350000" data-prezzo="6842.50">X3-GRD-350K-HV - 350.0kW (€6.842,50/cad)</option>
-                                    </optgroup>
+                <!-- Sistema di Accumulo -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-3 text-gray-700 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#2E8B57">
+                            <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                        </svg>
+                        Sistema di Accumulo
+                    </h3>
+                    <div id="batterieContainer">
+                        <!-- Le batterie dinamiche verranno inserite qui -->
+                    </div>
+                    <button type="button" id="aggiungiBatteria" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Aggiungi Batteria
+                    </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <select id="batterieTipo" class="form-select hidden">
+                                <option value="none">Nessuna Batteria</option>
 
-                                    <optgroup label="X1-Hybrid-LV Entry Level">
-                                        <option value="x1-hyb-30-lv" data-potenza="3000" data-prezzo="809.60">X1-HYB-3.0-LV - 3kW (€809,60/cad)</option>
-                                        <option value="x1-hyb-37-lv" data-potenza="3700" data-prezzo="821.10">X1-HYB-3.7-LV - 3.7kW (€821,10/cad)</option>
-                                        <option value="x1-hyb-40-lv" data-potenza="4000" data-prezzo="832.60">X1-HYB-4.0-LV - 4kW (€832,60/cad)</option>
-                                        <option value="x1-hyb-46-lv" data-potenza="4600" data-prezzo="844.10">X1-HYB-4.6-LV - 4.6kW (€844,10/cad)</option>
-                                        <option value="x1-hyb-50-lv" data-potenza="5000" data-prezzo="879.75">X1-HYB-5.0-LV - 5kW (€879,75/cad)</option>
-                                        <option value="x1-hyb-60-lv" data-potenza="6000" data-prezzo="891.25">X1-HYB-6.0-LV - 6kW (€891,25/cad)</option>
-                                    </optgroup>
-                                    
-                                    <optgroup label="X3-FORTH - Trifase 12 MPPT doppi">
-                                        <option value="x3-120k" data-potenza="120000" data-prezzo="4365">X3-120K - 120.0kW (€4.365/cad)</option>
-                                        <option value="x3-125k" data-potenza="125000" data-prezzo="4494">X3-125K - 125.0kW (€4.494/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Batterie T30">
+                                    <option value="t30-battery" data-prezzo="850">T30 Battery - Batteria litio-ferro-fosfato T30 (€850/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="Altri modelli">
-                                        <option value="g4d6000" data-potenza="6000" data-prezzo="1045">Inverter G4 D X1 6000W (€1.045/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Batterie T58">
+                                    <option value="t58-master" data-prezzo="1918">T58 Master - Batteria T58 con BMS (€1.918/cad)</option>
+                                    <option value="t58-slave" data-prezzo="1653">T58 Slave - Batteria T58 slave (€1.653/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="X1 ESS G4 HYBRID">
-                                        <option value="x1-hybrid-30d-g4" data-potenza="3000" data-prezzo="794">X1-Hybrid-3.0D G4 - 3.0kW (€794/cad)</option>
-                                        <option value="x1-hybrid-37d-g4" data-potenza="3700" data-prezzo="826">X1-Hybrid-3.7D G4 - 3.7kW (€826/cad)</option>
-                                        <option value="x1-hybrid-50d-g4" data-potenza="5000" data-prezzo="863">X1-Hybrid-5.0D G4 - 5.0kW (€863/cad)</option>
-                                        <option value="x1-hybrid-60d-g4" data-potenza="6000" data-prezzo="911">X1-Hybrid-6.0D G4 - 6.0kW (€911/cad)</option>
-                                        <option value="x1-hybrid-75d-g4" data-potenza="7500" data-prezzo="953">X1-Hybrid-7.5D G4 - 7.5kW (€953/cad)</option>
-                                    </optgroup>
-                                    
-                                    <optgroup label="X3-ULTRA HYBRID">
-                                        <option value="x3-ult-15k" data-potenza="15000" data-prezzo="2006">X3-ULT-15K - 15kW (€2.006/cad)</option>
-                                        <option value="x3-ult-199k" data-potenza="19900" data-prezzo="2110">X3-ULT-19.9K - 19.9kW (€2.110/cad)</option>
-                                        <option value="x3-ult-20k" data-potenza="20000" data-prezzo="2110">X3-ULT-20K - 20kW (€2.110/cad)</option>
-                                        <option value="x3-ult-25k" data-potenza="25000" data-prezzo="2196">X3-ULT-25K - 25kW (€2.196/cad)</option>
-                                        <option value="x3-ult-30k" data-potenza="30000" data-prezzo="2305">X3-ULT-30K - 30kW (€2.305/cad)</option>
-                                    </optgroup>
-                                    
-                                    <optgroup label="X3 ESS G4 HYBRID">
-                                        <option value="x3-hybrid-50d-g4" data-potenza="5000" data-prezzo="1114">X3-Hybrid-5.0D G4 - 5.0kW (€1.114/cad)</option>
-                                        <option value="x3-hybrid-60d-g4" data-potenza="6000" data-prezzo="1264">X3-Hybrid-6.0D G4 - 6.0kW (€1.264/cad)</option>
-                                        <option value="x3-hybrid-80d-g4" data-potenza="8000" data-prezzo="1329">X3-Hybrid-8.0D G4 - 8.0kW (€1.329/cad)</option>
-                                        <option value="x3-hybrid-100d-g4" data-potenza="10000" data-prezzo="1458">X3-Hybrid-10.0D G4 - 10.0kW (€1.458/cad)</option>
-                                        <option value="x3-hybrid-120d-g4" data-potenza="12000" data-prezzo="1521">X3-Hybrid-12.0D G4 - 12.0kW (€1.521/cad)</option>
-                                        <option value="x3-hybrid-150d-g4" data-potenza="15000" data-prezzo="1569">X3-Hybrid-15.0D G4 - 15.0kW (€1.569/cad)</option>
-                                    </optgroup>
-                    
-                                    <optgroup label="X1-IES Alta Gamma">
-                                        <option value="x1-ies-3k" data-potenza="3000" data-prezzo="857">X1-IES-3K - 3kW (€857/cad)</option>
-                                        <option value="x1-ies-37k" data-potenza="3700" data-prezzo="891">X1-IES-3.7K - 3.7kW (€891/cad)</option>
-                                        <option value="x1-ies-5k" data-potenza="5000" data-prezzo="930">X1-IES-5K - 5kW (€930/cad)</option>
-                                        <option value="x1-ies-6k" data-potenza="6000" data-prezzo="983">X1-IES-6K - 6kW (€983/cad)</option>
-                                        <option value="x1-ies-8k" data-potenza="8000" data-prezzo="1030">X1-IES-8K - 8kW (€1.030/cad)</option>
-                                    </optgroup>
-                    
-                                    <optgroup label="X3-IES Alta Gamma">
-                                        <option value="x3-ies-5k" data-potenza="5000" data-prezzo="1191">X3-IES-5K - 5kW (€1.191/cad)</option>
-                                        <option value="x3-ies-6k" data-potenza="6000" data-prezzo="1351">X3-IES-6K - 6kW (€1.351/cad)</option>
-                                        <option value="x3-ies-8k" data-potenza="8000" data-prezzo="1417">X3-IES-8K - 8kW (€1.417/cad)</option>
-                                        <option value="x3-ies-10k" data-potenza="10000" data-prezzo="1551">X3-IES-10K - 10kW (€1.551/cad)</option>
-                                        <option value="x3-ies-12k" data-potenza="12000" data-prezzo="1628">X3-IES-12K - 12kW (€1.628/cad)</option>
-                                        <option value="x3-ies-15k" data-potenza="15000" data-prezzo="1678">X3-IES-15K - 15kW (€1.678/cad)</option>
-                                    </optgroup>
-                    
-                                    <optgroup label="X1-Hybrid-LV Entry Level">
-                                        <option value="x1-hyb-30-lv" data-potenza="3000" data-prezzo="810">X1-HYB-3.0-LV - 3kW (€810/cad)</option>
-                                        <option value="x1-hyb-37-lv" data-potenza="3700" data-prezzo="821">X1-HYB-3.7-LV - 3.7kW (€821/cad)</option>
-                                        <option value="x1-hyb-40-lv" data-potenza="4000" data-prezzo="833">X1-HYB-4.0-LV - 4kW (€833/cad)</option>
-                                        <option value="x1-hyb-46-lv" data-potenza="4600" data-prezzo="844">X1-HYB-4.6-LV - 4.6kW (€844/cad)</option>
-                                        <option value="x1-hyb-50-lv" data-potenza="5000" data-prezzo="880">X1-HYB-5.0-LV - 5kW (€880/cad)</option>
-                                        <option value="x1-hyb-60-lv" data-potenza="6000" data-prezzo="891">X1-HYB-6.0-LV - 6kW (€891/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Batterie HS">
+                                    <option value="tp-hs36" data-prezzo="1034">TP-HS36 - Batteria HS 3.6kWh (€1.034/cad)</option>
+                                    <option value="tp-hs25" data-prezzo="746">TP-HS25 - Batteria HS 2.5kWh (€746/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="T-BAT-SYS-HV-S50E (Batteria per IES)">
-                                        <option value="x1-matebox-g2-ies" data-prezzo="528">X1-Matebox G2(IES) (€528/cad)</option>
-                                        <option value="x3-matebox-g2-ies" data-prezzo="587">X3-Matebox G2(IES) (€587/cad)</option>
-                                        <option value="tbms-mcs0800e" data-prezzo="469">TBMS-MCS0800E(with base) (€469/cad)</option>
-                                        <option value="tp-hs50e" data-prezzo="1408">TP-HS50E (€1.408/cad)</option>
-                                        <option value="series-box-ths50e" data-prezzo="469">Series box(THS50E)(with base) (€469/cad)</option>
-                                        <option value="wall-configuration" data-prezzo="140">Wall configuration package (€140/cad)</option>
-                                    </optgroup>
-                    
-                                    <optgroup label="AC Charger">
-                                        <option value="x1-fit-37e" data-potenza="3700" data-prezzo="801">X1-FIT-3.7E - 3.7kW (€801/cad)</option>
-                                        <option value="x1-fit-46e" data-potenza="4600" data-prezzo="836">X1-FIT-4.6E - 4.6kW (€836/cad)</option>
-                                        <option value="x1-fit-50e" data-potenza="5000" data-prezzo="870">X1-FIT-5.0E - 5.0kW (€870/cad)</option>
-                                        <option value="x3-fit-80e" data-potenza="8000" data-prezzo="1406">X3-FIT-8.0E - 8.0kW (€1.406/cad)</option>
-                                        <option value="x3-fit-100e" data-potenza="10000" data-prezzo="1508">X3-FIT-10.0E - 10.0kW (€1.508/cad)</option>
-                                    </optgroup>
-                                </select>
-                            </div>
+                                <optgroup label="Batterie Rack">
+                                    <option value="tb-hr140" data-prezzo="3174">TB-HR140 - Batteria Rack 14kWh (€3.174/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Batterie">
+                                    <option value="tp-ld53" data-prezzo="1034">TP-LD53 - Batteria IES 5.3kWh Low Voltage (€1.034/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori Batterie">
+                                    <option value="tbms-r15" data-prezzo="1323">TBMS-R15 - BMS per batteria rack (€1.323/cad)</option>
+                                    <option value="battery-rack-cabinet" data-prezzo="860">Battery Rack Cabinet - Cabinet per 7 batterie rack (€860/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori T30">
+                                    <option value="t30-bms" data-prezzo="507">T30 BMS - BMS per batterie T30 (€507/cad)</option>
+                                    <option value="bms-parallel-box-g2-t30" data-prezzo="715">BMS Parallel Box G2 T30 - Parallel Box per BMS T30 (€715/cad)</option>
+                                    <option value="accessory-pack-t30" data-prezzo="159">Accessory Pack T30 - Kit accessori per batteria T30 (€159/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori T58">
+                                    <option value="bms-parallel-box-ii" data-prezzo="540">BMS Parallel Box II - Parallel Box per batterie T58 (€540/cad)</option>
+                                    <option value="bms-parallel-box-g2-t58" data-prezzo="688">BMS Parallel Box G2 T58 - Parallel Box G2 per T58 (€688/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori HS">
+                                    <option value="tbms-mcs0800" data-prezzo="540">TBMS-MCS0800 - BMS per batterie HS (€540/cad)</option>
+                                    <option value="tc-pbox70" data-prezzo="216">TC-PBOX70 - Parallel Box per batterie HS (€216/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Carica Batterie">
+                                    <option value="triple-power-charge-box" data-prezzo="1005">Triple Power Charge Box - Caricabatterie tripla potenza (€1.005/cad)</option>
+                                </optgroup>
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Sistema di Accumulo -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-medium mb-3 text-gray-700 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#2E8B57">
-                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                            </svg>
-                            Sistema di Accumulo
-                        </h3>
-                            <div id="batterieContainer">
-                                <!-- Le batterie dinamiche verranno inserite qui -->
-                            </div>
-                            <button type="button" id="aggiungiBatteria" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    <!-- ESS Cabinet section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="form-group">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd" />
                                 </svg>
-                                Aggiungi Batteria
-                            </button>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="form-group">
-                                    <!-- Template per la selezione delle batterie (nascosto) -->
-                                    <select id="batterieTipo" class="form-select hidden">
-                                        <option value="none">Nessuna Batteria</option>
-                                        
-                                        <optgroup label="Batterie Standard">
-                                            <option value="t30-battery" data-prezzo="739">T30 Battery - 3kW a colonna (€739/cad)</option>
-                                            <option value="t30-bms" data-prezzo="440">T30 BMS - a colonna (€440/cad)</option>
-                                            <option value="tbms-mcs0800" data-prezzo="469">TBMS-MCS0800 - per batterie serie HS (€469/cad)</option>
-                                            <option value="tp-hs36" data-prezzo="899">TP-HS36 - Modulo batterie HS3.6 (€899/cad)</option>
-                                            <option value="tp-hs25" data-prezzo="649">TP-HS25 - Modulo batteria HS2.5 (€649/cad)</option>
-                                            <option value="series-box" data-prezzo="305">Series Box - per splittare le colonne di batterie (€305/cad)</option>
-                                            <option value="t58-master" data-prezzo="1667.50">T58 Master - 5.8kW con BMS (€1.667,50/cad)</option>
-                                            <option value="t58-slave" data-prezzo="1437.50">T58 Slave - 5.8kW (€1.437,50/cad)</option>
-                                            <option value="bms-parallel-box-ii" data-prezzo="469.20">BMS Parallel Box II - per T58 (€469,20/cad)</option>
-                                            <option value="bms-parallel-box-g2-t58" data-prezzo="598.00">BMS Parallel Box G2 T58 (€598,00/cad)</option>
-                                        </optgroup>
+                                ESS Cabinet
+                            </label>
+                            <select id="essCabinet" class="form-select">
+                                <option value="none">Nessun Cabinet</option>
 
-                                        <optgroup label="Batterie T30 - Installazioni a colonna">
-                                            <option value="t30-battery" data-prezzo="739.00">T30 Battery - 3kW (€739,00/cad)</option>
-                                            <option value="t30-bms" data-prezzo="440.45">T30 BMS (€440,45/cad)</option>
-                                            <option value="bms-parallel-box-g2-t30" data-prezzo="622.15">BMS Parallel Box G2 T30 (€622,15/cad)</option>
-                                        </optgroup>
+                                <optgroup label="ESS Cabinet">
+                                    <option value="aelio-p50b100" data-prezzo="52086">AELIO-P50B100 - DC Couple BESS Cabinet 50kW 100kWh (€52.086/cad)</option>
+                                    <option value="aelio-p50b200" data-prezzo="66967">AELIO-P50B200 - DC Couple BESS Cabinet 50kW 200kWh (€66.967/cad)</option>
+                                </optgroup>
 
-                                        <optgroup label="Batterie HS Series">
-                                            <option value="tbms-mcs0800" data-prezzo="469.20">TBMS-MCS0800 - BMS per batterie HS (€469,20/cad)</option>
-                                            <option value="tp-hs36" data-prezzo="899.00">TP-HS36 - Modulo 3.6kW (€899,00/cad)</option>
-                                            <option value="tp-hs25" data-prezzo="649.00">TP-HS25 - Modulo 2.5kW (€649,00/cad)</option>
-                                            <option value="series-box" data-prezzo="304.75">Series Box - Splitter colonne (€304,75/cad)</option>
-                                            <option value="tc-pbox70" data-prezzo="187.45">TC-PBOX70 - Parallel Box triplo HS (€187,45/cad)</option>
-                                        </optgroup>
-
-                                        <optgroup label="Batterie IES Low Voltage">
-                                            <option value="tp-ld53" data-prezzo="899.00">TP-LD53 - 5kWh LV (€899,00/cad)</option>
-                                        </optgroup>
-
-                                        <optgroup label="Batterie Rack">
-                                            <option value="tb-hr140" data-prezzo="2760.00">TB-HR140 - Batteria Rack (€2.760,00/cad)</option>
-                                            <option value="tbms-r15" data-prezzo="1150.00">TBMS-R15 - BMS Rack (€1.150,00/cad)</option>
-                                            <option value="battery-rack-cabinet" data-prezzo="747.50">Battery Rack Cabinet - 7 posti (€747,50/cad)</option>
-                                        </optgroup>
-
-                                        <optgroup label="Carica Batterie">
-                                            <option value="triple-power-charge-box" data-prezzo="874.00">Triple Power Charge Box (€874,00/cad)</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- ESS Cabinet section -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div class="form-group">
-                                    <label class="form-label flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                            <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clip-rule="evenodd" />
-                                        </svg>
-                                        ESS Cabinet
-                                    </label>
-                                    <select id="essCabinet" class="form-select">
-                                        <option value="none">Nessun Cabinet</option>
-                                        <optgroup label="Aelio DC Couple BESS Cabinet">
-                                            <option value="aelio-p50b100" data-prezzo="45292">AELIO-P50B100 (€45.292/cad)</option>
-                                            <option value="aelio-p50b200" data-prezzo="58232">AELIO-P50B200 (€58.232/cad)</option>
-                                            <option value="aelio-p60b100" data-prezzo="45550">AELIO-P60B100 (€45.550/cad)</option>
-                                            <option value="aelio-p60b200" data-prezzo="58491">AELIO-P60B200 (€58.491/cad)</option>
-                                            <option value="aelio-p65b100" data-prezzo="45809">AELIO-P65B100 (€45.809/cad)</option>
-                                            <option value="aelio-p65b200" data-prezzo="58750">AELIO-P65B200 (€58.750/cad)</option>
-                                            <option value="aelio-b100" data-prezzo="27025">AELIO-B100 (€27.025/cad)</option>
-                                            <option value="aelio-b200" data-prezzo="42909">AELIO-B200 (€42.909/cad)</option>
-                                            <option value="x3-aelio-50k" data-potenza="50000" data-prezzo="4916">X3-AELIO-50K - 50.0kW (€4.916/cad)</option>
-                                            <option value="x3-aelio-60k" data-potenza="60000" data-prezzo="5189">X3-AELIO-60K - 60.0kW (€5.189/cad)</option>
-                                        </optgroup>
-                                        <optgroup label="Trene AC Couple BESS Cabinet">
-                                            <option value="trene-p100b215-i" data-prezzo="71173">TRENE-P100B215-I (€71.173/cad)</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div class="form-group" id="numeroEssCabinetContainer">
-                                    <label class="form-label flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-                                        </svg>
-                                        Quantità
-                                    </label>
-                                    <input type="number" id="numeroEssCabinet" class="form-input" value="1" min="1">
-                                </div>
-                            </div>
-
-                            <!-- Parallel Box section -->
-                            <div id="parallelBoxContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div class="form-group">
-                                    <label class="form-label flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-                                        </svg>
-                                        Parallel Box
-                                    </label>
-                                    <select id="parallelBox" class="form-select">
-                                        <option value="none">Nessuna Parallel box</option>
-                                        <option value="tc-pbox70" data-prezzo="187">TC-PBOX70 - Parallel Box triplo per batterie HS (€187/cad)</option>
-                                        <option value="x3-pbox-60kw-g2" data-prezzo="959">X3-PBOX-60KW G2 - Backup Parallelo 3/5 macchine (€959/cad)</option>
-                                        <option value="x3-pbox-150kw-g2" data-prezzo="1576">X3-PBOX-150KW G2 - Backup Parallelo 5/10 macchine (€1.576/cad)</option>
-                                        <option value="adapter-box" data-prezzo="33">Adapter Box - Per pompe di calore (€33/cad)</option>
-                                        <option value="adapter-box-g2" data-prezzo="52">Adapter Box G2 - Per pompe di calore (€52/cad)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group" id="numeroParallelBoxContainer">
-                                    <label class="form-label flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-                                        </svg>
-                                        Quantità
-                                    </label>
-                                    <input type="number" id="numeroParallelBox" class="form-input" value="1" min="1">
-                                </div>
-                            </div>
-                    </div>
-
-                    <!-- Ricarica Elettrica -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-medium mb-3 text-gray-700 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#2E8B57">
-                                <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                            </svg>
-                            Ricarica Elettrica
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <label class="form-label">Tipo Caricatore EV</label>
-                                <select id="evCharger" class="form-select">
-                                    <option value="none">Nessun Caricatore</option>
-                                    <option value="x1-evc-72k-sxh" data-prezzo="347.30">X1-EVC-7.2K(SXH) - 7.2kW Monofase (€347,30/cad)</option>
-                                    <option value="x1-evc-72k-pxh" data-prezzo="381.80">X1-EVC-7.2K(PXH) - 7.2kW Monofase con cavo (€381,80/cad)</option>
-                                    <option value="x3-evc-11k-sxh" data-prezzo="424.35">X3-EVC-11K(SXH) - 11kW Trifase (€424,35/cad)</option>
-                                    <option value="x3-evc-11k-pxh" data-prezzo="474.95">X3-EVC-11K(PXH) - 11kW Trifase con cavo (€474,95/cad)</option>
-                                    <option value="x3-evc-22k-sxh" data-prezzo="483.00">X3-EVC-22K(SXH) - 22kW Trifase (€483,00/cad)</option>
-                                    <option value="x3-evc-22k-pxh" data-prezzo="542.80">X3-EVC-22K(PXH) - 22kW Trifase con cavo (€542,80/cad)</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="numeroEvChargerContainer">
-                                <label class="form-label">Numero Caricatori EV</label>
-                                <input type="number" id="numeroEvCharger" class="form-input" value="1" min="1">
-                            </div>
+                                <optgroup label="ESS Trene">
+                                    <option value="trene-p100b215-i" data-prezzo="81849">TRENE-P100B215-I - AC Couple BESS Cabinet 100kW 215kWh (€81.849/cad)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="numeroEssCabinetContainer">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+                                </svg>
+                                Quantità ESS Cabinet
+                            </label>
+                            <input type="number" id="numeroEssCabinet" class="form-input" value="1" min="1">
                         </div>
                     </div>
 
-                    <!-- Accessori e Monitoraggio -->
-                    <div class="mb-8">
-                        <h3 class="text-lg font-medium mb-3 text-gray-700 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#2E8B57">
-                                <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                            </svg>
-                            Accessori e Monitoraggio
-                        </h3>
-                        
-                        <!-- Connettività -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div class="form-group">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path fill-rule="evenodd" d="M17.778 8.222c-4.296-4.296-11.26-4.296-15.556 0A1 1 0 01.808 6.808c5.076-5.077 13.308-5.077 18.384 0a1 1 0 01-1.414 1.414zM14.95 11.05a7 7 0 00-9.9 0 1 1 0 01-1.414-1.414 9 9 0 0112.728 0 1 1 0 01-1.414 1.414zM12.12 13.88a3 3 0 00-4.242 0 1 1 0 01-1.415-1.415 5 5 0 017.072 0 1 1 0 01-1.415 1.415zM9 16a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    Connettività
-                                </label>
-                                <select id="connettivita" class="form-select">
-                                    <option value="none">Nessuna Connettività</option>
+                    <!-- Parallel Box section -->
+                    <div id="parallelBoxContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="form-group">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                                </svg>
+                                Parallel Box
+                            </label>
+                            <select id="parallelBox" class="form-select">
+                                <option value="none">Nessuna Parallel box</option>
 
-                                    <optgroup label="Connettività Standard">
-                                        <option value="pocket-wifi-3" data-prezzo="15.00">Pocket WiFi 3.0 (€15,00/cad)</option>
-                                        <option value="pocket-wifi-plus" data-prezzo="21.00">Pocket WiFi Plus 3.0 (€21,00/cad)</option>
-                                        <option value="pocket-wifi-plus-lm" data-prezzo="23.00">Pocket WiFi Plus 3.0 LM (€23,00/cad)</option>
-                                        <option value="pocket-wifi-4gm" data-prezzo="32.20">Pocket WiFi+4GM (€32,20/cad)</option>
-                                        <option value="pocket-wifi-lan" data-prezzo="35.00">Pocket WiFi+Lan (€35,00/cad)</option>
-                                    </optgroup>
+                                <optgroup label="Adapter Box">
+                                    <option value="adapter-box" data-prezzo="38">Adapter Box - Adattatore per pompe di calore (€38/cad)</option>
+                                    <option value="adapter-box-g2" data-prezzo="60">Adapter Box G2 - Adattatore G2 per pompe di calore (€60/cad)</option>
+                                </optgroup>
 
-                                    <optgroup label="Connettività Avanzata">
-                                        <option value="pocket-lan-3" data-prezzo="22">Pocket LAN 3.0 - Solo LAN (€22/cad)</option>
-                                        <option value="pocket-wifi-plus-lm" data-prezzo="25">Pocket WiFi Plus 3.0 LM - WiFi+ Monitoraggio (€25/cad)</option>
-                                        <option value="pocket-wifi-lan" data-prezzo="39">Pocket WiFi+LAN - Dual Connection (€39/cad)</option>
-                                        <option value="pocket-4g-v3" data-prezzo="39">Pocket 4G V3 - Con Slot SIM (€39/cad)</option>
-                                    </optgroup>
-
-                                </select>
-                            </div>
-                            <div class="form-group" id="numeroConnettivitaContainer">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-                                    </svg>
-                                    Quantità
-                                </label>
-                                <input type="number" id="numeroConnettivita" class="form-input" value="1" min="1">
-                            </div>
+                                <optgroup label="EPS Box">
+                                    <option value="x1-eps-box" data-prezzo="212">X1-EPS Box - Sistema backup monofase (€212/cad)</option>
+                                    <option value="x3-eps-box" data-prezzo="278">X3-EPS Box - Sistema backup trifase (€278/cad)</option>
+                                    <option value="x3-eps-box-p5-e" data-prezzo="1597">X3-EPS-BOX-P5-E - Sistema backup parallelo P5 (€1.597/cad)</option>
+                                    <option value="x3-pbox-60kw-g2" data-prezzo="1103">X3-PBOX-60KW G2 - Parallel Box 60kW per backup multiplo (€1.103/cad)</option>
+                                    <option value="x3-pbox-150kw-g2" data-prezzo="1812">X3-PBOX-150KW G2 - Parallel Box 150kW per backup multiplo (€1.812/cad)</option>
+                                </optgroup>
+                            </select>
                         </div>
-
-                        <!-- Backup e Controllo -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div class="form-group">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
-                                    </svg>
-                                    Backup e Controllo
-                                </label>
-                                <select id="backupControllo" class="form-select">
-                                    <option value="none">Nessun Backup/Controllo</option>
-
-                                    <optgroup label="Backup">
-                                        <option value="x1-eps-box" data-prezzo="184">X1-EPS Box - Backup Monofase (€184/cad)</option>
-                                        <option value="x3-eps-box" data-prezzo="242">X3-EPS Box - Backup Trifase (€242/cad)</option>
-                                        <option value="x3-eps-box-p5-e" data-prezzo="1389">X3-EPS-BOX-P5-E - Backup Parallelo (€1.389/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Quadri Comando">
-                                        <option value="x1-mate-box" data-prezzo="588">X1 Mate Box - Monofase (€588/cad)</option>
-                                        <option value="x3-mate-box" data-prezzo="1083">X3 Mate Box - Trifase (€1.083/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Matebox - Quadri Comando">
-                                        <option value="x1-matebox-advanced" data-prezzo="507.15">X1 Matebox Advanced - Monofase (€507,15/cad)</option>
-                                        <option value="x3-matebox-advanced" data-prezzo="941.85">X3 Matebox Advanced - Trifase (€941,85/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Backup e Parallel Box">
-                                        <option value="x3-pbox-60kw-g2" data-prezzo="959.10">X3-PBOX-60KW G2 - 3/5 macchine (€959,10/cad)</option>
-                                        <option value="x3-pbox-150kw-g2" data-prezzo="1575.50">X3-PBOX-150KW G2 - 5/10 macchine (€1.575,50/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="DataHub e Controllo">
-                                        <option value="datahub1000" data-prezzo="330.05">DataHub1000 - Controllo multiplo (€330,05/cad)</option>
-                                        <option value="wi-br" data-prezzo="54.05">Wi-BR - Ponte Wireless (€54,05/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Altri Controlli">
-                                        <option value="heat-box-g2" data-prezzo="62">Heat Box G2 - Per Pompe Calore (€62/cad)</option>
-                                        <option value="datahub" data-prezzo="378">DATAHUB - Controllo Multiplo (€378/cad)</option>
-                                    </optgroup>
-
-                                </select>
-                            </div>
-                            <div class="form-group" id="numeroBackupControlloContainer">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-                                    </svg>
-                                    Quantità
-                                </label>
-                                <input type="number" id="numeroBackupControllo" class="form-input" value="1" min="1">
-                            </div>
-                        </div>
-
-                        <!-- Meter e CT -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div class="form-group">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0a6 6 0 11-12 0 6 6 0 0112 0zm-1.5 0a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" clip-rule="evenodd" />
-                                    </svg>
-                                    Meter e CT
-                                </label>
-                                <select id="meterCT" class="form-select">
-                                    <option value="none">Nessun Meter/CT</option>
-
-                                    <optgroup label="Meter Standard">
-                                        <option value="ddsu666-d" data-prezzo="54">DDSU666-D - Meter Monofase (€54/cad)</option>
-                                        <option value="dtsu666-d" data-prezzo="72">DTSU666-D - Meter Trifase (€72/cad)</option>
-                                        <option value="dtsu666-d-ct" data-prezzo="117">DTSU666-D-CT - Meter Trifase con CT (€117/cad)</option>
-                                        <option value="ddsu666-d-ct" data-prezzo="71">DDSU666-D-CT - Meter Monofase con CT (€71/cad)</option>
-                                        <option value="wi-br" data-prezzo="54">Wi-BR - Ponte Wireless per Meter (€54/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Meter Eastron">
-                                        <option value="sdm630m-ct-v2" data-prezzo="125">SDM630M-CT V2 - Trifase (€125/cad)</option>
-                                        <option value="sdm230-modbus" data-prezzo="65">SDM230-Modbus - Monofase (€65/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Current Transformers">
-                                        <option value="ct-200" data-prezzo="15.00">CT 200A (€15,00/cad)</option>
-                                        <option value="ct-600" data-prezzo="30.00">CT 600A (€30,00/cad)</option>
-                                        <option value="ct-1500" data-prezzo="62.00">CT 1500A (€62,00/cad)</option>
-                                    </optgroup>
-
-                                </select>
-                            </div>
-                            <div class="form-group" id="numeroMeterCTContainer">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-                                    </svg>
-                                    Quantità
-                                </label>
-                                <input type="number" id="numeroMeterCT" class="form-input" value="1" min="1">
-                            </div>
-                        </div>
-
-                        <!-- Cavi e Accessori -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    Cavi e Accessori
-                                </label>
-                                <select id="caviAccessori" class="form-select">
-                                    <option value="none">Nessun Cavo/Accessorio</option>
-
-                                    <optgroup label="Cavi di Alimentazione">
-                                        <option value="power-cable-12" data-prezzo="36">Cavo Alimentazione 1.2m (€36/cad)</option>
-                                        <option value="power-cable-18" data-prezzo="39">Cavo Alimentazione 1.8m (€39/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Cavi di Comunicazione">
-                                        <option value="comm-cable-12" data-prezzo="9">Cavo Comunicazione 1.2m (€9/cad)</option>
-                                        <option value="comm-cable-18" data-prezzo="10">Cavo Comunicazione 1.8m (€10/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Kit Installazione">
-                                        <option value="accessory-pack-t30" data-prezzo="138">Accessory Pack T30 - Kit ESS G4 a "L" (€138/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Accessori Micro Inverters">
-                                        <option value="ac-trunk-end-cap" data-prezzo="2.30">AC Trunk End Cap (€2,30/cad)</option>
-                                        <option value="ac-trunk-connector" data-prezzo="4.60">AC Trunk Connector (€4,60/cad)</option>
-                                        <option value="ac-trunk-disconnect" data-prezzo="4.60">AC Trunk Port Disconnect (€4,60/cad)</option>
-                                        <option value="ac-trunk-cable-10awg" data-prezzo="23.00">AC Trunk Cable 2.4m 10AWG (€23,00/cad)</option>
-                                        <option value="ac-trunk-cable-12awg" data-prezzo="28.75">AC Trunk Cable 2.4m 12AWG (€28,75/cad)</option>
-                                        <option value="ac-end-cable-m" data-prezzo="2.30">AC End Cable-M (€2,30/cad)</option>
-                                        <option value="dc-extension-cable" data-prezzo="5.75">DC Extension Cable al metro (€5,75/cad)</option>
-                                    </optgroup>
-
-                                    <optgroup label="Carica Batterie">
-                                        <option value="triple-power-charge-box" data-prezzo="874">Triple Power Charge Box (€874/cad)</option>
-                                    </optgroup>
-                                </select>
-                            </div>
-                            <div class="form-group" id="numeroCaviAccessoriContainer">
-                                <label class="form-label flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
-                                    </svg>
-                                    Quantità
-                                </label>
-                                <input type="number" id="numeroCaviAccessori" class="form-input" value="1" min="1">
-                            </div>
+                        <div class="form-group" id="numeroParallelBoxContainer">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+                                </svg>
+                                Quantità Parallel Box
+                            </label>
+                            <input type="number" id="numeroParallelBox" class="form-input" value="1" min="1">
                         </div>
                     </div>
+                </div>
+
+                <!-- Ricarica Elettrica -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-3 text-gray-700 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="#2E8B57">
+                            <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                        </svg>
+                        Ricarica Elettrica
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">Tipo Caricatore EV</label>
+                            <select id="evCharger" class="form-select">
+                                <option value="none">Nessun Caricatore</option>
+                                <option value="x1-evc-7-2k-sxh-" data-prezzo="399">X1-EVC-7.2K(SXH) - Caricatore monofase 7.2kW senza cavo (€399/cad)</option>
+                                <option value="x1-evc-7-2k-pxh-" data-prezzo="439">X1-EVC-7.2K(PXH) - Caricatore monofase 7.2kW con cavo (€439/cad)</option>
+                                <option value="x3-evc-11k-sxh-" data-prezzo="488">X3-EVC-11K(SXH) - Caricatore trifase 11kW senza cavo (€488/cad)</option>
+                                <option value="x3-evc-11k-pxh-" data-prezzo="546">X3-EVC-11K(PXH) - Caricatore trifase 11kW con cavo (€546/cad)</option>
+                                <option value="x3-evc-22k-sxh-" data-prezzo="555">X3-EVC-22K(SXH) - Caricatore trifase 22kW senza cavo (€555/cad)</option>
+                                <option value="x3-evc-22k-pxh-" data-prezzo="624">X3-EVC-22K(PXH) - Caricatore trifase 22kW con cavo (€624/cad)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="numeroEvChargerContainer">
+                            <label class="form-label">Numero Caricatori EV</label>
+                            <input type="number" id="numeroEvCharger" class="form-input" value="1" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accessori e Monitoraggio -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-3 text-gray-700 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#2E8B57">
+                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                        </svg>
+                        Accessori e Monitoraggio
+                    </h3>
+                    
+                    <!-- Connettività -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path fill-rule="evenodd" d="M17.778 8.222c-4.296-4.296-11.26-4.296-15.556 0A1 1 0 01.808 6.808c5.076-5.077 13.308-5.077 18.384 0a1 1 0 01-1.414 1.414zM14.95 11.05a7 7 0 00-9.9 0 1 1 0 01-1.414-1.414 9 9 0 0112.728 0 1 1 0 01-1.414 1.414zM12.12 13.88a3 3 0 00-4.242 0 1 1 0 01-1.415-1.415 5 5 0 017.072 0 1 1 0 01-1.415 1.415zM9 16a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Connettività
+                            </label>
+                            <select id="connettivita" class="form-select">
+                                <option value="none">Nessuna Connettività</option>
+                                <option value="pocket-wifi-3-0" data-prezzo="17">Pocket WiFi 3.0 - Modulo WiFi base (€17/cad)</option>
+                                <option value="pocket-wifi-plus-3-0" data-prezzo="24">Pocket WiFi Plus 3.0 - Modulo WiFi potenziato (€24/cad)</option>
+                                <option value="pocket-wifi-plus-3-0-lm" data-prezzo="26">Pocket WiFi Plus 3.0 LM - Modulo WiFi Plus con monitoraggio (€26/cad)</option>
+                                <option value="pocket-lan-3-0" data-prezzo="25">Pocket LAN 3.0 - Modulo LAN (€25/cad)</option>
+                                <option value="pocket-wifi-lan" data-prezzo="45">Pocket WiFi+LAN - Modulo WiFi e LAN (€45/cad)</option>
+                                <option value="pocket-4g-v3" data-prezzo="45">Pocket 4G V3 - Modulo 4G con SIM (€45/cad)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="numeroConnettivitaContainer">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+                                </svg>
+                                Quantità Connettività
+                            </label>
+                            <input type="number" id="numeroConnettivita" class="form-input" value="1" min="1">
+                        </div>
+                    </div>
+
+                    <!-- Backup e Controllo -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                                </svg>
+                                Backup e Controllo
+                            </label>
+                            <select id="backupControllo" class="form-select">
+                                <option value="none">Nessun Backup/Controllo</option>
+
+                                <optgroup label="EPS Box">
+                                    <option value="x1-eps-box" data-prezzo="212">X1-EPS Box - Sistema backup monofase (€212/cad)</option>
+                                    <option value="x3-eps-box" data-prezzo="278">X3-EPS Box - Sistema backup trifase (€278/cad)</option>
+                                    <option value="x3-eps-box-p5-e" data-prezzo="1597">X3-EPS-BOX-P5-E - Sistema backup parallelo P5 (€1.597/cad)</option>
+                                    <option value="x3-pbox-60kw-g2" data-prezzo="1103">X3-PBOX-60KW G2 - Parallel Box 60kW per backup multiplo (€1.103/cad)</option>
+                                    <option value="x3-pbox-150kw-g2" data-prezzo="1812">X3-PBOX-150KW G2 - Parallel Box 150kW per backup multiplo (€1.812/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Matebox">
+                                    <option value="x1-matebox-advanced" data-prezzo="583">X1 Matebox Advanced - Quadro comando monofase (€583/cad)</option>
+                                    <option value="x3-matebox-advanced" data-prezzo="1083">X3 Matebox Advanced - Quadro comando trifase (€1.083/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Adapter Box">
+                                    <option value="adapter-box" data-prezzo="38">Adapter Box - Adattatore per pompe di calore (€38/cad)</option>
+                                    <option value="adapter-box-g2" data-prezzo="60">Adapter Box G2 - Adattatore G2 per pompe di calore (€60/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori Wireless">
+                                    <option value="wi-br" data-prezzo="62">Wi-BR - Bridge wireless per comunicazione (€62/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Data Hub">
+                                    <option value="datahub1000" data-prezzo="380">DataHub1000 - Hub dati per gestione multipla (€380/cad)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="numeroBackupControlloContainer">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+                                </svg>
+                                Quantità backup e controllo
+                            </label>
+                            <input type="number" id="numeroBackupControllo" class="form-input" value="1" min="1">
+                        </div>
+                    </div>
+
+                    <!-- Meter e CT -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0a6 6 0 11-12 0 6 6 0 0112 0zm-1.5 0a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" clip-rule="evenodd" />
+                                </svg>
+                                Meter e CT
+                            </label>
+                            <select id="meterCT" class="form-select">
+                                <option value="none">Nessun Meter/CT</option>
+
+                                <optgroup label="Meter">
+                                    <option value="ddsu666-d" data-prezzo="62">DDSU666-D - Meter monofase (€62/cad)</option>
+                                    <option value="dtsu666-d" data-prezzo="83">DTSU666-D - Meter trifase (€83/cad)</option>
+                                    <option value="sdm630m-ct-v2" data-prezzo="144">SDM630M-CT V2 - Meter trifase con CT (€144/cad)</option>
+                                    <option value="sdm230-modbus" data-prezzo="75">SDM230-Modbus - Meter monofase Modbus (€75/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Current Transformer">
+                                    <option value="ct-200" data-prezzo="17">CT 200 - Current Transformer 200A (€17/cad)</option>
+                                    <option value="ct-600" data-prezzo="35">CT 600 - Current Transformer 600A (€35/cad)</option>
+                                    <option value="ct-1500" data-prezzo="71">CT 1500 - Current Transformer 1500A (€71/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori Wireless">
+                                    <option value="wi-br" data-prezzo="62">Wi-BR - Bridge wireless per comunicazione (€62/cad)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="numeroMeterCTContainer">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+                                </svg>
+                                Quantità Meter e CT
+                            </label>
+                            <input type="number" id="numeroMeterCT" class="form-input" value="1" min="1">
+                        </div>
+                    </div>
+
+                    <!-- Cavi e Accessori -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Cavi e Accessori
+                            </label>
+                            <select id="caviAccessori" class="form-select">
+                                <option value="none">Nessun Cavo/Accessorio</option>
+
+                                <optgroup label="Accessori Micro">
+                                    <option value="ac-trunk-end-cap" data-prezzo="3">AC Trunk End Cap - Tappo terminale per trunk AC (€3/cad)</option>
+                                    <option value="ac-trunk-connector" data-prezzo="5">AC Trunk Connector - Connettore per trunk AC (€5/cad)</option>
+                                    <option value="ac-trunk-port-disconnect" data-prezzo="5">AC Trunk Port Disconnect - Disconnettore porta trunk AC (€5/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Cavi Micro">
+                                    <option value="ac-trunk-cable-2-4m-10awg" data-prezzo="26">AC Trunk Cable 2.4m 10AWG - Cavo trunk AC 2.4m 10AWG (€26/cad)</option>
+                                    <option value="ac-trunk-cable-2-4m-12awg" data-prezzo="33">AC Trunk Cable 2.4m 12AWG - Cavo trunk AC 2.4m 12AWG (€33/cad)</option>
+                                    <option value="ac-end-cable-m" data-prezzo="3">AC End Cable-M - Cavo terminale AC maschio (€3/cad)</option>
+                                    <option value="dc-extension-cable-1-0m" data-prezzo="7">DC Extension Cable 1.0m - Cavo prolunga DC 1.0m (€7/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori">
+                                    <option value="power-cable-1-2m" data-prezzo="41">Power Cable 1.2m - Cavo alimentazione 1.2m (€41/cad)</option>
+                                    <option value="power-cable-1-8m" data-prezzo="45">Power Cable 1.8m - Cavo alimentazione 1.8m (€45/cad)</option>
+                                    <option value="comm-cable-1-2m" data-prezzo="10">Comm Cable 1.2m - Cavo comunicazione 1.2m (€10/cad)</option>
+                                    <option value="comm-cable-1-8m" data-prezzo="12">Comm Cable 1.8m - Cavo comunicazione 1.8m (€12/cad)</option>
+                                    <option value="series-box" data-prezzo="351">Series Box - Box per connessioni in serie (€351/cad)</option>
+                                    <option value="heat-box-g2" data-prezzo="71">Heat Box G2 - Box controllo pompa calore (€71/cad)</option>
+                                </optgroup>
+
+                                <optgroup label="Accessori Vari">
+                                    <option value="wall-configuration-package" data-prezzo="161">Wall Configuration Package - Kit configurazione a parete (€161/cad)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group" id="numeroCaviAccessoriContainer">
+                            <label class="form-label flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
+                                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
+                                </svg>
+                                Quantità cavi e accessori
+                            </label>
+                            <input type="number" id="numeroCaviAccessori" class="form-input" value="1" min="1">
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Manodopera e Sicurezza -->
                 <div class="form-section">
@@ -939,294 +840,294 @@
                         </div>
                     </div>
                     <div id="dettagliCosti"></div>
-                </div>
-            </form>
-
-            <!-- Dati Energetici Cliente -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
-                    </svg>
-                    Dati Energetici Cliente (Bolletta)
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">Consumo Annuo (kWh)</label>
-                        <input type="number" id="consumoAnnuo" class="form-input" value="0" min="0">
-                        <p class="text-xs text-gray-500 mt-1">Se compilato, genera l'analisi economica</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Costo Energia Attuale (€/kWh)</label>
-                        <input type="number" id="costoEnergiaAttuale" class="form-input" value="0.16" min="0.1" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Spesa Annua Energia (€)</label>
-                        <input type="number" id="spesaAnnuaEnergia" class="form-input" value="0" min="0">
-                        <p class="text-xs text-gray-500 mt-1">Se compilato, sostituisce il calcolo automatico</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Autoconsumo Stimato (%)</label>
-                        <input type="number" id="autoconsumoStimato" class="form-input" value="0" min="0" max="100">
-                    </div>
-                </div>
             </div>
+        </form>
 
-            <!-- Parametri Economici -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                    Parametri Economici
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">Produzione Annua Stimata (kWh da PVGIS)</label>
-                        <input type="number" id="produzioneAnnuaKw" class="form-input" value="1200" min="800" max="1600">
-                        <p class="text-xs text-gray-500 mt-1">Se caricato il PVGIS viene compilato in automatico</p>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Percentuale IVA (%)</label>
-                        <input type="number" id="percentualeIva" class="form-input" value="10" min="0" max="22">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Percentuale Detrazione Fiscale (%)</label>
-                        <input type="number" id="percentualeDetrazione" class="form-input" value="50" min="0" max="100">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Anni Detrazione</label>
-                        <input type="number" id="anniDetrazione" class="form-input" value="10" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Risparmio Bolletta Stimato (%)</label>
-                        <input type="number" id="risparmioStimato" class="form-input" value="80" min="0" max="100">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Tipo di Cessione Energia</label>
-                        <select id="tipoCessione" class="form-select">
-                            <option value="ritiro">Ritiro Dedicato</option>
-                            <option value="cessioneTotale">Cessione Totale</option>
-                            <option value="cessioneParziale">Cessione Parziale</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dati Preventivo -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
-                    </svg>
-                    Dati Preventivo
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">Validità Preventivo<br>(giorni)</label>
-                        <input type="number" id="validitaPreventivo" class="form-input" value="20" min="1">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Riferimento Preventivo<br>(lasciare vuoto per autogenerato)</label>
-                        <input id="riferimentoPreventivo" class="form-input" placeholder="PRV-YYYYMMDD-HHMM">
-                    </div>
-                </div>
-                
-                <!-- Percentuali di Pagamento -->
-                <div class="mt-6">
-                    <h3 class="text-lg font-medium mb-3 text-gray-700">Percentuali di Pagamento</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="form-group">
-                            <label class="form-label">Prima Tranche<br>(Ordine Materiali %)</label>
-                            <input type="number" id="percentualePrimaPagamento" class="form-input" value="50" min="0" max="100">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Seconda Tranche<br>(Fine Lavori %)</label>
-                            <input type="number" id="percentualeSecondaPagamento" class="form-input" value="40" min="0" max="100">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Terza Tranche<br>(Collaudo %)</label>
-                            <input type="number" id="percentualeTerzaPagamento" class="form-input" value="10" min="0" max="100">
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">La somma delle percentuali deve essere 100%</p>
-                    <div id="errorePercentuali" class="hidden mt-2 text-red-600 text-sm"></div>
-                </div>
-            </div>
-
-            <!-- Premessa Personalizzata -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd" />
-                    </svg>
-                    Premessa Personalizzata
-                </h2>
+        <!-- Dati Energetici Cliente -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
+                </svg>
+                Dati Energetici Cliente (Bolletta)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="form-group">
-                    <label class="form-label">Testo introduttivo (apparirà all'inizio del preventivo, lasciare vuoto per autogenerazione)</label>
-                    <textarea id="premessaPersonalizzata" class="form-input" rows="6" style="width: 100%;" placeholder="Offerta economica per installazione di un impianto fotovoltaico con accumulo.
+                    <label class="form-label">Consumo Annuo (kWh)</label>
+                    <input type="number" id="consumoAnnuo" class="form-input" value="0" min="0">
+                    <p class="text-xs text-gray-500 mt-1">Se compilato, genera l'analisi economica</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Costo Energia Attuale (€/kWh)</label>
+                    <input type="number" id="costoEnergiaAttuale" class="form-input" value="0.16" min="0.1" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Spesa Annua Energia (€)</label>
+                    <input type="number" id="spesaAnnuaEnergia" class="form-input" value="0" min="0">
+                    <p class="text-xs text-gray-500 mt-1">Se compilato, sostituisce il calcolo automatico</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Autoconsumo Stimato (%)</label>
+                    <input type="number" id="autoconsumoStimato" class="form-input" value="0" min="0" max="100">
+                </div>
+            </div>
+        </div>
+
+        <!-- Parametri Economici -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                Parametri Economici
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Produzione Annua Stimata (kWh da PVGIS)</label>
+                    <input type="number" id="produzioneAnnuaKw" class="form-input" value="1200" min="800" max="1600">
+                    <p class="text-xs text-gray-500 mt-1">Se caricato il PVGIS viene compilato in automatico</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Percentuale IVA (%)</label>
+                    <input type="number" id="percentualeIva" class="form-input" value="10" min="0" max="22">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Percentuale Detrazione Fiscale (%)</label>
+                    <input type="number" id="percentualeDetrazione" class="form-input" value="50" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Anni Detrazione</label>
+                    <input type="number" id="anniDetrazione" class="form-input" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Risparmio Bolletta Stimato (%)</label>
+                    <input type="number" id="risparmioStimato" class="form-input" value="80" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo di Cessione Energia</label>
+                    <select id="tipoCessione" class="form-select">
+                        <option value="ritiro">Ritiro Dedicato</option>
+                        <option value="cessioneTotale">Cessione Totale</option>
+                        <option value="cessioneParziale">Cessione Parziale</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dati Preventivo -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                </svg>
+                Dati Preventivo
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Validità Preventivo<br>(giorni)</label>
+                    <input type="number" id="validitaPreventivo" class="form-input" value="20" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Riferimento Preventivo<br>(lasciare vuoto per autogenerato)</label>
+                    <input id="riferimentoPreventivo" class="form-input" placeholder="PRV-YYYYMMDD-HHMM">
+                </div>
+            </div>
+            
+            <!-- Percentuali di Pagamento -->
+            <div class="mt-6">
+                <h3 class="text-lg font-medium mb-3 text-gray-700">Percentuali di Pagamento</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Prima Tranche<br>(Ordine Materiali %)</label>
+                        <input type="number" id="percentualePrimaPagamento" class="form-input" value="50" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Seconda Tranche<br>(Fine Lavori %)</label>
+                        <input type="number" id="percentualeSecondaPagamento" class="form-input" value="40" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Terza Tranche<br>(Collaudo %)</label>
+                        <input type="number" id="percentualeTerzaPagamento" class="form-input" value="10" min="0" max="100">
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">La somma delle percentuali deve essere 100%</p>
+                <div id="errorePercentuali" class="hidden mt-2 text-red-600 text-sm"></div>
+            </div>
+        </div>
+
+        <!-- Premessa Personalizzata -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path fill-rule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clip-rule="evenodd" />
+                </svg>
+                Premessa Personalizzata
+            </h2>
+            <div class="form-group">
+                <label class="form-label">Testo introduttivo (apparirà all'inizio del preventivo, lasciare vuoto per autogenerazione)</label>
+                <textarea id="premessaPersonalizzata" class="form-input" rows="6" style="width: 100%;" placeholder="Offerta economica per installazione di un impianto fotovoltaico con accumulo.
 
 Vi trasmettiamo la nostra migliore offerta per l'esecuzione dei lavori da effettuare sull'edificio.
 
 A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le vostre esigenze..."></textarea>
-                </div>
-                <p class="text-xs text-gray-500 mt-1">Allarga il box del testo dall'angolo in basso a destra</p>
             </div>
+            <p class="text-xs text-gray-500 mt-1">Allarga il box del testo dall'angolo in basso a destra</p>
+        </div>
 
-            <!-- Note Personalizzate -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+        <!-- Note Personalizzate -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                </svg>
+                Note Personalizzate
+            </h2>
+            <div class="form-group">
+                <label class="form-label">Note Aggiuntive (appariranno nel preventivo sotto alle note standard)</label>
+                <textarea id="notePersonalizzate" class="form-input" rows="4" style="width: 100%;" placeholder="Inserisci qui eventuali note aggiuntive per il preventivo..."></textarea>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Allarga il box del testo dall'angolo in basso a destra</p>
+        </div>
+
+        <!-- Dati PVGIS -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                </svg>
+                Dati PVGIS
+            </h2>
+            
+            <div class="highlight-box mb-5 p-4 bg-blue-50 border-l-4 border-blue-500">
+                <h3 class="font-semibold text-blue-800 mb-2 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#3B82F6">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                     </svg>
-                    Note Personalizzate
-                </h2>
+                    Come utilizzare PVGIS
+                </h3>
+                <ol class="list-decimal pl-5 space-y-2 text-sm">
+                    <li>Vai su <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" target="_blank" class="text-blue-600 hover:underline font-medium">PVGIS (Photovoltaic Geographical Information System)</a></li>
+                    <li>Inserisci le coordinate del tuo impianto o cerca l'indirizzo nella mappa</li>
+                    <li>Nella sezione "PERFORMANCE OF GRID-CONNECTED PV", specifica:
+                        <ul class="list-disc pl-5 mt-1">
+                            <li>Potenza installata (in kWp)</li>
+                            <li>Inclinazione (in gradi)</li>
+                            <li>Orientamento (azimut, 0° = Sud, -90° = Est, 90° = Ovest)</li>
+                        </ul>
+                    </li>
+                    <li>Clicca su "Visualize results" e poi sul tasto "json" come formato del file e scarica</li>
+                    <li>Carica il file JSON scaricato qui sotto per ottenere calcoli di produzione precisi</li>
+                </ol>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
-                    <label class="form-label">Note Aggiuntive (appariranno nel preventivo sotto alle note standard)</label>
-                    <textarea id="notePersonalizzate" class="form-input" rows="4" style="width: 100%;" placeholder="Inserisci qui eventuali note aggiuntive per il preventivo..."></textarea>
-                </div>
-                <p class="text-xs text-gray-500 mt-1">Allarga il box del testo dall'angolo in basso a destra</p>
-            </div>
-
-            <!-- Dati PVGIS -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
-                    </svg>
-                    Dati PVGIS
-                </h2>
-                
-                <div class="highlight-box mb-5 p-4 bg-blue-50 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-blue-800 mb-2 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#3B82F6">
+                    <label class="form-label flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#4A5568">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Carica file JSON PVGIS
+                    </label>
+                    <input type="file" id="pvgisFileInput" class="form-input border-2 border-dashed border-gray-300 rounded-lg p-4 w-full cursor-pointer hover:border-blue-500 transition duration-300" accept=".json">
+                    <p class="text-xs text-gray-500 mt-2 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                         </svg>
-                        Come utilizzare PVGIS
-                    </h3>
-                    <ol class="list-decimal pl-5 space-y-2 text-sm">
-                        <li>Vai su <a href="https://re.jrc.ec.europa.eu/pvg_tools/en/" target="_blank" class="text-blue-600 hover:underline font-medium">PVGIS (Photovoltaic Geographical Information System)</a></li>
-                        <li>Inserisci le coordinate del tuo impianto o cerca l'indirizzo nella mappa</li>
-                        <li>Nella sezione "PERFORMANCE OF GRID-CONNECTED PV", specifica:
-                            <ul class="list-disc pl-5 mt-1">
-                                <li>Potenza installata (in kWp)</li>
-                                <li>Inclinazione (in gradi)</li>
-                                <li>Orientamento (azimut, 0° = Sud, -90° = Est, 90° = Ovest)</li>
-                            </ul>
-                        </li>
-                        <li>Clicca su "Visualize results" e poi sul tasto "json" come formato del file e scarica</li>
-                        <li>Carica il file JSON scaricato qui sotto per ottenere calcoli di produzione precisi</li>
-                    </ol>
+                        Carica un file JSON esportato da PVGIS per calcoli precisi sulla produzione fotovoltaica
+                    </p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-group">
-                        <label class="form-label flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#4A5568">
-                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                <div class="form-group">
+                    <div id="pvgisInfo" class="p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-100 shadow-sm hidden">
+                        <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#3B82F6">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
-                            Carica file JSON PVGIS
-                        </label>
-                        <input type="file" id="pvgisFileInput" class="form-input border-2 border-dashed border-gray-300 rounded-lg p-4 w-full cursor-pointer hover:border-blue-500 transition duration-300" accept=".json">
-                        <p class="text-xs text-gray-500 mt-2 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                            </svg>
-                            Carica un file JSON esportato da PVGIS per calcoli precisi sulla produzione fotovoltaica
-                        </p>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div id="pvgisInfo" class="p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-100 shadow-sm hidden">
-                            <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#3B82F6">
-                                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                </svg>
-                                Dati PVGIS rilevati
-                            </h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-blue-100 pb-2">
-                                    <span class="font-medium text-gray-700">Stato:</span>
-                                    <span id="pvgisStatus" class="font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full text-sm">Nessun file caricato</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-700">Produzione annuale:</span>
-                                    <span id="pvgisAnnualProduction" class="font-semibold text-blue-800">-</span>
-                                    <span class="text-gray-600 ml-1">kWh</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="font-medium text-gray-700">Irradiazione annuale:</span>
-                                    <span id="pvgisAnnualIrradiation" class="font-semibold text-blue-800">-</span>
-                                    <span class="text-gray-600 ml-1">kWh/m²</span>
-                                </div>
+                            Dati PVGIS rilevati
+                        </h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center border-b border-blue-100 pb-2">
+                                <span class="font-medium text-gray-700">Stato:</span>
+                                <span id="pvgisStatus" class="font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full text-sm">Nessun file caricato</span>
                             </div>
-                            <div class="mt-3 text-xs text-gray-500 italic">
-                                I dati PVGIS migliorano l'accuratezza delle stime di produzione energetica e rendimento economico
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium text-gray-700">Produzione annuale:</span>
+                                <span id="pvgisAnnualProduction" class="font-semibold text-blue-800">-</span>
+                                <span class="text-gray-600 ml-1">kWh</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium text-gray-700">Irradiazione annuale:</span>
+                                <span id="pvgisAnnualIrradiation" class="font-semibold text-blue-800">-</span>
+                                <span class="text-gray-600 ml-1">kWh/m²</span>
                             </div>
                         </div>
-                        <div id="pvgisPlaceholder" class="p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-center h-full">
-                            <div class="text-center text-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                </svg>
-                                <p class="font-medium">Nessun file PVGIS caricato</p>
-                                <p class="text-xs mt-1">I dati caricati verranno visualizzati qui</p>
-                            </div>
+                        <div class="mt-3 text-xs text-gray-500 italic">
+                            I dati PVGIS migliorano l'accuratezza delle stime di produzione energetica e rendimento economico
                         </div>
                     </div>
-                </div>
-
-                <div id="pvgisMapContainer" class="hidden" style="margin-top: 20px;">
-                    <h3 class="font-semibold text-blue-800 mb-3 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#3B82F6">
-                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                        </svg>
-                        Posizione dell'impianto
-                    </h3>
-                    <div id="pvgisMap" style="height: 300px; border-radius: 8px;"></div>
+                    <div id="pvgisPlaceholder" class="p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-center h-full">
+                        <div class="text-center text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            <p class="font-medium">Nessun file PVGIS caricato</p>
+                            <p class="text-xs mt-1">I dati caricati verranno visualizzati qui</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Aggiungi immagini render -->
-            <div class="form-section">
-                <h2 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
-                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+            <div id="pvgisMapContainer" class="hidden" style="margin-top: 20px;">
+                <h3 class="font-semibold text-blue-800 mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#3B82F6">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                     </svg>
-                    Immagini Render Impianto
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-                    <div class="form-group">
-                        <label class="form-label">Immagine Render 1</label>
-                        <input type="file" id="renderImage1" class="form-input" accept="image/*">
-                        <div id="preview1" class="mt-2 hidden">
-                            <img src="" alt="Anteprima immagine 1" class="max-h-32 border rounded">
-                            <button type="button" class="mt-1 text-red-500 text-sm remove-image" data-id="1">Rimuovi</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Immagine Render 2</label>
-                        <input type="file" id="renderImage2" class="form-input" accept="image/*">
-                        <div id="preview2" class="mt-2 hidden">
-                            <img src="" alt="Anteprima immagine 2" class="max-h-32 border rounded">
-                            <button type="button" class="mt-1 text-red-500 text-sm remove-image" data-id="2">Rimuovi</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Immagine Render 3</label>
-                        <input type="file" id="renderImage3" class="form-input" accept="image/*">
-                        <div id="preview3" class="mt-2 hidden">
-                            <img src="" alt="Anteprima immagine 3" class="max-h-32 border rounded">
-                            <button type="button" class="mt-1 text-red-500 text-sm remove-image" data-id="3">Rimuovi</button>
-                        </div>
+                    Posizione dell'impianto
+                </h3>
+                <div id="pvgisMap" style="height: 300px; border-radius: 8px;"></div>
+            </div>
+        </div>
+
+        <!-- Aggiungi immagini render -->
+        <div class="form-section">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="#0F3460">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                </svg>
+                Immagini Render Impianto
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <div class="form-group">
+                    <label class="form-label">Immagine Render 1</label>
+                    <input type="file" id="renderImage1" class="form-input" accept="image/*">
+                    <div id="preview1" class="mt-2 hidden">
+                        <img src="" alt="Anteprima immagine 1" class="max-h-32 border rounded">
+                        <button type="button" class="mt-1 text-red-500 text-sm remove-image" data-id="1">Rimuovi</button>
                     </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-1">Carica fino a 3 immagini dei render dell'impianto che verranno visualizzate nel preventivo.</p>
+                <div class="form-group">
+                    <label class="form-label">Immagine Render 2</label>
+                    <input type="file" id="renderImage2" class="form-input" accept="image/*">
+                    <div id="preview2" class="mt-2 hidden">
+                        <img src="" alt="Anteprima immagine 2" class="max-h-32 border rounded">
+                        <button type="button" class="mt-1 text-red-500 text-sm remove-image" data-id="2">Rimuovi</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Immagine Render 3</label>
+                    <input type="file" id="renderImage3" class="form-input" accept="image/*">
+                    <div id="preview3" class="mt-2 hidden">
+                        <img src="" alt="Anteprima immagine 3" class="max-h-32 border rounded">
+                        <button type="button" class="mt-1 text-red-500 text-sm remove-image" data-id="3">Rimuovi</button>
+                    </div>
+                </div>
             </div>
+            <p class="text-xs text-gray-500 mt-1">Carica fino a 3 immagini dei render dell'impianto che verranno visualizzate nel preventivo.</p>
+        </div>
 
-            <!-- Risultati -->
-            <div id="risultati" class="mt-8 form-section"></div>
+        <!-- Risultati -->
+        <div id="risultati" class="mt-8 form-section"></div>
             <div class="mt-6 text-center">
                 <button id="generaPreventivo" type="button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg shadow-lg transition duration-300 flex items-center mx-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1235,12 +1136,12 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                     Genera Preventivo
                 </button>
             </div>
+            </div>
         </div>
-    </div>
 
     <script>
         // Definizione della versione corrente dell'applicazione
-        const CURRENT_APP_VERSION = "3.40";  // La versione attuale di PRISMA
+        const CURRENT_APP_VERSION = "3.41";  // La versione attuale di PRISMA
         const FORMATO_FILE = "2.0";  // La versione attuale del file .prisma
 
         let isPvgisDataAvailable = false;
@@ -1322,12 +1223,12 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                     <div style="margin-bottom: 20px;">
                         <p style="margin-bottom: 8px;"><strong>PRISMA Versione:</strong> ${CURRENT_APP_VERSION}</p>
                         <p style="margin-bottom: 8px;"><strong>Formato File:</strong> ${FORMATO_FILE}</p>
-                        <p style="margin-bottom: 0;"><strong>Data rilascio:</strong> 15 settembre 2025</p>
+                        <p style="margin-bottom: 0;"><strong>Data rilascio:</strong> 8 ottobre 2025</p>
                     </div>
                     <div style="background-color: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px;">
                         <h3 style="margin-top: 0; font-size: 1rem; margin-bottom: 8px; color: #0F3460;">Note di rilascio</h3>
                         <ul style="margin: 0; padding-left: 20px;">
-                            <li>aumentato i font</li>
+                            <li>aggiornato il listino prezzi</li>
                             
                         </ul>
                     </div>
@@ -1953,7 +1854,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
                                     <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
                                 </svg>
-                                Quantità
+                                Quantità Inverter
                             </label>
                             <input type="number" class="form-input numero-inverter" name="quantita_${id}" value="1" min="1">
                         </div>
@@ -2067,7 +1968,7 @@ A seguito di sopralluogo tecnico, abbiamo valutato la migliore soluzione per le 
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="#718096">
                                     <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v8a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" />
                                 </svg>
-                                Quantità
+                                Quantità Batterie
                             </label>
                             <input type="number" class="form-input numero-batterie" name="quantita_${id}" value="1" min="1">
                         </div>
