@@ -59,6 +59,16 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
+  // Ignora richieste non-HTTP/HTTPS (chrome-extension, devtools, etc)
+  if (!request.url.startsWith('http')) {
+    return;
+  }
+
+  // Ignora richieste browser extensions
+  if (url.protocol === 'chrome-extension:' || url.protocol === 'moz-extension:') {
+    return;
+  }
+
   // Gestione chiamate API Airtable
   if (url.hostname === 'api.airtable.com') {
     event.respondWith(handleAirtableRequest(request));
@@ -76,11 +86,17 @@ self.addEventListener('fetch', (event) => {
         return fetch(request)
           .then((response) => {
             // Copia la response per poterla cachare
-            if (response && response.status === 200) {
+            // Solo se HTTP/HTTPS e status OK
+            if (response && response.status === 200 && request.url.startsWith('http')) {
               const responseToCache = response.clone();
               caches.open(CACHE_NAME)
                 .then((cache) => {
-                  cache.put(request, responseToCache);
+                  // Verifica ancora schema prima di cachare
+                  if (request.url.startsWith('http')) {
+                    cache.put(request, responseToCache).catch((err) => {
+                      console.log('Cache put failed:', request.url, err);
+                    });
+                  }
                 });
             }
             return response;

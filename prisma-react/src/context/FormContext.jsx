@@ -33,6 +33,9 @@ export const FormProvider = ({ children }) => {
     airtableClientId: '' // Store the Airtable client ID for linking
   });
 
+  // Selected Client Record (full client object from Gestione Clienti)
+  const [selectedClientRecord, setSelectedClientRecord] = useState(null);
+
   // Structure Data
   const [structureData, setStructureData] = useState({
     tipoTetto: 'lamiera', // 'lamiera' or 'tegole'
@@ -325,6 +328,8 @@ export const FormProvider = ({ children }) => {
     setDuplicateCheckDecision,
     clientData,
     setClientData,
+    selectedClientRecord,
+    setSelectedClientRecord,
     structureData,
     setStructureData,
     falde,

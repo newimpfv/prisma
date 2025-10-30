@@ -131,6 +131,12 @@ function App() {
     },
     {
       id: 1,
+      name: 'Sopralluogo',
+      icon: '📸',
+      component: <Sopralluogo />
+    },
+    {
+      id: 2,
       name: 'Cliente e Struttura',
       icon: '👤',
       component: (
@@ -141,19 +147,19 @@ function App() {
       )
     },
     {
-      id: 2,
+      id: 3,
       name: 'Configurazione Tetto',
       icon: '🏠',
       component: <Falde />
     },
     {
-      id: 3,
+      id: 4,
       name: 'Apparecchiature',
       icon: '⚡',
       component: <Components />
     },
     {
-      id: 4,
+      id: 5,
       name: 'Costi',
       icon: '💰',
       component: (
@@ -164,7 +170,7 @@ function App() {
       )
     },
     {
-      id: 5,
+      id: 6,
       name: 'Energia ed Economia',
       icon: '📊',
       component: (
@@ -175,13 +181,13 @@ function App() {
       )
     },
     {
-      id: 6,
+      id: 7,
       name: 'Preventivo',
       icon: '📋',
       component: <QuoteData />
     },
     {
-      id: 7,
+      id: 8,
       name: 'Personalizzazione',
       icon: '✏️',
       component: (
@@ -194,7 +200,7 @@ function App() {
       )
     },
     {
-      id: 8,
+      id: 9,
       name: 'Risultati ed Export',
       icon: '📄',
       component: (
@@ -203,12 +209,6 @@ function App() {
           <ExportButtons />
         </>
       )
-    },
-    {
-      id: 9,
-      name: 'Sopralluogo',
-      icon: '📸',
-      component: <Sopralluogo />
     }
   ];
 

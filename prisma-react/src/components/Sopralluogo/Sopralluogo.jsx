@@ -1,18 +1,58 @@
 import { useState, useEffect, useRef } from 'react';
 import { getOfflineManager } from '../../services/offlineManager';
+import airtableService from '../../services/airtableService';
+import { createClient } from '../../services/clients';
+import { useForm } from '../../context/FormContext';
 
 function Sopralluogo() {
+  // Get selected client from context
+  const { selectedClientRecord, setSelectedClientRecord } = useForm();
+
   const [photos, setPhotos] = useState([]);
   const [videos, setVideos] = useState([]);
   const [pCloudLink, setPCloudLink] = useState('');
+  const [notes, setNotes] = useState('');
   const [coordinates, setCoordinates] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [clients, setClients] = useState([]);
+  const [loadingClients, setLoadingClients] = useState(false);
+  const [clientSearch, setClientSearch] = useState('');
+  const [showNewClientForm, setShowNewClientForm] = useState(false);
+  const [creatingClient, setCreatingClient] = useState(false);
+  const [newClientData, setNewClientData] = useState({
+    nome: '',
+    cognome: '',
+    telefono: '',
+    cellulare: '',
+    email: '',
+    indirizzo_residenza: '',
+    citta_residenza: '',
+    indirizzo_impianto: '',
+    citta_impianto: '',
+    cap_impianto: '',
+    iban: '',
+    note: ''
+  });
 
   const photoInputRef = useRef(null);
   const videoInputRef = useRef(null);
+
+  // Load clients on mount
+  useEffect(() => {
+    loadClients();
+  }, []);
+
+  // Pre-populate client from context if available
+  useEffect(() => {
+    if (selectedClientRecord && selectedClientRecord.fields && !clientSearch) {
+      const clientName = selectedClientRecord.fields['nome / ragione sociale'] || 'Cliente';
+      setClientSearch(clientName);
+      showMessage('info', `📋 Cliente selezionato: ${clientName}`);
+    }
+  }, [selectedClientRecord]);
 
   // Get GPS coordinates on mount
   useEffect(() => {
@@ -31,9 +71,9 @@ function Sopralluogo() {
           showMessage('warning', '⚠️ GPS non disponibile - puoi inserire le coordinate manualmente');
         },
         {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
+          enableHighAccuracy: false, // False is faster
+          timeout: 30000, // 30 seconds
+          maximumAge: 300000 // Accept cached position up to 5 minutes old
         }
       );
     }
@@ -50,6 +90,105 @@ function Sopralluogo() {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  const loadClients = async () => {
+    setLoadingClients(true);
+    try {
+      const allClients = await airtableService.clients.getAll({
+        maxRecords: 100
+      });
+      setClients(allClients);
+    } catch (error) {
+      console.error('Error loading clients:', error);
+      showMessage('warning', '⚠️ Impossibile caricare i clienti');
+    } finally {
+      setLoadingClients(false);
+    }
+  };
+
+  // Filter clients based on search query
+  const filteredClients = clients.filter(client => {
+    if (!clientSearch.trim()) return false;
+    const searchLower = clientSearch.toLowerCase();
+    const name = client.fields['nome / ragione sociale'] || '';
+    const email = client.fields.email || '';
+    const phone = client.fields.telefono || '';
+    const mobile = client.fields.cellulare || '';
+
+    return (
+      name.toLowerCase().includes(searchLower) ||
+      email.toLowerCase().includes(searchLower) ||
+      phone.includes(searchLower) ||
+      mobile.includes(searchLower)
+    );
+  });
+
+  // Handle client selection from search results
+  const handleSelectClient = (client) => {
+    setSelectedClientRecord(client); // Save to context
+    setClientSearch(client.fields['nome / ragione sociale'] || '');
+    showMessage('success', `✅ Cliente "${client.fields['nome / ragione sociale']}" selezionato`);
+  };
+
+  // Handle creating a new client
+  const handleCreateNewClient = async (e) => {
+    e.preventDefault();
+
+    if (!newClientData.nome && !newClientData.cognome) {
+      showMessage('warning', '⚠️ Inserisci almeno il nome o cognome');
+      return;
+    }
+
+    if (!newClientData.telefono && !newClientData.cellulare && !newClientData.email) {
+      showMessage('warning', '⚠️ Inserisci almeno un contatto (telefono, cellulare o email)');
+      return;
+    }
+
+    setCreatingClient(true);
+    try {
+      const clientData = {
+        ...newClientData,
+        nome: newClientData.cognome
+          ? `${newClientData.nome} ${newClientData.cognome}`.trim()
+          : newClientData.nome,
+        nome_first: newClientData.nome
+      };
+
+      const result = await createClient(clientData);
+
+      // Reload clients list
+      await loadClients();
+
+      // Find and select the newly created client
+      const newClient = await airtableService.clients.getById(result.id);
+      setSelectedClientRecord(newClient); // Save to context
+      setClientSearch(newClient.fields['nome / ragione sociale'] || '');
+
+      // Reset form
+      setNewClientData({
+        nome: '',
+        cognome: '',
+        telefono: '',
+        cellulare: '',
+        email: '',
+        indirizzo_residenza: '',
+        citta_residenza: '',
+        indirizzo_impianto: '',
+        citta_impianto: '',
+        cap_impianto: '',
+        iban: '',
+        note: ''
+      });
+      setShowNewClientForm(false);
+
+      showMessage('success', '✅ Cliente creato e selezionato!');
+    } catch (error) {
+      console.error('Error creating client:', error);
+      showMessage('error', '❌ Errore durante la creazione del cliente: ' + error.message);
+    } finally {
+      setCreatingClient(false);
+    }
+  };
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -126,6 +265,11 @@ function Sopralluogo() {
 
   // Upload to Airtable
   const uploadToAirtable = async () => {
+    if (!selectedClientRecord) {
+      showMessage('warning', '⚠️ Seleziona un cliente');
+      return;
+    }
+
     if (photos.length === 0 && !pCloudLink) {
       showMessage('warning', '⚠️ Aggiungi almeno una foto o un link video');
       return;
@@ -134,80 +278,64 @@ function Sopralluogo() {
     setUploading(true);
 
     try {
-      const token = import.meta.env.VITE_AIRTABLE_TOKEN;
-      const baseId = import.meta.env.VITE_AIRTABLE_BASE_ID;
-      const tableId = 'tblU0P92KEZv9hQsK'; // dettagli_impianti
+      // Save photos to IndexedDB first
+      const offlineManager = await getOfflineManager();
+      const photoIds = [];
 
-      // Prepare photo attachments for Airtable
-      const photoAttachments = await Promise.all(
-        photos.map(async (photo) => {
-          // Convert blob to base64 for Airtable
-          return {
-            url: photo.url,
-            filename: photo.name
-          };
-        })
-      );
-
-      // Create record in Airtable
-      const record = {
-        fields: {
-          sopralluogoData: new Date().toISOString().split('T')[0],
-          coordinate: coordinates || '',
-          linkPCloud: pCloudLink || ''
-        }
-      };
-
-      // Add photos if online
-      if (isOnline && photoAttachments.length > 0) {
-        record.fields.sopralluogoFoto = photoAttachments;
-      }
-
-      if (isOnline) {
-        // Upload to Airtable
-        const response = await fetch(
-          `https://api.airtable.com/v0/${baseId}/${tableId}`,
+      for (const photo of photos) {
+        const photoId = await offlineManager.savePhoto(
+          'temp-project-' + Date.now(),
+          photo.file,
           {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(record)
+            tipo: 'sopralluogo',
+            descrizione: photo.name,
+            gps: coordinates
           }
         );
+        photoIds.push(photoId);
+      }
 
-        if (!response.ok) {
-          throw new Error('Upload failed');
-        }
+      // Prepare fields for Airtable
+      const fields = {};
 
-        const data = await response.json();
+      // Required: Link to client (Airtable linked record field expects array of IDs)
+      fields.cliente = [selectedClientRecord.id];
+
+      // Add fields only if they have values
+      if (coordinates) {
+        fields.coordinate = coordinates;
+      }
+
+      if (pCloudLink) {
+        fields.linkPCloud = pCloudLink;
+      }
+
+      if (notes) {
+        fields['dettagli moduli e note'] = notes;
+      }
+
+      // Always add date
+      fields.sopralluogoData = airtableService.formatDate(new Date());
+
+      if (isOnline) {
+        // Upload to Airtable using service
+        const data = await airtableService.installations.create(fields);
         console.log('Uploaded to Airtable:', data);
 
-        // Mark photos as uploaded
-        setPhotos((prev) =>
-          prev.map((p) => ({ ...p, uploaded: true }))
+        showMessage(
+          'success',
+          `✅ Sopralluogo salvato! ${photos.length} foto in IndexedDB (caricare manualmente)`
         );
-
-        showMessage('success', '✅ Sopralluogo salvato su Airtable!');
       } else {
         // Save offline
-        const offlineManager = await getOfflineManager();
-
         await offlineManager.saveProject({
           type: 'sopralluogo',
-          sopralluogoData: record.fields.sopralluogoData,
-          coordinate: record.fields.coordinate,
-          linkPCloud: record.fields.linkPCloud,
-          photos: photos.map((p) => ({
-            name: p.name,
-            size: p.size,
-            url: p.url
-          })),
-          videos: videos.map((v) => ({
-            name: v.name,
-            size: v.size
-          }))
+          sopralluogoData: fields.sopralluogoData,
+          coordinate: fields.coordinate,
+          linkPCloud: fields.linkPCloud,
+          photoIds,
+          photoCount: photos.length,
+          videoCount: videos.length
         });
 
         showMessage(
@@ -221,7 +349,10 @@ function Sopralluogo() {
         setPhotos([]);
         setVideos([]);
         setPCloudLink('');
-        setCoordinates(null);
+        setNotes('');
+        // Note: Don't clear selectedClientRecord - it persists across pages
+        setClientSearch('');
+        // Don't clear coordinates - keep for next sopralluogo
       }, 2000);
     } catch (error) {
       console.error('Upload error:', error);
@@ -255,6 +386,437 @@ function Sopralluogo() {
       >
         📸 Sopralluogo Impianto
       </h2>
+
+      {/* Client Search and Selection */}
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: '1rem',
+          borderRadius: '0.5rem',
+          marginBottom: '1rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+        }}
+      >
+        <label
+          style={{
+            display: 'block',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: '0.5rem'
+          }}
+        >
+          👤 Cerca Cliente *
+        </label>
+
+        {/* Search Input */}
+        <input
+          type="text"
+          value={clientSearch}
+          onChange={(e) => setClientSearch(e.target.value)}
+          placeholder="Cerca per nome, email o telefono..."
+          disabled={loadingClients}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            fontSize: '1rem',
+            border: `2px solid ${selectedClientRecord ? '#10b981' : '#e5e7eb'}`,
+            borderRadius: '0.5rem',
+            outline: 'none',
+            backgroundColor: loadingClients ? '#f3f4f6' : 'white'
+          }}
+          onFocus={(e) => {
+            if (!selectedClientRecord) e.target.style.borderColor = '#3b82f6';
+          }}
+          onBlur={(e) => {
+            if (!selectedClientRecord) e.target.style.borderColor = '#e5e7eb';
+          }}
+        />
+
+        {/* Selected Client Display */}
+        {selectedClientRecord && selectedClientRecord.fields && (
+          <div
+            style={{
+              marginTop: '0.75rem',
+              padding: '0.75rem',
+              backgroundColor: '#ecfdf5',
+              border: '2px solid #10b981',
+              borderRadius: '0.5rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <div>
+              <div style={{ fontWeight: '600', color: '#065f46' }}>
+                ✅ {selectedClientRecord.fields['nome / ragione sociale'] || 'Cliente'}
+              </div>
+              {selectedClientRecord.fields.email && (
+                <div style={{ fontSize: '0.75rem', color: '#047857' }}>
+                  {selectedClientRecord.fields.email}
+                </div>
+              )}
+              {selectedClientRecord.fields.telefono && (
+                <div style={{ fontSize: '0.75rem', color: '#047857' }}>
+                  {selectedClientRecord.fields.telefono}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                setSelectedClientRecord(null);
+                setClientSearch('');
+              }}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                fontWeight: '600'
+              }}
+            >
+              Cambia
+            </button>
+          </div>
+        )}
+
+        {/* Search Results */}
+        {!selectedClientRecord && clientSearch.trim() && filteredClients.length > 0 && (
+          <div
+            style={{
+              marginTop: '0.5rem',
+              maxHeight: '200px',
+              overflowY: 'auto',
+              border: '1px solid #e5e7eb',
+              borderRadius: '0.5rem'
+            }}
+          >
+            {filteredClients.map((client) => (
+              <div
+                key={client.id}
+                onClick={() => handleSelectClient(client)}
+                style={{
+                  padding: '0.75rem',
+                  borderBottom: '1px solid #f3f4f6',
+                  cursor: 'pointer',
+                  backgroundColor: 'white'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                }}
+              >
+                <div style={{ fontWeight: '600', color: '#1f2937' }}>
+                  {client.fields['nome / ragione sociale'] || 'Cliente senza nome'}
+                </div>
+                {client.fields.email && (
+                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                    {client.fields.email}
+                  </div>
+                )}
+                {client.fields.telefono && (
+                  <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                    📞 {client.fields.telefono}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* No Results + Create Button */}
+        {!selectedClientRecord && clientSearch.trim() && filteredClients.length === 0 && (
+          <div style={{ marginTop: '0.75rem' }}>
+            <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+              Nessun cliente trovato con "{clientSearch}"
+            </p>
+            <button
+              onClick={() => setShowNewClientForm(true)}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                fontSize: '1rem',
+                fontWeight: '600',
+                color: 'white',
+                backgroundColor: '#10b981',
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: 'pointer'
+              }}
+            >
+              ➕ Crea Nuovo Cliente
+            </button>
+          </div>
+        )}
+
+        {/* Create Button when no search */}
+        {!selectedClientRecord && !clientSearch.trim() && !showNewClientForm && (
+          <button
+            onClick={() => setShowNewClientForm(true)}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              color: '#10b981',
+              backgroundColor: 'white',
+              border: '2px solid #10b981',
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              marginTop: '0.75rem'
+            }}
+          >
+            ➕ Crea Nuovo Cliente
+          </button>
+        )}
+      </div>
+
+      {/* New Client Form */}
+      {showNewClientForm && !selectedClientRecord && (
+        <div
+          style={{
+            backgroundColor: '#f0fdf4',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            marginBottom: '1rem',
+            border: '2px solid #10b981'
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              marginBottom: '1rem',
+              color: '#065f46'
+            }}
+          >
+            ➕ Crea Nuovo Cliente
+          </h3>
+
+          <form onSubmit={handleCreateNewClient}>
+            {/* Nome e Cognome */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                  Nome *
+                </label>
+                <input
+                  type="text"
+                  value={newClientData.nome}
+                  onChange={(e) => setNewClientData({ ...newClientData, nome: e.target.value })}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                  Cognome
+                </label>
+                <input
+                  type="text"
+                  value={newClientData.cognome}
+                  onChange={(e) => setNewClientData({ ...newClientData, cognome: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                Email
+              </label>
+              <input
+                type="email"
+                value={newClientData.email}
+                onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  fontSize: '0.875rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.375rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            {/* Telefono e Cellulare */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                  Telefono
+                </label>
+                <input
+                  type="tel"
+                  value={newClientData.telefono}
+                  onChange={(e) => setNewClientData({ ...newClientData, telefono: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                  Cellulare *
+                </label>
+                <input
+                  type="tel"
+                  value={newClientData.cellulare}
+                  onChange={(e) => setNewClientData({ ...newClientData, cellulare: e.target.value })}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Indirizzo Impianto */}
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                Indirizzo Impianto
+              </label>
+              <input
+                type="text"
+                value={newClientData.indirizzo_impianto}
+                onChange={(e) => setNewClientData({ ...newClientData, indirizzo_impianto: e.target.value })}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  fontSize: '0.875rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '0.375rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            {/* Città e CAP Impianto */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                  Città Impianto
+                </label>
+                <input
+                  type="text"
+                  value={newClientData.citta_impianto}
+                  onChange={(e) => setNewClientData({ ...newClientData, citta_impianto: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '600', color: '#374151', marginBottom: '0.25rem' }}>
+                  CAP
+                </label>
+                <input
+                  type="text"
+                  value={newClientData.cap_impianto}
+                  onChange={(e) => setNewClientData({ ...newClientData, cap_impianto: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowNewClientForm(false);
+                  setNewClientData({
+                    nome: '',
+                    cognome: '',
+                    telefono: '',
+                    cellulare: '',
+                    email: '',
+                    indirizzo_residenza: '',
+                    citta_residenza: '',
+                    indirizzo_impianto: '',
+                    citta_impianto: '',
+                    cap_impianto: '',
+                    iban: '',
+                    note: ''
+                  });
+                }}
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#6b7280',
+                  backgroundColor: 'white',
+                  border: '2px solid #d1d5db',
+                  borderRadius: '0.5rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Annulla
+              </button>
+              <button
+                type="submit"
+                disabled={creatingClient}
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: 'white',
+                  backgroundColor: creatingClient ? '#9ca3af' : '#10b981',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  cursor: creatingClient ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {creatingClient ? '⏳ Creazione...' : '✅ Crea e Seleziona'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Message notification */}
       {message && (
@@ -584,6 +1146,46 @@ function Sopralluogo() {
             Carica prima i video su pCloud, poi incolla qui il link condiviso
           </p>
         </div>
+
+        {/* Notes Input */}
+        <div style={{ marginTop: '1rem' }}>
+          <label
+            style={{
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              color: '#374151',
+              marginBottom: '0.5rem'
+            }}
+          >
+            📝 Note (dettagli moduli e note)
+          </label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Inserisci note sul sopralluogo, dettagli moduli, osservazioni..."
+            rows={4}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              fontSize: '1rem',
+              border: '2px solid #e5e7eb',
+              borderRadius: '0.5rem',
+              outline: 'none',
+              fontFamily: 'inherit',
+              resize: 'vertical'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#8b5cf6';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#e5e7eb';
+            }}
+          />
+          <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
+            Aggiungi eventuali note, dettagli sui moduli o osservazioni dal sopralluogo
+          </p>
+        </div>
       </div>
 
       {/* Status Summary */}
@@ -608,7 +1210,7 @@ function Sopralluogo() {
       {/* Upload Button */}
       <button
         onClick={uploadToAirtable}
-        disabled={uploading || (photos.length === 0 && !pCloudLink)}
+        disabled={uploading || !selectedClientRecord || (photos.length === 0 && !pCloudLink)}
         style={{
           width: '100%',
           padding: '1.25rem',
@@ -616,10 +1218,10 @@ function Sopralluogo() {
           fontWeight: '700',
           color: 'white',
           backgroundColor:
-            uploading || (photos.length === 0 && !pCloudLink) ? '#9ca3af' : '#10b981',
+            uploading || !selectedClientRecord || (photos.length === 0 && !pCloudLink) ? '#9ca3af' : '#10b981',
           border: 'none',
           borderRadius: '0.5rem',
-          cursor: uploading || (photos.length === 0 && !pCloudLink) ? 'not-allowed' : 'pointer',
+          cursor: uploading || !selectedClientRecord || (photos.length === 0 && !pCloudLink) ? 'not-allowed' : 'pointer',
           boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
         }}
       >

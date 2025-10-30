@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { getClients, createClient, updateClient, deleteClient, searchClients, findExistingClient } from '../../services/clients';
-import { saveQuoteToAirtable } from '../../services/installations';
 import { useForm } from '../../context/FormContext';
 import { isOnline } from '../../services/airtable';
 
@@ -12,13 +11,13 @@ const ClientManager = () => {
   const [editingClient, setEditingClient] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
   const [online, setOnline] = useState(isOnline());
-  const [saving, setSaving] = useState(false);
   const [showAllClients, setShowAllClients] = useState(false);
   const [showAllFields, setShowAllFields] = useState(false);
   const [duplicateMatches, setDuplicateMatches] = useState([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
   const formContext = useForm();
+  const { setSelectedClientRecord } = useForm();
 
   // Form state for adding/editing clients
   const [formData, setFormData] = useState({
@@ -277,58 +276,9 @@ const ClientManager = () => {
     setShowAddForm(false);
   };
 
-  const handleSaveCurrentQuote = async () => {
-    if (!online) {
-      alert('Impossibile salvare mentre sei offline');
-      return;
-    }
-
-    // Check if client data is filled
-    const hasClientData = formContext.clientData?.nome || formContext.clientData?.nomeCognome;
-    if (!hasClientData) {
-      alert('⚠️ Inserisci i dati del cliente nella sezione "Cliente e Struttura" prima di salvare il preventivo.');
-      return;
-    }
-
-    const confirmMessage = formContext.clientData?.airtableClientId
-      ? 'Salvare il preventivo per il cliente selezionato?'
-      : 'Salvare il preventivo corrente su Airtable? Verrà verificato se il cliente esiste già.';
-
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const quoteData = {
-        clientData: formContext.clientData,
-        structureData: formContext.structureData,
-        falde: formContext.falde,
-        inverters: formContext.inverters,
-        batteries: formContext.batteries,
-        components: formContext.components,
-        quoteData: formContext.quoteData,
-        energyData: formContext.energyData
-      };
-
-      const result = await saveQuoteToAirtable(quoteData);
-
-      const statusMessage = result.wasExisting
-        ? '(Cliente esistente)'
-        : '(Nuovo cliente creato)';
-
-      alert(`✅ Preventivo salvato su Airtable!\n\nCliente: ${result.client.nome} ${statusMessage}\nImpianto: ${result.installation.nome}`);
-
-      loadClients();
-    } catch (error) {
-      alert(`❌ Errore salvataggio: ${error.message}`);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleSelectClient = (client) => {
     setSelectedClient(client);
+    setSelectedClientRecord(client);  // Save to global context for other pages
 
     // Auto-fill client data in the form
     const nomeCompleto = client.cognome
@@ -491,47 +441,6 @@ const ClientManager = () => {
 
       {/* Content Area */}
       <div style={{ padding: '1.5rem' }}>
-
-        {/* Quick Action: Save Current Quote */}
-        {!showAddForm && !editingClient && (
-          <div style={{
-            background: 'linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%)',
-            padding: '1rem',
-            borderRadius: '0.75rem',
-            marginBottom: '1.5rem',
-            border: '2px solid #86efac',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#166534', margin: 0, marginBottom: '0.25rem' }}>
-                💾 Salva Preventivo Corrente
-              </h3>
-              <p style={{ fontSize: '0.75rem', color: '#15803d', margin: 0 }}>
-                Crea cliente e impianto da questo preventivo
-              </p>
-            </div>
-            <button
-              onClick={handleSaveCurrentQuote}
-              disabled={saving || !online}
-              style={{
-                background: saving ? '#9ca3af' : '#10b981',
-                color: 'white',
-                padding: '0.625rem 1rem',
-                borderRadius: '0.5rem',
-                border: 'none',
-                fontWeight: '600',
-                cursor: saving || !online ? 'not-allowed' : 'pointer',
-                opacity: saving || !online ? 0.6 : 1,
-                fontSize: '0.875rem',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {saving ? 'Salvataggio...' : 'Salva'}
-            </button>
-          </div>
-        )}
 
         {/* Add/Edit Form - Compact */}
         {(showAddForm || editingClient) && (
