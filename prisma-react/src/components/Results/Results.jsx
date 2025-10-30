@@ -160,12 +160,18 @@ const Results = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Guide di Fissaggio</span>
-                <span>{results.breakdown.strutturale.metersOfRails.toFixed(1)} m</span>
+                <span>{results.breakdown.strutturale.guideTotali} pz</span>
               </div>
               {results.breakdown.strutturale.staffe > 0 && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Staffe per Tegole</span>
                   <span>{results.breakdown.strutturale.staffe} pz</span>
+                </div>
+              )}
+              {results.breakdown.strutturale.prolunghe > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Prolunghe Guide</span>
+                  <span>{results.breakdown.strutturale.prolunghe} pz</span>
                 </div>
               )}
               <div className="flex justify-between mt-2 pt-2 border-t">

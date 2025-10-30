@@ -11,11 +11,26 @@ export const useForm = () => {
   return context;
 };
 
+// Generate unique session ID
+const generateSessionId = () => {
+  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
 export const FormProvider = ({ children }) => {
+  // Session Management
+  const [sessionId, setSessionId] = useState(() => generateSessionId());
+  const [hasCheckedDuplicates, setHasCheckedDuplicates] = useState(false);
+  const [duplicateCheckDecision, setDuplicateCheckDecision] = useState(null);
+
   // Client Data
   const [clientData, setClientData] = useState({
-    nomeCognome: '',
-    indirizzo: ''
+    nome: '',
+    cognome: '',
+    indirizzo: '',
+    email: '',
+    telefono: '',
+    comune: '',
+    airtableClientId: '' // Store the Airtable client ID for linking
   });
 
   // Structure Data
@@ -164,6 +179,7 @@ export const FormProvider = ({ children }) => {
     const saveToLocalStorage = () => {
       try {
         const dataToSave = {
+          sessionId,
           clientData,
           structureData,
           falde,
@@ -181,12 +197,12 @@ export const FormProvider = ({ children }) => {
           lastSaved: new Date().toISOString()
         };
 
-        const nomeCliente = clientData.nomeCognome || 'unnamed';
+        const nomeCliente = clientData.nome || clientData.cognome ? `${clientData.nome}_${clientData.cognome}` : 'unnamed';
         const numeroPreventivo = quoteData.riferimentoPreventivo || 'draft';
         const key = `prisma_autosave_${nomeCliente}_${numeroPreventivo}`;
 
         localStorage.setItem(key, JSON.stringify(dataToSave));
-        console.log('Auto-saved at:', new Date().toLocaleTimeString());
+        localStorage.setItem(`prisma_session_${sessionId}`, JSON.stringify(dataToSave));
       } catch (error) {
         console.error('Auto-save error:', error);
       }
@@ -196,6 +212,94 @@ export const FormProvider = ({ children }) => {
 
     return () => clearInterval(autoSaveInterval);
   }, [
+    sessionId,
+    clientData,
+    structureData,
+    falde,
+    inverters,
+    batteries,
+    components,
+    laborSafety,
+    unitCosts,
+    energyData,
+    economicParams,
+    quoteData,
+    customText,
+    pvgisData,
+    renderImages
+  ]);
+
+  // Auto-sync to Airtable every 2 minutes (after first-time duplicate check)
+  useEffect(() => {
+    const syncToAirtable = async () => {
+      // Only sync if we have client data
+      if (!clientData.nome && !clientData.cognome) {
+        return;
+      }
+
+      // Check if online
+      const { isOnline } = await import('../services/airtable');
+      if (!isOnline()) {
+        return;
+      }
+
+      try {
+        const { createSession, updateSession, findSessionById } = await import('../services/sessions');
+
+        // Check for duplicate check decision
+        if (!hasCheckedDuplicates) {
+          // This will be handled by a separate component/modal
+          return;
+        }
+
+        const sessionData = {
+          session_id: sessionId,
+          nome_cliente: clientData.nome || '',
+          cognome_cliente: clientData.cognome || '',
+          riferimento_preventivo: quoteData.riferimentoPreventivo || '',
+          session_data: {
+            clientData,
+            structureData,
+            falde,
+            inverters,
+            batteries,
+            components,
+            laborSafety,
+            unitCosts,
+            energyData,
+            economicParams,
+            quoteData,
+            customText,
+            pvgisData,
+            renderImages
+          },
+          status: 'in_progress',
+          client_record: clientData.airtableClientId ? [clientData.airtableClientId] : undefined
+        };
+
+        // Check if session already exists
+        const existingSession = await findSessionById(sessionId);
+
+        if (existingSession) {
+          // Update existing session
+          await updateSession(existingSession.airtableId, sessionData);
+          console.log('Session synced to Airtable (updated)');
+        } else {
+          // Create new session
+          await createSession(sessionData);
+          console.log('Session synced to Airtable (created)');
+        }
+      } catch (error) {
+        console.error('Airtable sync error:', error);
+      }
+    };
+
+    const syncInterval = setInterval(syncToAirtable, 2 * 60 * 1000); // 2 minutes
+
+    return () => clearInterval(syncInterval);
+  }, [
+    sessionId,
+    hasCheckedDuplicates,
     clientData,
     structureData,
     falde,
@@ -213,6 +317,12 @@ export const FormProvider = ({ children }) => {
   ]);
 
   const value = {
+    sessionId,
+    setSessionId,
+    hasCheckedDuplicates,
+    setHasCheckedDuplicates,
+    duplicateCheckDecision,
+    setDuplicateCheckDecision,
     clientData,
     setClientData,
     structureData,

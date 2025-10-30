@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from '../../context/FormContext';
+import { generatePDFFromTemplate } from '../../services/pdfGenerator';
 
 const ExportButtons = () => {
   const [saveStatus, setSaveStatus] = useState('');
@@ -41,7 +42,7 @@ const ExportButtons = () => {
         renderImages,
         results,
         // Metadata
-        nomeFile: clientData.nomeCognome || 'Cliente',
+        nomeFile: (clientData.nome && clientData.cognome ? `${clientData.nome}_${clientData.cognome}` : clientData.nome || clientData.nomeCognome || 'Cliente'),
         riferimentoPreventivo: quoteData.riferimentoPreventivo || 'draft',
         dataCreazione: new Date().toISOString(),
         appVersion: '4.0.0',
@@ -83,24 +84,63 @@ const ExportButtons = () => {
     }
   };
 
-  const handleGeneratePDF = () => {
-    // Create a simple HTML quote for printing
-    const quoteHTML = generateQuoteHTML();
+  const handleGeneratePDF = async () => {
+    try {
+      setSaveStatus('⏳ Generazione PDF in corso...');
 
-    // Open in new window
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(quoteHTML);
-    printWindow.document.close();
+      // Prepare all form data
+      const formData = {
+        clientData,
+        structureData,
+        falde,
+        inverters,
+        batteries,
+        components,
+        laborSafety,
+        unitCosts,
+        energyData,
+        economicParams,
+        quoteData,
+        customText,
+        pvgisData,
+        renderImages,
+        results
+      };
 
-    // Trigger print dialog after content loads
-    printWindow.onload = () => {
-      printWindow.print();
-    };
+      // Try to generate PDF using PRISMA template
+      await generatePDFFromTemplate(formData);
+
+      setSaveStatus('✅ PDF generato con successo!');
+      setTimeout(() => setSaveStatus(''), 3000);
+    } catch (error) {
+      console.error('Error generating PDF from template:', error);
+      setSaveStatus('⚠️ Errore template, uso versione semplificata...');
+
+      // Fallback to simple HTML version
+      setTimeout(() => {
+        try {
+          const quoteHTML = generateQuoteHTML();
+          const printWindow = window.open('', '_blank');
+          printWindow.document.write(quoteHTML);
+          printWindow.document.close();
+          printWindow.onload = () => {
+            printWindow.print();
+          };
+          setSaveStatus('✅ PDF semplificato generato!');
+          setTimeout(() => setSaveStatus(''), 3000);
+        } catch (fallbackError) {
+          setSaveStatus('❌ Errore nella generazione del PDF');
+          setTimeout(() => setSaveStatus(''), 3000);
+        }
+      }, 1000);
+    }
   };
 
   const generateQuoteHTML = () => {
     const today = new Date().toLocaleDateString('it-IT');
-    const clientName = clientData.nomeCognome || 'Cliente';
+    const clientName = clientData.nome && clientData.cognome
+      ? `${clientData.nome} ${clientData.cognome}`.trim()
+      : clientData.nome || clientData.nomeCognome || 'Cliente';
     const address = clientData.indirizzo || 'Indirizzo non specificato';
     const riferimentoPreventivo = quoteData.riferimentoPreventivo || 'N/A';
     const validitaPreventivo = quoteData.validitaPreventivo || 20;

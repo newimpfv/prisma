@@ -1,0 +1,96 @@
+{
+  "version": "4.1.0",
+  "releaseDate": "2025-10-30",
+  "appName": "PRISMA Solar",
+  "subtitle": "Pricing Reliable Intelligence System for Management and Analysis",
+  "changelog": [
+    {
+      "version": "4.1.0",
+      "date": "2025-10-30",
+      "title": "PDF Generation & Enhanced Features",
+      "features": [
+        {
+          "type": "new",
+          "title": "PRISMA Template PDF Generation",
+          "description": "Generate professional PDF quotes using the full PRISMA.html template with all form data automatically populated"
+        },
+        {
+          "type": "new",
+          "title": "Authentication System",
+          "description": "Secure login system with 24-hour session persistence"
+        },
+        {
+          "type": "new",
+          "title": "Session Management",
+          "description": "Sessions now sync with Airtable for cloud backup and multi-device access"
+        },
+        {
+          "type": "improved",
+          "title": "Duplicate Client Detection",
+          "description": "Smart detection of existing clients with one-time prompt for handling duplicates"
+        },
+        {
+          "type": "improved",
+          "title": "Auto-save System",
+          "description": "Enhanced auto-save with dual storage (localStorage + Airtable) for maximum reliability"
+        },
+        {
+          "type": "fixed",
+          "title": "Session Persistence",
+          "description": "Fixed issues with session data persistence across page reloads"
+        }
+      ]
+    },
+    {
+      "version": "4.0.0",
+      "date": "2025-10-15",
+      "title": "Major UI Overhaul",
+      "features": [
+        {
+          "type": "new",
+          "title": "Modern Tab Interface",
+          "description": "Completely redesigned navigation with intuitive tab-based workflow"
+        },
+        {
+          "type": "new",
+          "title": "Client Manager",
+          "description": "Dedicated interface for managing multiple clients and quotes"
+        },
+        {
+          "type": "new",
+          "title": "Real-time Calculations",
+          "description": "Instant cost and energy calculations as you type"
+        },
+        {
+          "type": "improved",
+          "title": "Mobile Responsive",
+          "description": "Fully optimized for tablets and mobile devices with touch gestures"
+        }
+      ]
+    },
+    {
+      "version": "3.5.0",
+      "date": "2025-09-20",
+      "title": "Airtable Integration",
+      "features": [
+        {
+          "type": "new",
+          "title": "Cloud Sync",
+          "description": "Automatic synchronization with Airtable database"
+        },
+        {
+          "type": "new",
+          "title": "Offline Mode",
+          "description": "Continue working without internet connection"
+        }
+      ]
+    }
+  ],
+  "about": {
+    "company": "SoleFacile S.r.l.",
+    "developer": "PRISMA Development Team",
+    "contact": "solefacilesrl@gmail.com",
+    "website": "www.solefacilesrl.com",
+    "description": "PRISMA is a comprehensive solar installation quoting system designed to streamline the process of creating accurate, professional quotes for photovoltaic installations."
+  }
+}

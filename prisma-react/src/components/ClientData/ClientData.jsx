@@ -18,25 +18,69 @@ const ClientData = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="form-group">
-          <label className="form-label">Nome e Cognome Cliente</label>
+          <label className="form-label">Nome / Ragione Sociale</label>
           <input
             type="text"
-            name="nomeCognome"
-            value={clientData.nomeCognome}
+            name="nome"
+            value={clientData.nome || ''}
             onChange={handleChange}
             className="form-input"
-            placeholder="Inserisci nome e cognome"
+            placeholder="Inserisci nome o ragione sociale"
           />
         </div>
         <div className="form-group">
-          <label className="form-label">Indirizzo Impianto (completo di città)</label>
+          <label className="form-label">Cognome</label>
+          <input
+            type="text"
+            name="cognome"
+            value={clientData.cognome || ''}
+            onChange={handleChange}
+            className="form-input"
+            placeholder="Inserisci cognome"
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={clientData.email || ''}
+            onChange={handleChange}
+            className="form-input"
+            placeholder="Inserisci email"
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Telefono</label>
+          <input
+            type="tel"
+            name="telefono"
+            value={clientData.telefono || ''}
+            onChange={handleChange}
+            className="form-input"
+            placeholder="Inserisci telefono"
+          />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Comune</label>
+          <input
+            type="text"
+            name="comune"
+            value={clientData.comune || ''}
+            onChange={handleChange}
+            className="form-input"
+            placeholder="Inserisci comune"
+          />
+        </div>
+        <div className="form-group md:col-span-2">
+          <label className="form-label">Indirizzo Impianto Completo</label>
           <input
             type="text"
             name="indirizzo"
-            value={clientData.indirizzo}
+            value={clientData.indirizzo || ''}
             onChange={handleChange}
             className="form-input"
-            placeholder="Inserisci indirizzo completo"
+            placeholder="Inserisci indirizzo completo dell'impianto"
           />
         </div>
       </div>

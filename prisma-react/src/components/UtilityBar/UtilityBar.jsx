@@ -1,11 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from '../../context/FormContext';
+import { getProducts, isOnline, getCacheTimestamp } from '../../services/airtable';
+import { addConnectionListener } from '../../utils/offline';
+import Version from '../Version/Version';
 
 const UtilityBar = () => {
-  const [showVersionModal, setShowVersionModal] = useState(false);
   const [importHover, setImportHover] = useState(false);
+  const [syncHover, setSyncHover] = useState(false);
   const [clearHover, setClearHover] = useState(false);
-  const [versionHover, setVersionHover] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [online, setOnline] = useState(isOnline());
+  const [cacheAge, setCacheAge] = useState(null);
 
   const {
     setClientData,
@@ -23,6 +28,72 @@ const UtilityBar = () => {
     setPvgisData,
     setRenderImages
   } = useForm();
+
+  // Listen for online/offline events
+  useEffect(() => {
+    const cleanup = addConnectionListener((isOnline) => {
+      setOnline(isOnline);
+      if (isOnline) {
+        console.log('[Network] Back online - checking for data updates');
+
+        // Auto-sync in background when coming back online if cache is stale
+        const timestamp = getCacheTimestamp();
+        if (timestamp) {
+          const age = Date.now() - timestamp;
+          const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+          if (age > CACHE_DURATION) {
+            console.log('[Auto-Sync] Cache is stale, refreshing in background...');
+            getProducts(true)
+              .then(result => {
+                console.log(`[Auto-Sync] Successfully updated ${result.products.length} products`);
+                // Update cache age display
+                const newTimestamp = getCacheTimestamp();
+                if (newTimestamp) {
+                  setCacheAge(Date.now() - newTimestamp);
+                }
+              })
+              .catch(error => {
+                console.warn('[Auto-Sync] Failed:', error.message);
+              });
+          } else {
+            console.log('[Auto-Sync] Cache is still fresh, no need to update');
+          }
+        }
+      } else {
+        console.log('[Network] Gone offline - using cached data');
+      }
+    });
+
+    // Update cache age periodically
+    const updateCacheAge = () => {
+      const timestamp = getCacheTimestamp();
+      if (timestamp) {
+        const age = Date.now() - timestamp;
+        setCacheAge(age);
+      } else {
+        setCacheAge(null);
+      }
+    };
+
+    updateCacheAge();
+    const interval = setInterval(updateCacheAge, 30000); // Update every 30 seconds
+
+    return () => {
+      cleanup();
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Format cache age for display
+  const formatCacheAge = (age) => {
+    if (!age) return 'mai';
+    const hours = Math.floor(age / (1000 * 60 * 60));
+    const minutes = Math.floor((age % (1000 * 60 * 60)) / (1000 * 60));
+    if (hours > 0) return `${hours}h fa`;
+    if (minutes > 0) return `${minutes}m fa`;
+    return 'ora';
+  };
 
   const handleImport = () => {
     const input = document.createElement('input');
@@ -78,6 +149,37 @@ const UtilityBar = () => {
     }
   };
 
+  const handleSync = async () => {
+    // Check if offline
+    if (!online) {
+      alert('⚠️ Modalità Offline\n\nSei attualmente offline. Il pulsante Sync funziona solo quando sei connesso a Internet.\n\nL\'app continuerà a funzionare con i dati salvati in cache.');
+      return;
+    }
+
+    try {
+      setSyncing(true);
+      const result = await getProducts(true); // Force refresh
+
+      if (result.offline) {
+        alert(`📴 Offline\n\nSei offline. Vengono usati ${result.products.length} prodotti dalla cache.`);
+      } else if (result.fromCache && result.error) {
+        alert(`⚠️ Sincronizzazione Parziale\n\nImpossibile connettersi ad Airtable (${result.error}).\n\nVengono usati ${result.products.length} prodotti dalla cache precedente.`);
+      } else {
+        alert(`✅ Sincronizzazione Completata!\n\n${result.products.length} prodotti caricati da Airtable.\n\nI dati sono stati aggiornati e salvati in cache.`);
+        // Update cache age immediately
+        const timestamp = getCacheTimestamp();
+        if (timestamp) {
+          setCacheAge(Date.now() - timestamp);
+        }
+        window.location.reload(); // Reload to apply new data
+      }
+    } catch (error) {
+      alert(`❌ Errore Sincronizzazione\n\n${error.message}\n\nVerifica la connessione e riprova.`);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   return (
     <>
       <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -116,6 +218,92 @@ const UtilityBar = () => {
           Importa
         </button>
 
+        {/* Sync Airtable Button - Purple Gradient with Online/Offline Indicator */}
+        <button
+          onClick={handleSync}
+          disabled={syncing || !online}
+          onMouseEnter={() => setSyncHover(true)}
+          onMouseLeave={() => setSyncHover(false)}
+          style={{
+            background: !online
+              ? 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)'
+              : syncing
+              ? 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)'
+              : syncHover
+              ? 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)'
+              : 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+            color: 'white',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.6rem',
+            boxShadow: syncHover && !syncing && online
+              ? '0 10px 25px -5px rgba(139, 92, 246, 0.5), 0 8px 10px -6px rgba(139, 92, 246, 0.4)'
+              : '0 4px 15px -3px rgba(139, 92, 246, 0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            fontSize: '0.8rem',
+            fontWeight: '600',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            border: 'none',
+            cursor: (syncing || !online) ? 'not-allowed' : 'pointer',
+            transform: syncHover && !syncing && online ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
+            opacity: (syncing || !online) ? 0.6 : 1,
+            position: 'relative'
+          }}
+          title={online ? `Sincronizza Listino Prezzi da Airtable (cache: ${formatCacheAge(cacheAge)})` : 'Offline - Sincronizzazione non disponibile'}
+        >
+          {/* Online/Offline Status Indicator */}
+          <div style={{
+            position: 'absolute',
+            top: '-4px',
+            right: '-4px',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            background: online ? '#10b981' : '#ef4444',
+            border: '2px solid white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }} />
+
+          {syncing ? (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" style={{ height: '0.95rem', width: '0.95rem', animation: 'spin 1s linear infinite' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              Sincronizzando...
+              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            </>
+          ) : !online ? (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" style={{ height: '0.95rem', width: '0.95rem' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+                <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+                <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+                <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+                <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                <line x1="12" y1="20" x2="12.01" y2="20"></line>
+              </svg>
+              Offline
+            </>
+          ) : (
+            <>
+              <svg xmlns="http://www.w3.org/2000/svg" style={{ height: '0.95rem', width: '0.95rem' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              Sync Airtable
+              {cacheAge && (
+                <span style={{ fontSize: '0.7rem', opacity: 0.8 }}>
+                  ({formatCacheAge(cacheAge)})
+                </span>
+              )}
+            </>
+          )}
+        </button>
+
         {/* Clear All Button - Red with white background */}
         <button
           onClick={handleClearAll}
@@ -150,144 +338,9 @@ const UtilityBar = () => {
           Cancella Tutto
         </button>
 
-        {/* Version Button - Blue Badge */}
-        <button
-          onClick={() => setShowVersionModal(true)}
-          onMouseEnter={() => setVersionHover(true)}
-          onMouseLeave={() => setVersionHover(false)}
-          style={{
-            background: versionHover
-              ? 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)'
-              : 'linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%)',
-            color: 'white',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.6rem',
-            boxShadow: versionHover
-              ? '0 10px 25px -5px rgba(59, 130, 246, 0.5), 0 8px 10px -6px rgba(59, 130, 246, 0.4)'
-              : '0 4px 15px -3px rgba(59, 130, 246, 0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            fontSize: '0.8rem',
-            fontWeight: '600',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            border: 'none',
-            cursor: 'pointer',
-            transform: versionHover ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)'
-          }}
-          title="Informazioni Versione"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" style={{ height: '0.95rem', width: '0.95rem' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-          v4.0
-        </button>
+        {/* Version Button */}
+        <Version />
       </div>
-
-      {/* Version Info Modal */}
-      {showVersionModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          zIndex: 50,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1rem',
-          backdropFilter: 'blur(4px)'
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '1rem',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            maxWidth: '28rem',
-            width: '100%',
-            padding: '2rem',
-            border: '2px solid #e5e7eb'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div style={{
-                background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                padding: '1rem',
-                borderRadius: '1rem',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}>
-                <svg xmlns="http://www.w3.org/2000/svg" style={{ height: '2.5rem', width: '2.5rem', color: '#2563eb' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="12" y1="16" x2="12" y2="12"></line>
-                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-              </div>
-              <div>
-                <h2 style={{
-                  fontSize: '1.875rem',
-                  fontWeight: 'bold',
-                  background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }}>PRISMA React</h2>
-                <p style={{ fontSize: '0.875rem', fontWeight: '600', color: '#4b5563', marginTop: '0.25rem' }}>Versione 4.0.0</p>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '1.5rem' }}>
-              <div>
-                <h3 style={{ fontWeight: '600', color: '#1f2937', marginBottom: '0.5rem' }}>Novità in questa versione:</h3>
-                <ul style={{ fontSize: '0.875rem', color: '#4b5563', listStyleType: 'disc', paddingLeft: '1.5rem', lineHeight: '1.75' }}>
-                  <li>Applicazione React completamente rinnovata</li>
-                  <li>Tutti i componenti modulari e ottimizzati</li>
-                  <li>Calcoli in tempo reale</li>
-                  <li>Salvataggio automatico ogni 30 secondi</li>
-                  <li>Gestione sessioni migliorata</li>
-                  <li>Supporto caricamento immagini render</li>
-                  <li>Integrazione mappa PVGIS interattiva</li>
-                  <li>Importazione/Esportazione preventivi</li>
-                </ul>
-              </div>
-
-              <div style={{ paddingTop: '1rem', borderTop: '1px solid #e5e7eb', marginTop: '1rem' }}>
-                <p style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                  Basato su PRISMA HTML v3.42<br />
-                  React Edition - Marzo 2025
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowVersionModal(false)}
-              style={{
-                width: '100%',
-                background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-                color: 'white',
-                padding: '0.75rem 1rem',
-                borderRadius: '0.75rem',
-                fontWeight: '600',
-                boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.4)',
-                transition: 'all 0.3s',
-                border: '2px solid #60a5fa',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.boxShadow = '0 20px 25px -5px rgba(37, 99, 235, 0.5)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.boxShadow = '0 10px 15px -3px rgba(37, 99, 235, 0.4)';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              Chiudi
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 };
