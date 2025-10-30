@@ -10,11 +10,11 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: ['prisma.solefacilesrl.com', '.solefacilesrl.com'],
     hmr: {
-      // Use domain settings only when accessed via domain
-      // Otherwise use default settings for localhost
-      protocol: process.env.VITE_HMR_PROTOCOL || 'ws',
-      host: process.env.VITE_HMR_HOST || undefined,
-      clientPort: process.env.VITE_HMR_PORT ? parseInt(process.env.VITE_HMR_PORT) : undefined
+      // HMR configuration for domain access
+      // The client will automatically use wss:// when the page is loaded over https://
+      protocol: 'wss',
+      host: 'prisma.solefacilesrl.com',
+      clientPort: 443
     }
   }
 })
