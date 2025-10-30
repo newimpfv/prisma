@@ -184,6 +184,7 @@ export const FormProvider = ({ children }) => {
         const dataToSave = {
           sessionId,
           clientData,
+          selectedClientRecord,
           structureData,
           falde,
           inverters,
@@ -217,6 +218,7 @@ export const FormProvider = ({ children }) => {
   }, [
     sessionId,
     clientData,
+    selectedClientRecord,
     structureData,
     falde,
     inverters,

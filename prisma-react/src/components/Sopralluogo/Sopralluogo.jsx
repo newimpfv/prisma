@@ -47,8 +47,8 @@ function Sopralluogo() {
 
   // Pre-populate client from context if available
   useEffect(() => {
-    if (selectedClientRecord && selectedClientRecord.fields && !clientSearch) {
-      const clientName = selectedClientRecord.fields['nome / ragione sociale'] || 'Cliente';
+    if (selectedClientRecord && !clientSearch) {
+      const clientName = selectedClientRecord.nome || 'Cliente';
       setClientSearch(clientName);
       showMessage('info', `📋 Cliente selezionato: ${clientName}`);
     }
@@ -416,8 +416,8 @@ function Sopralluogo() {
           onChange={(e) => {
             setClientSearch(e.target.value);
             // Clear selected client when user starts typing a different name
-            if (selectedClientRecord && selectedClientRecord.fields) {
-              const currentClientName = selectedClientRecord.fields['nome / ragione sociale'] || '';
+            if (selectedClientRecord) {
+              const currentClientName = selectedClientRecord.nome || '';
               if (e.target.value !== currentClientName) {
                 setSelectedClientRecord(null);
               }
@@ -443,7 +443,7 @@ function Sopralluogo() {
         />
 
         {/* Selected Client Display */}
-        {selectedClientRecord && selectedClientRecord.fields && (
+        {selectedClientRecord && (
           <div
             style={{
               marginTop: '0.75rem',
@@ -458,16 +458,16 @@ function Sopralluogo() {
           >
             <div>
               <div style={{ fontWeight: '600', color: '#065f46' }}>
-                ✅ {selectedClientRecord.fields['nome / ragione sociale'] || 'Cliente'}
+                ✅ {selectedClientRecord.nome || 'Cliente'}
               </div>
-              {selectedClientRecord.fields.email && (
+              {selectedClientRecord.email && (
                 <div style={{ fontSize: '0.75rem', color: '#047857' }}>
-                  {selectedClientRecord.fields.email}
+                  {selectedClientRecord.email}
                 </div>
               )}
-              {selectedClientRecord.fields.telefono && (
+              {(selectedClientRecord.telefono || selectedClientRecord.cellulare) && (
                 <div style={{ fontSize: '0.75rem', color: '#047857' }}>
-                  {selectedClientRecord.fields.telefono}
+                  {selectedClientRecord.cellulare || selectedClientRecord.telefono}
                 </div>
               )}
             </div>

@@ -23,6 +23,8 @@ import UtilityBar from './components/UtilityBar/UtilityBar';
 import ExportButtons from './components/ExportButtons/ExportButtons';
 import DuplicateCheckModal from './components/DuplicateCheckModal/DuplicateCheckModal';
 import Sopralluogo from './components/Sopralluogo/Sopralluogo';
+import MaintenanceContract from './components/MaintenanceContract/MaintenanceContract';
+import InstallationChecklist from './components/InstallationChecklist/InstallationChecklist';
 import { getOfflineManager } from './services/offlineManager';
 import { getOfflineQueue } from './services/offlineQueue';
 
@@ -209,6 +211,18 @@ function App() {
           <ExportButtons />
         </>
       )
+    },
+    {
+      id: 10,
+      name: 'Checklist Intervento',
+      icon: '✅',
+      component: <InstallationChecklist />
+    },
+    {
+      id: 11,
+      name: 'Contratto Manutenzione',
+      icon: '🔧',
+      component: <MaintenanceContract />
     }
   ];
 

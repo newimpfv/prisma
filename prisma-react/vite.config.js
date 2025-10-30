@@ -7,11 +7,14 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    strictPort: true,
     allowedHosts: ['prisma.solefacilesrl.com', '.solefacilesrl.com'],
     hmr: {
-      clientPort: 443,
-      host: 'prisma.solefacilesrl.com',
-      protocol: 'wss'
+      // Use domain settings only when accessed via domain
+      // Otherwise use default settings for localhost
+      protocol: process.env.VITE_HMR_PROTOCOL || 'ws',
+      host: process.env.VITE_HMR_HOST || undefined,
+      clientPort: process.env.VITE_HMR_PORT ? parseInt(process.env.VITE_HMR_PORT) : undefined
     }
   }
 })
