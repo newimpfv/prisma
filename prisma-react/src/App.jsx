@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FormProvider } from './context/FormContext';
 import { useAuth } from './context/AuthContext';
 import Login from './components/Login/Login';
@@ -22,12 +22,79 @@ import SessionManager from './components/SessionManager/SessionManager';
 import UtilityBar from './components/UtilityBar/UtilityBar';
 import ExportButtons from './components/ExportButtons/ExportButtons';
 import DuplicateCheckModal from './components/DuplicateCheckModal/DuplicateCheckModal';
+import Sopralluogo from './components/Sopralluogo/Sopralluogo';
+import { getOfflineManager } from './services/offlineManager';
+import { getOfflineQueue } from './services/offlineQueue';
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [syncStatus, setSyncStatus] = useState(null);
   const containerRef = useRef(null);
   const formRef = useRef(null);
+
+  // Initialize offline support
+  useEffect(() => {
+    const initOfflineSupport = async () => {
+      try {
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.register('/sw.js');
+          console.log('✅ Service Worker registered:', registration);
+
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('🔄 New Service Worker available! Refresh to update.');
+              }
+            });
+          });
+        }
+
+        // Initialize OfflineManager
+        await getOfflineManager();
+        console.log('✅ OfflineManager initialized');
+
+        // Initialize OfflineQueue
+        const queue = getOfflineQueue();
+
+        // Listen to sync status changes
+        queue.onSyncStatusChange((status) => {
+          setSyncStatus(status);
+          console.log('Sync status:', status);
+        });
+
+        console.log('✅ OfflineQueue initialized');
+
+      } catch (error) {
+        console.error('❌ Error initializing offline support:', error);
+      }
+    };
+
+    initOfflineSupport();
+
+    // Listen to online/offline events
+    const handleOnline = () => {
+      setIsOnline(true);
+      console.log('🌐 Online');
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      console.log('📴 Offline');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -136,6 +203,12 @@ function App() {
           <ExportButtons />
         </>
       )
+    },
+    {
+      id: 9,
+      name: 'Sopralluogo',
+      icon: '📸',
+      component: <Sopralluogo />
     }
   ];
 
@@ -164,6 +237,66 @@ function App() {
           padding: '1rem'
         }}>
           <Header />
+
+          {/* Offline Status Indicator */}
+          {!isOnline && (
+            <div style={{
+              backgroundColor: '#fbbf24',
+              color: '#78350f',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}>
+              <span style={{ fontSize: '1.25rem' }}>📴</span>
+              <span>Modalità Offline - I dati verranno sincronizzati al ripristino della connessione</span>
+            </div>
+          )}
+
+          {/* Sync Status Indicator */}
+          {syncStatus?.status === 'syncing' && (
+            <div style={{
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}>
+              <span style={{ fontSize: '1.25rem' }}>🔄</span>
+              <span>Sincronizzazione in corso...</span>
+            </div>
+          )}
+
+          {syncStatus?.status === 'completed' && isOnline && (
+            <div style={{
+              backgroundColor: '#10b981',
+              color: 'white',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              animation: 'slideInDown 0.3s ease-out'
+            }}>
+              <span style={{ fontSize: '1.25rem' }}>✅</span>
+              <span>Dati sincronizzati con successo!</span>
+            </div>
+          )}
 
           {/* Utility Buttons */}
           <UtilityBar />
@@ -317,7 +450,7 @@ function App() {
       {/* Duplicate Check Modal - shown once per session */}
       <DuplicateCheckModal />
 
-      {/* Add fade-in animation */}
+      {/* Add animations */}
       <style>{`
         @keyframes fadeIn {
           from {
@@ -327,6 +460,16 @@ function App() {
           to {
             opacity: 1;
             transform: translateX(0);
+          }
+        }
+        @keyframes slideInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
       `}</style>

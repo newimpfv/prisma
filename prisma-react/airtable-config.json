@@ -1,0 +1,276 @@
+{
+  "base": {
+    "id": "appZ2DRpgz4wr3OqX",
+    "name": "PRISMA Solar",
+    "apiUrl": "https://api.airtable.com/v0/appZ2DRpgz4wr3OqX"
+  },
+  "tables": {
+    "clients": {
+      "id": "tbldgj4A9IUwSL8z6",
+      "name": "dettagli_clienti",
+      "primaryField": "nome / ragione sociale",
+      "fields": {
+        "fullName": "nome / ragione sociale",
+        "firstName": "nome",
+        "lastName": "cognome",
+        "email": "email",
+        "mobile": "cellulare",
+        "phone": "telefono",
+        "contactDate": "Data Contatto",
+        "contactMethod": "Contatto tramite",
+        "installationAddress": "indirizzo impianto",
+        "installationCity": "città impianto",
+        "installationZip": "cap impianto",
+        "sessionId": "session_id",
+        "installations": "impianto",
+        "sessions": "sessioni"
+      }
+    },
+    "installations": {
+      "id": "tblp0aOjMtrn7kCv1",
+      "name": "dettagli_impianti",
+      "primaryField": "nome",
+      "fields": {
+        "name": "nome",
+        "address": "indirizzo",
+        "coordinates": "coordinate",
+        "totalModules": "n moduli totali",
+        "renderStatus": "simulazione/render",
+        "quoteStatus": "status offerta",
+        "projectStatus": "status progetto",
+        "realizationStatus": "status realizzazione",
+        "compensation": "Compenso",
+        "completed": "impianto completato",
+        "prismaData": "prisma_data",
+        "sessionId": "session_id",
+        "mapsRef": "maps / ref",
+        "renderImages": "render moduli",
+        "realPhotos": "foto impianto reale",
+        "clientData": "dati cliente",
+        "sessions": "sessioni"
+      }
+    },
+    "products": {
+      "id": "tbli07cJoEIWNEAnW",
+      "name": "listino_prezzi",
+      "primaryField": "id_component",
+      "fields": {
+        "id": "id_component",
+        "name": "nome",
+        "description": "descrizione",
+        "category": "categoria",
+        "group": "gruppo",
+        "power": "potenza",
+        "width": "larghezza",
+        "height": "altezza",
+        "price": "prezzo"
+      }
+    },
+    "sessions": {
+      "id": "tblb7q5ZbbdPhe19v",
+      "name": "sessioni",
+      "primaryField": "session_id",
+      "fields": {
+        "sessionId": "session_id",
+        "clientFirstName": "nome_cliente",
+        "clientLastName": "cognome_cliente",
+        "quoteRef": "riferimento_preventivo",
+        "sessionData": "session_data",
+        "lastUpdated": "last_updated",
+        "createdAt": "created_at",
+        "status": "status",
+        "clientRecord": "client_record",
+        "installationRecord": "installation_record"
+      }
+    },
+    "tasks": {
+      "id": "tblTRU4BEt1w2zllZ",
+      "name": "da_fare",
+      "primaryField": "Task",
+      "fields": {
+        "task": "Task",
+        "notes": "Notes",
+        "assignee": "Assignee",
+        "status": "Status",
+        "type": "Tipologia",
+        "objective": "Obiettivo",
+        "deadline": "Scadenza",
+        "size": "Dimensione task"
+      }
+    },
+    "budget": {
+      "id": "tblydCjFKnlV9VDRJ",
+      "name": "budget",
+      "primaryField": "Name",
+      "fields": {
+        "name": "Name",
+        "area": "Area",
+        "link": "Link",
+        "annualCost": "Costo Annuo",
+        "notes": "Notes",
+        "status": "Status",
+        "assignee": "Assignee",
+        "importance": "Importanza",
+        "priority": "Priorità"
+      }
+    }
+  },
+  "fieldTypes": {
+    "clients": {
+      "nome / ragione sociale": "singleLineText",
+      "nome": "singleLineText",
+      "cognome": "singleLineText",
+      "email": "email",
+      "cellulare": "phoneNumber",
+      "telefono": "phoneNumber",
+      "Data Contatto": "date",
+      "Contatto tramite": "singleSelect",
+      "indirizzo impianto": "singleLineText",
+      "città impianto": "singleLineText",
+      "cap impianto": "number",
+      "session_id": "singleLineText",
+      "impianto": "multipleRecordLinks",
+      "sessioni": "multipleRecordLinks"
+    },
+    "installations": {
+      "nome": "singleLineText",
+      "indirizzo": "singleLineText",
+      "coordinate": "singleLineText",
+      "n moduli totali": "number",
+      "simulazione/render": "singleSelect",
+      "status offerta": "singleSelect",
+      "status progetto": "singleSelect",
+      "status realizzazione": "singleSelect",
+      "Compenso": "currency",
+      "impianto completato": "checkbox",
+      "prisma_data": "multilineText",
+      "session_id": "singleLineText",
+      "maps / ref": "multipleAttachments",
+      "render moduli": "multipleAttachments",
+      "foto impianto reale": "multipleAttachments",
+      "dati cliente": "multipleRecordLinks",
+      "sessioni": "multipleRecordLinks"
+    },
+    "products": {
+      "id_component": "singleLineText",
+      "nome": "singleLineText",
+      "descrizione": "singleLineText",
+      "categoria": "singleLineText",
+      "gruppo": "singleLineText",
+      "potenza": "number",
+      "larghezza": "number",
+      "altezza": "number",
+      "prezzo": "number"
+    },
+    "sessions": {
+      "session_id": "singleLineText",
+      "nome_cliente": "singleLineText",
+      "cognome_cliente": "singleLineText",
+      "riferimento_preventivo": "singleLineText",
+      "session_data": "multilineText",
+      "last_updated": "dateTime",
+      "created_at": "dateTime",
+      "status": "singleSelect",
+      "client_record": "multipleRecordLinks",
+      "installation_record": "multipleRecordLinks"
+    }
+  },
+  "selectOptions": {
+    "contactMethod": [
+      "Facebook ADS",
+      "Website",
+      "E-mail",
+      "Passaparola"
+    ],
+    "renderStatus": [
+      "Da fare",
+      "In costruzione",
+      "Da revisionare",
+      "Fatto",
+      "Rimandato"
+    ],
+    "quoteStatus": [
+      "da mandare",
+      "in attesa di risposta",
+      "mandata",
+      "non si fa",
+      "da rivedere"
+    ],
+    "realizationStatus": [
+      "da montare",
+      "in corso",
+      "montato",
+      "non si fa"
+    ],
+    "sessionStatus": [
+      "draft",
+      "in_progress",
+      "saved_to_airtable"
+    ],
+    "taskStatus": [
+      "To do",
+      "In pausa",
+      "In calendario",
+      "In progress",
+      "In review",
+      "Done"
+    ],
+    "taskType": [
+      "Nuovi impianti",
+      "Manutenzioni",
+      "Riparazioni",
+      "Fatturazione",
+      "Ufficio",
+      "Revamping",
+      "Convention",
+      "Sopralluogo",
+      "Marketing"
+    ],
+    "assignees": [
+      "Manu",
+      "Cesare",
+      "Simo e Cinzia",
+      "Denis"
+    ]
+  },
+  "rateLimits": {
+    "requestsPerSecond": 5,
+    "minInterval": 200,
+    "maxRecordsPerBase": 100000
+  },
+  "cache": {
+    "products": {
+      "duration": 86400000,
+      "key": "airtable_products_cache"
+    },
+    "clients": {
+      "duration": 3600000,
+      "key": "airtable_clients_cache"
+    },
+    "installations": {
+      "duration": 3600000,
+      "key": "airtable_installations_cache"
+    },
+    "sessions": {
+      "duration": 300000,
+      "key": "airtable_sessions_cache"
+    }
+  },
+  "integration": {
+    "currentlyUsed": [
+      "products",
+      "sessions"
+    ],
+    "notYetIntegrated": [
+      "clients",
+      "installations",
+      "tasks",
+      "budget"
+    ],
+    "priority": {
+      "high": ["clients", "installations"],
+      "medium": ["tasks"],
+      "low": ["budget"]
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "name": "PRISMA Solar - Preventivatore Fotovoltaico",
+  "short_name": "PRISMA Solar",
+  "description": "Pricing Reliable Intelligence System for Management and Analysis - Sistema completo per preventivi e gestione impianti fotovoltaici",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#3b82f6",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "it",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Schermata principale PRISMA Solar"
+    },
+    {
+      "src": "/screenshots/mobile-2.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Preventivo fotovoltaico"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuovo Preventivo",
+      "short_name": "Nuovo",
+      "description": "Crea un nuovo preventivo fotovoltaico",
+      "url": "/?action=new",
+      "icons": [
+        {
+          "src": "/icons/shortcut-new.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Gestione Clienti",
+      "short_name": "Clienti",
+      "description": "Visualizza e gestisci i clienti",
+      "url": "/?action=clients",
+      "icons": [
+        {
+          "src": "/icons/shortcut-clients.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Sopralluogo",
+      "short_name": "Sopralluogo",
+      "description": "Avvia un sopralluogo con GPS e foto",
+      "url": "/?action=inspection",
+      "icons": [
+        {
+          "src": "/icons/shortcut-inspection.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "",
+  "features": [
+    "Modalità offline completa",
+    "Sincronizzazione automatica",
+    "Cattura foto e video",
+    "Rilevamento GPS automatico",
+    "Preventivi PDF professionali",
+    "Gestione clienti e progetti",
+    "Monitoraggio impianti"
+  ],
+  "edge_side_panel": {},
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "protocol_handlers": [],
+  "scope_extensions": [],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "photos",
+          "accept": ["image/*", "video/*"]
+        }
+      ]
+    }
+  }
+}

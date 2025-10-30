@@ -1,9 +1,46 @@
 {
-  "version": "4.1.0",
+  "version": "5.0.0",
   "releaseDate": "2025-10-30",
   "appName": "PRISMA Solar",
   "subtitle": "Pricing Reliable Intelligence System for Management and Analysis",
   "changelog": [
+    {
+      "version": "5.0.0",
+      "date": "2025-10-30",
+      "title": "Offline Mode & PWA - Foundation Complete",
+      "features": [
+        {
+          "type": "new",
+          "title": "Complete Offline Support",
+          "description": "Funziona completamente senza connessione internet - perfetto per sopralluoghi in montagna. Service Worker + IndexedDB per storage locale di tutti i dati."
+        },
+        {
+          "type": "new",
+          "title": "Automatic Sync",
+          "description": "Sincronizzazione automatica quando torna la connessione. Gestione intelligente della coda con retry e priorità. Upload foto e video in background."
+        },
+        {
+          "type": "new",
+          "title": "Progressive Web App (PWA)",
+          "description": "Installabile su smartphone come app nativa. Funziona standalone senza browser. Shortcuts per azioni rapide (Nuovo Preventivo, Clienti, Sopralluogo)."
+        },
+        {
+          "type": "new",
+          "title": "IndexedDB Storage",
+          "description": "Database locale con 6 object stores: clienti, progetti, foto, video, manutenzioni, coda API. Supporta migliaia di record offline."
+        },
+        {
+          "type": "new",
+          "title": "Visual Status Indicators",
+          "description": "Indicatori visivi per stato offline (giallo), sincronizzazione in corso (blu), sync completata (verde). Sempre chiaro cosa sta succedendo."
+        },
+        {
+          "type": "new",
+          "title": "Offline Photo & Video Storage",
+          "description": "Salva foto e video di sopralluoghi localmente. Upload automatico su Airtable (foto) e pCloud (video) quando torna internet."
+        }
+      ]
+    },
     {
       "version": "4.1.0",
       "date": "2025-10-30",
