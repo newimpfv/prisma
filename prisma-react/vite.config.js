@@ -5,6 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['prisma.solefacilesrl.com', '.solefacilesrl.com']
+    host: true,
+    port: 5173,
+    allowedHosts: ['prisma.solefacilesrl.com', '.solefacilesrl.com'],
+    hmr: {
+      clientPort: 443,
+      host: 'prisma.solefacilesrl.com',
+      protocol: 'wss'
+    }
   }
 })
