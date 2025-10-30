@@ -413,7 +413,16 @@ function Sopralluogo() {
         <input
           type="text"
           value={clientSearch}
-          onChange={(e) => setClientSearch(e.target.value)}
+          onChange={(e) => {
+            setClientSearch(e.target.value);
+            // Clear selected client when user starts typing a different name
+            if (selectedClientRecord && selectedClientRecord.fields) {
+              const currentClientName = selectedClientRecord.fields['nome / ragione sociale'] || '';
+              if (e.target.value !== currentClientName) {
+                setSelectedClientRecord(null);
+              }
+            }
+          }}
           placeholder="Cerca per nome, email o telefono..."
           disabled={loadingClients}
           style={{
