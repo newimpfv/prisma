@@ -22,6 +22,7 @@ const ClientManager = () => {
   const [allProjects, setAllProjects] = useState([]);
   const [showProjectLinking, setShowProjectLinking] = useState(false);
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
+  const [linkedProjectsFilter, setLinkedProjectsFilter] = useState('');
   const [loadingProjects, setLoadingProjects] = useState(false);
 
   const formContext = useForm();
@@ -230,6 +231,7 @@ const ClientManager = () => {
       setLinkedProjects([]);
       setShowProjectLinking(false);
       setProjectSearchQuery('');
+      setLinkedProjectsFilter('');
       setFormData({
         nome: '',
         cognome: '',
@@ -325,7 +327,10 @@ const ClientManager = () => {
 
   // Project management functions
   const loadLinkedProjects = async (clientId) => {
-    if (!online) return;
+    if (!online) {
+      setLinkedProjects([]);
+      return;
+    }
 
     setLoadingProjects(true);
     try {
@@ -333,6 +338,7 @@ const ClientManager = () => {
       setLinkedProjects(projects);
     } catch (error) {
       console.error('Error loading linked projects:', error);
+      setLinkedProjects([]);
     } finally {
       setLoadingProjects(false);
     }
@@ -399,6 +405,18 @@ const ClientManager = () => {
 
     const query = projectSearchQuery.toLowerCase();
     return unlinkedProjects.filter(project =>
+      (project.nome && project.nome.toLowerCase().includes(query)) ||
+      (project.indirizzo && project.indirizzo.toLowerCase().includes(query))
+    );
+  };
+
+  const getFilteredLinkedProjects = () => {
+    if (!linkedProjectsFilter.trim()) {
+      return linkedProjects;
+    }
+
+    const query = linkedProjectsFilter.toLowerCase();
+    return linkedProjects.filter(project =>
       (project.nome && project.nome.toLowerCase().includes(query)) ||
       (project.indirizzo && project.indirizzo.toLowerCase().includes(query))
     );
@@ -1007,14 +1025,28 @@ const ClientManager = () => {
                   alignItems: 'center',
                   marginBottom: '0.75rem'
                 }}>
-                  <h4 style={{
-                    fontSize: '0.875rem',
-                    fontWeight: '700',
-                    color: '#1e40af',
-                    margin: 0
-                  }}>
-                    🔗 Progetti Collegati
-                  </h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h4 style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '700',
+                      color: '#1e40af',
+                      margin: 0
+                    }}>
+                      🔗 Progetti Collegati
+                    </h4>
+                    {linkedProjects.length > 0 && (
+                      <span style={{
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        padding: '0.125rem 0.5rem',
+                        borderRadius: '9999px',
+                        fontSize: '0.7rem',
+                        fontWeight: '600'
+                      }}>
+                        {linkedProjects.length}
+                      </span>
+                    )}
+                  </div>
                   <button
                     type="button"
                     onClick={toggleProjectLinking}
@@ -1036,16 +1068,38 @@ const ClientManager = () => {
                 {/* Linked Projects List */}
                 {loadingProjects ? (
                   <div style={{ fontSize: '0.75rem', color: '#64748b', textAlign: 'center', padding: '1rem' }}>
-                    Caricamento progetti...
+                    ⏳ Caricamento progetti...
                   </div>
                 ) : linkedProjects.length > 0 ? (
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.5rem',
-                    marginBottom: showProjectLinking ? '0.75rem' : 0
-                  }}>
-                    {linkedProjects.map(project => (
+                  <>
+                    {/* Search bar for linked projects */}
+                    <input
+                      type="text"
+                      placeholder="🔍 Filtra progetti collegati..."
+                      value={linkedProjectsFilter}
+                      onChange={(e) => setLinkedProjectsFilter(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #93c5fd',
+                        fontSize: '0.75rem',
+                        marginBottom: '0.5rem',
+                        outline: 'none',
+                        backgroundColor: 'white'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                      onBlur={(e) => e.target.style.borderColor = '#93c5fd'}
+                    />
+
+                    {getFilteredLinkedProjects().length > 0 ? (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                        marginBottom: showProjectLinking ? '0.75rem' : 0
+                      }}>
+                        {getFilteredLinkedProjects().map(project => (
                       <div
                         key={project.id || project.airtableId}
                         style={{
@@ -1088,8 +1142,14 @@ const ClientManager = () => {
                           ✕ Scollega
                         </button>
                       </div>
-                    ))}
-                  </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '0.5rem' }}>
+                        {linkedProjectsFilter ? '🔍 Nessun progetto corrisponde alla ricerca' : 'Nessun progetto collegato'}
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '0.5rem' }}>
                     Nessun progetto collegato
@@ -1210,6 +1270,7 @@ const ClientManager = () => {
                   setLinkedProjects([]);
                   setShowProjectLinking(false);
                   setProjectSearchQuery('');
+                  setLinkedProjectsFilter('');
                   setFormData({
                     nome: '',
                     cognome: '',

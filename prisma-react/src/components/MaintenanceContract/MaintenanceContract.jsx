@@ -8,10 +8,9 @@ function MaintenanceContract() {
 
   // Form state
   const [formData, setFormData] = useState({
-    contractDate: new Date().toISOString().split('T')[0],
-    serviceType: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
     contractDuration: '1',
-    moduleType: 'standard',
     power: '',
     price1: '',
     description1: '',
@@ -19,6 +18,14 @@ function MaintenanceContract() {
     description2: '',
     price3: '',
     description3: ''
+  });
+
+  // Service types (checkboxes)
+  const [services, setServices] = useState({
+    lavaggio_pannelli: false,
+    monitoraggio_remoto: false,
+    intervento_base: false,
+    intervento_plus: false
   });
 
   // Pre-fill client data if available
@@ -37,6 +44,26 @@ function MaintenanceContract() {
     }));
   };
 
+  const handleServiceChange = (serviceName) => {
+    setServices(prev => ({
+      ...prev,
+      [serviceName]: !prev[serviceName]
+    }));
+  };
+
+  const getSelectedServices = () => {
+    const selected = [];
+    if (services.lavaggio_pannelli) selected.push('Lavaggio Pannelli');
+    if (services.monitoraggio_remoto) selected.push('Monitoraggio Remoto');
+    if (services.intervento_base) selected.push('Intervento Base (1x/anno)');
+    if (services.intervento_plus) selected.push('Intervento Plus (2x/anno)');
+    return selected;
+  };
+
+  const hasSelectedServices = () => {
+    return Object.values(services).some(v => v === true);
+  };
+
   const calculateTotal = () => {
     const p1 = parseFloat(formData.price1) || 0;
     const p2 = parseFloat(formData.price2) || 0;
@@ -50,13 +77,13 @@ function MaintenanceContract() {
       return;
     }
 
-    if (!formData.serviceType || !formData.power) {
-      alert('⚠️ Compila tutti i campi obbligatori prima di generare il PDF');
+    if (!hasSelectedServices() || !formData.power) {
+      alert('⚠️ Seleziona almeno un servizio e inserisci la potenza dell\'impianto');
       return;
     }
 
-    // Generate HTML content
-    const htmlContent = generateContractHTML(selectedClientRecord, formData);
+    // Generate HTML content (pass services as well)
+    const htmlContent = generateContractHTML(selectedClientRecord, { ...formData, services: getSelectedServices() });
 
     // Create a temporary container
     const tempContainer = document.createElement('div');
@@ -66,7 +93,7 @@ function MaintenanceContract() {
     // PDF options
     const options = {
       margin: [10, 10, 10, 10],
-      filename: `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.contractDate}.pdf`,
+      filename: `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.startDate}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -95,26 +122,31 @@ function MaintenanceContract() {
       return;
     }
 
-    if (!formData.serviceType || !formData.power) {
-      alert('⚠️ Compila tutti i campi obbligatori');
+    if (!hasSelectedServices() || !formData.power) {
+      alert('⚠️ Seleziona almeno un servizio e compila tutti i campi obbligatori');
       return;
     }
 
     try {
+      const selectedServices = getSelectedServices();
+
       // Prepare data for Airtable
       const contractData = {
         fields: {
-          Name: `${selectedClientRecord.nome} - ${formData.serviceType} - ${formData.contractDate}`,
-          data_contratto: formData.contractDate,
+          Name: `${selectedClientRecord.nome} - ${selectedServices.join(', ')} - ${formData.startDate}`,
+          inizio_contratto: formData.startDate,
           Cliente: [selectedClientRecord.id],
-          tipo_servizio: formData.serviceType === 'pulizia' ? 'Pulizia Impianto Fotovoltaico' :
-                        formData.serviceType === 'service_base' ? 'Service Base' : 'Service Plus',
+          tipo_servizio: selectedServices.join(', '),
           durata_anni: parseInt(formData.contractDuration),
           potenza_impianto_kwp: parseFloat(formData.power),
-          tipo_moduli: formData.moduleType === 'standard' ? 'Standard (≥ 350 WP/cad)' : 'Piccoli (< 350 WP/cad)',
           stato: 'Bozza'
         }
       };
+
+      // Add end date if provided
+      if (formData.endDate) {
+        contractData.fields.fine_contratto = formData.endDate;
+      }
 
       // Add prices and descriptions if provided
       if (formData.price1) {
@@ -154,10 +186,9 @@ function MaintenanceContract() {
 
       // Reset form
       setFormData({
-        contractDate: new Date().toISOString().split('T')[0],
-        serviceType: '',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: '',
         contractDuration: '1',
-        moduleType: 'standard',
         power: '',
         price1: '',
         description1: '',
@@ -165,6 +196,14 @@ function MaintenanceContract() {
         description2: '',
         price3: '',
         description3: ''
+      });
+
+      // Reset services
+      setServices({
+        lavaggio_pannelli: false,
+        monitoraggio_remoto: false,
+        intervento_base: false,
+        intervento_plus: false
       });
 
     } catch (error) {
@@ -230,51 +269,192 @@ function MaintenanceContract() {
           Dettagli Contratto
         </h3>
 
-        {/* Contract Date */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-            Data Contratto
-          </label>
-          <input
-            type="date"
-            name="contractDate"
-            value={formData.contractDate}
-            onChange={handleInputChange}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              fontSize: '1rem',
-              border: '2px solid #e5e7eb',
-              borderRadius: '0.5rem',
-              outline: 'none'
-            }}
-          />
+        {/* Contract Dates */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
+              Inizio Contratto *
+            </label>
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleInputChange}
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                fontSize: '1rem',
+                border: '2px solid #e5e7eb',
+                borderRadius: '0.5rem',
+                outline: 'none'
+              }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
+              Fine Contratto
+            </label>
+            <input
+              type="date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleInputChange}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                fontSize: '1rem',
+                border: '2px solid #e5e7eb',
+                borderRadius: '0.5rem',
+                outline: 'none'
+              }}
+            />
+          </div>
         </div>
 
-        {/* Service Type */}
+        {/* Service Types - Checkboxes */}
         <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-            Tipo di Servizio *
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.75rem' }}>
+            Tipo di Servizio * (seleziona uno o più)
           </label>
-          <select
-            name="serviceType"
-            value={formData.serviceType}
-            onChange={handleInputChange}
-            required
-            style={{
-              width: '100%',
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
               padding: '0.75rem',
-              fontSize: '1rem',
-              border: '2px solid #e5e7eb',
               borderRadius: '0.5rem',
-              outline: 'none'
-            }}
-          >
-            <option value="">Seleziona servizio</option>
-            <option value="pulizia">Pulizia Impianto Fotovoltaico</option>
-            <option value="service_base">Service Base</option>
-            <option value="service_plus">Service Plus</option>
-          </select>
+              backgroundColor: services.lavaggio_pannelli ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.lavaggio_pannelli ? '#3b82f6' : '#e5e7eb'}`,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}>
+              <input
+                type="checkbox"
+                checked={services.lavaggio_pannelli}
+                onChange={() => handleServiceChange('lavaggio_pannelli')}
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6'
+                }}
+              />
+              <span style={{
+                fontSize: '0.875rem',
+                color: services.lavaggio_pannelli ? '#1e40af' : '#374151',
+                fontWeight: services.lavaggio_pannelli ? '600' : '400'
+              }}>
+                Lavaggio Pannelli
+              </span>
+            </label>
+
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              backgroundColor: services.monitoraggio_remoto ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.monitoraggio_remoto ? '#3b82f6' : '#e5e7eb'}`,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}>
+              <input
+                type="checkbox"
+                checked={services.monitoraggio_remoto}
+                onChange={() => handleServiceChange('monitoraggio_remoto')}
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6'
+                }}
+              />
+              <span style={{
+                fontSize: '0.875rem',
+                color: services.monitoraggio_remoto ? '#1e40af' : '#374151',
+                fontWeight: services.monitoraggio_remoto ? '600' : '400'
+              }}>
+                Monitoraggio Remoto
+              </span>
+            </label>
+
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              backgroundColor: services.intervento_base ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.intervento_base ? '#3b82f6' : '#e5e7eb'}`,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}>
+              <input
+                type="checkbox"
+                checked={services.intervento_base}
+                onChange={() => handleServiceChange('intervento_base')}
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6'
+                }}
+              />
+              <span style={{
+                fontSize: '0.875rem',
+                color: services.intervento_base ? '#1e40af' : '#374151',
+                fontWeight: services.intervento_base ? '600' : '400'
+              }}>
+                Intervento Base di Manutenzione (una volta all'anno)
+              </span>
+            </label>
+
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              backgroundColor: services.intervento_plus ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.intervento_plus ? '#3b82f6' : '#e5e7eb'}`,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}>
+              <input
+                type="checkbox"
+                checked={services.intervento_plus}
+                onChange={() => handleServiceChange('intervento_plus')}
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6'
+                }}
+              />
+              <span style={{
+                fontSize: '0.875rem',
+                color: services.intervento_plus ? '#1e40af' : '#374151',
+                fontWeight: services.intervento_plus ? '600' : '400'
+              }}>
+                Intervento Plus di Manutenzione (2 volte all'anno)
+              </span>
+            </label>
+          </div>
+
+          {hasSelectedServices() && (
+            <div style={{
+              marginTop: '0.75rem',
+              padding: '0.75rem',
+              backgroundColor: '#f0f9ff',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              color: '#1e40af'
+            }}>
+              ✓ Servizi selezionati: {getSelectedServices().join(', ')}
+            </div>
+          )}
         </div>
 
         {/* Contract Duration */}
@@ -325,29 +505,6 @@ function MaintenanceContract() {
               outline: 'none'
             }}
           />
-        </div>
-
-        {/* Module Type */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-            Tipo Moduli
-          </label>
-          <select
-            name="moduleType"
-            value={formData.moduleType}
-            onChange={handleInputChange}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              fontSize: '1rem',
-              border: '2px solid #e5e7eb',
-              borderRadius: '0.5rem',
-              outline: 'none'
-            }}
-          >
-            <option value="standard">Standard (≥ 350 WP/cad)</option>
-            <option value="small">Piccoli (&lt; 350 WP/cad - Maggiorazione)</option>
-          </select>
         </div>
 
         <div style={{ borderTop: '2px solid #e5e7eb', marginTop: '1.5rem', paddingTop: '1.5rem' }}>
@@ -511,17 +668,17 @@ function MaintenanceContract() {
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <button
           onClick={generatePDF}
-          disabled={!formData.serviceType || !formData.power}
+          disabled={!hasSelectedServices() || !formData.power}
           style={{
             flex: 1,
             padding: '1rem',
             fontSize: '1rem',
             fontWeight: '600',
             color: 'white',
-            backgroundColor: (!formData.serviceType || !formData.power) ? '#9ca3af' : '#3b82f6',
+            backgroundColor: (!hasSelectedServices() || !formData.power) ? '#9ca3af' : '#3b82f6',
             border: 'none',
             borderRadius: '0.5rem',
-            cursor: (!formData.serviceType || !formData.power) ? 'not-allowed' : 'pointer',
+            cursor: (!hasSelectedServices() || !formData.power) ? 'not-allowed' : 'pointer',
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
           }}
         >
@@ -529,17 +686,17 @@ function MaintenanceContract() {
         </button>
         <button
           onClick={saveContract}
-          disabled={!formData.serviceType || !formData.power}
+          disabled={!hasSelectedServices() || !formData.power}
           style={{
             flex: 1,
             padding: '1rem',
             fontSize: '1rem',
             fontWeight: '600',
             color: 'white',
-            backgroundColor: (!formData.serviceType || !formData.power) ? '#9ca3af' : '#10b981',
+            backgroundColor: (!hasSelectedServices() || !formData.power) ? '#9ca3af' : '#10b981',
             border: 'none',
             borderRadius: '0.5rem',
-            cursor: (!formData.serviceType || !formData.power) ? 'not-allowed' : 'pointer',
+            cursor: (!hasSelectedServices() || !formData.power) ? 'not-allowed' : 'pointer',
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
           }}
         >

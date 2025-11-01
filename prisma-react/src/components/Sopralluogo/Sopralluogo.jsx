@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getOfflineManager } from '../../services/offlineManager';
 import airtableService from '../../services/airtableService';
-import { createClient } from '../../services/clients';
+import { createClient, updateClient } from '../../services/clients';
 import { useForm } from '../../context/FormContext';
 
 function Sopralluogo() {
@@ -36,6 +36,12 @@ function Sopralluogo() {
     iban: '',
     note: ''
   });
+
+  // Schedule site visit state
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledTime, setScheduledTime] = useState('');
+  const [scheduleNotes, setScheduleNotes] = useState('');
+  const [scheduling, setScheduling] = useState(false);
 
   const photoInputRef = useRef(null);
   const videoInputRef = useRef(null);
@@ -193,6 +199,51 @@ function Sopralluogo() {
   const showMessage = (type, text) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 5000);
+  };
+
+  // Handle scheduling site visit
+  const handleScheduleVisit = async () => {
+    if (!selectedClientRecord) {
+      showMessage('error', '❌ Seleziona un cliente prima di programmare il sopralluogo');
+      return;
+    }
+
+    if (!scheduledDate) {
+      showMessage('error', '❌ Inserisci una data per il sopralluogo');
+      return;
+    }
+
+    if (!isOnline) {
+      showMessage('error', '❌ Devi essere online per programmare un sopralluogo');
+      return;
+    }
+
+    setScheduling(true);
+    try {
+      // Combine date and time
+      const fullDateTime = scheduledTime
+        ? `${scheduledDate} ${scheduledTime}`
+        : scheduledDate;
+
+      // Update client with scheduled date
+      await updateClient(selectedClientRecord.id || selectedClientRecord.airtableId, {
+        ...selectedClientRecord,
+        data_sopralluogo: fullDateTime,
+        note: scheduleNotes ? `${selectedClientRecord.note || ''}\n\nSopralluogo programmato: ${fullDateTime}\n${scheduleNotes}`.trim() : selectedClientRecord.note
+      });
+
+      showMessage('success', `✅ Sopralluogo programmato per ${fullDateTime}`);
+
+      // Clear scheduling form
+      setScheduledDate('');
+      setScheduledTime('');
+      setScheduleNotes('');
+    } catch (error) {
+      console.error('Error scheduling visit:', error);
+      showMessage('error', `❌ Errore: ${error.message}`);
+    } finally {
+      setScheduling(false);
+    }
   };
 
   // Handle photo selection
@@ -898,6 +949,162 @@ function Sopralluogo() {
           </p>
         )}
       </div>
+
+      {/* Schedule Site Visit */}
+      {selectedClientRecord && (
+        <div
+          style={{
+            backgroundColor: 'white',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            marginBottom: '1rem',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            border: '2px solid #f59e0b'
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: '700',
+              marginBottom: '1rem',
+              color: '#92400e',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}
+          >
+            📅 Programma Sopralluogo
+          </h3>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                📆 Data Sopralluogo *
+              </label>
+              <input
+                type="date"
+                value={scheduledDate}
+                onChange={(e) => setScheduledDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  fontSize: '1rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                  outline: 'none'
+                }}
+                onFocus={(e) => (e.target.style.borderColor = '#f59e0b')}
+                onBlur={(e) => (e.target.style.borderColor = '#e5e7eb')}
+              />
+            </div>
+
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: '#374151',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                ⏰ Ora
+              </label>
+              <input
+                type="time"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  fontSize: '1rem',
+                  border: '2px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                  outline: 'none'
+                }}
+                onFocus={(e) => (e.target.style.borderColor = '#f59e0b')}
+                onBlur={(e) => (e.target.style.borderColor = '#e5e7eb')}
+              />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#374151',
+                marginBottom: '0.5rem'
+              }}
+            >
+              📝 Note Aggiuntive
+            </label>
+            <textarea
+              value={scheduleNotes}
+              onChange={(e) => setScheduleNotes(e.target.value)}
+              placeholder="Es: Portare scala, verificare accesso tetto, ecc..."
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                fontSize: '0.875rem',
+                border: '2px solid #e5e7eb',
+                borderRadius: '0.5rem',
+                outline: 'none',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => (e.target.style.borderColor = '#f59e0b')}
+              onBlur={(e) => (e.target.style.borderColor = '#e5e7eb')}
+            />
+          </div>
+
+          <button
+            onClick={handleScheduleVisit}
+            disabled={scheduling || !scheduledDate || !isOnline}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              fontSize: '1rem',
+              fontWeight: '600',
+              color: 'white',
+              backgroundColor: scheduling || !scheduledDate || !isOnline ? '#9ca3af' : '#f59e0b',
+              border: 'none',
+              borderRadius: '0.5rem',
+              cursor: scheduling || !scheduledDate || !isOnline ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              if (!scheduling && scheduledDate && isOnline) {
+                e.target.style.backgroundColor = '#d97706';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!scheduling && scheduledDate && isOnline) {
+                e.target.style.backgroundColor = '#f59e0b';
+              }
+            }}
+          >
+            {scheduling ? '⏳ Programmazione...' : '📅 Programma Sopralluogo'}
+          </button>
+
+          {!isOnline && (
+            <div style={{ marginTop: '0.75rem', padding: '0.75rem', backgroundColor: '#fef3c7', borderRadius: '0.5rem', fontSize: '0.875rem', color: '#92400e' }}>
+              ⚠️ Devi essere online per programmare un sopralluogo
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Photo Upload */}
       <div
