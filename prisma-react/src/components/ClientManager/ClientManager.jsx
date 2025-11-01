@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getClients, createClient, updateClient, deleteClient, searchClients, findExistingClient } from '../../services/clients';
-import { saveQuoteToAirtable } from '../../services/installations';
+import { getInstallations, getInstallationsForClient, linkInstallationToClient, unlinkInstallationFromClient } from '../../services/installations';
 import { useForm } from '../../context/FormContext';
 import { isOnline } from '../../services/airtable';
 
@@ -12,13 +12,21 @@ const ClientManager = () => {
   const [editingClient, setEditingClient] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
   const [online, setOnline] = useState(isOnline());
-  const [saving, setSaving] = useState(false);
   const [showAllClients, setShowAllClients] = useState(false);
   const [showAllFields, setShowAllFields] = useState(false);
   const [duplicateMatches, setDuplicateMatches] = useState([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
+  // Project linking state
+  const [linkedProjects, setLinkedProjects] = useState([]);
+  const [allProjects, setAllProjects] = useState([]);
+  const [showProjectLinking, setShowProjectLinking] = useState(false);
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
+  const [linkedProjectsFilter, setLinkedProjectsFilter] = useState('');
+  const [loadingProjects, setLoadingProjects] = useState(false);
+
   const formContext = useForm();
+  const { setSelectedClientRecord } = useForm();
 
   // Form state for adding/editing clients
   const [formData, setFormData] = useState({
@@ -219,6 +227,11 @@ const ClientManager = () => {
       await updateClient(editingClient.id, formData);
       alert('✅ Cliente aggiornato con successo!');
       setEditingClient(null);
+      // Reset project linking state
+      setLinkedProjects([]);
+      setShowProjectLinking(false);
+      setProjectSearchQuery('');
+      setLinkedProjectsFilter('');
       setFormData({
         nome: '',
         cognome: '',
@@ -258,7 +271,7 @@ const ClientManager = () => {
     }
   };
 
-  const handleEditClick = (client) => {
+  const handleEditClick = async (client) => {
     setEditingClient(client);
     setFormData({
       nome: client.nome || '',
@@ -275,60 +288,14 @@ const ClientManager = () => {
       note: client.note || ''
     });
     setShowAddForm(false);
-  };
 
-  const handleSaveCurrentQuote = async () => {
-    if (!online) {
-      alert('Impossibile salvare mentre sei offline');
-      return;
-    }
-
-    // Check if client data is filled
-    const hasClientData = formContext.clientData?.nome || formContext.clientData?.nomeCognome;
-    if (!hasClientData) {
-      alert('⚠️ Inserisci i dati del cliente nella sezione "Cliente e Struttura" prima di salvare il preventivo.');
-      return;
-    }
-
-    const confirmMessage = formContext.clientData?.airtableClientId
-      ? 'Salvare il preventivo per il cliente selezionato?'
-      : 'Salvare il preventivo corrente su Airtable? Verrà verificato se il cliente esiste già.';
-
-    if (!confirm(confirmMessage)) {
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const quoteData = {
-        clientData: formContext.clientData,
-        structureData: formContext.structureData,
-        falde: formContext.falde,
-        inverters: formContext.inverters,
-        batteries: formContext.batteries,
-        components: formContext.components,
-        quoteData: formContext.quoteData,
-        energyData: formContext.energyData
-      };
-
-      const result = await saveQuoteToAirtable(quoteData);
-
-      const statusMessage = result.wasExisting
-        ? '(Cliente esistente)'
-        : '(Nuovo cliente creato)';
-
-      alert(`✅ Preventivo salvato su Airtable!\n\nCliente: ${result.client.nome} ${statusMessage}\nImpianto: ${result.installation.nome}`);
-
-      loadClients();
-    } catch (error) {
-      alert(`❌ Errore salvataggio: ${error.message}`);
-    } finally {
-      setSaving(false);
-    }
+    // Load linked projects for this client
+    await loadLinkedProjects(client.id || client.airtableId);
   };
 
   const handleSelectClient = (client) => {
     setSelectedClient(client);
+    setSelectedClientRecord(client);  // Save to global context for other pages
 
     // Auto-fill client data in the form
     const nomeCompleto = client.cognome
@@ -356,6 +323,103 @@ const ClientManager = () => {
     });
 
     alert(`✅ Cliente selezionato: ${nomeCompleto}\n\nI dati del cliente sono stati caricati nel modulo "Cliente e Struttura".`);
+  };
+
+  // Project management functions
+  const loadLinkedProjects = async (clientId) => {
+    if (!online) {
+      setLinkedProjects([]);
+      return;
+    }
+
+    setLoadingProjects(true);
+    try {
+      const projects = await getInstallationsForClient(clientId);
+      setLinkedProjects(projects);
+    } catch (error) {
+      console.error('Error loading linked projects:', error);
+      setLinkedProjects([]);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const loadAllProjects = async () => {
+    if (!online) return;
+
+    setLoadingProjects(true);
+    try {
+      const { installations } = await getInstallations();
+      setAllProjects(installations);
+    } catch (error) {
+      console.error('Error loading all projects:', error);
+      alert(`❌ Errore caricamento progetti: ${error.message}`);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const handleLinkProject = async (projectId) => {
+    if (!editingClient) return;
+
+    try {
+      await linkInstallationToClient(projectId, editingClient.id || editingClient.airtableId);
+      alert('✅ Progetto collegato con successo!');
+      await loadLinkedProjects(editingClient.id || editingClient.airtableId);
+      setShowProjectLinking(false);
+      setProjectSearchQuery('');
+    } catch (error) {
+      alert(`❌ Errore: ${error.message}`);
+    }
+  };
+
+  const handleUnlinkProject = async (projectId) => {
+    if (!editingClient) return;
+
+    if (!confirm('Vuoi davvero scollegare questo progetto dal cliente?')) return;
+
+    try {
+      await unlinkInstallationFromClient(projectId, editingClient.id || editingClient.airtableId);
+      alert('✅ Progetto scollegato con successo!');
+      await loadLinkedProjects(editingClient.id || editingClient.airtableId);
+    } catch (error) {
+      alert(`❌ Errore: ${error.message}`);
+    }
+  };
+
+  const toggleProjectLinking = async () => {
+    if (!showProjectLinking && allProjects.length === 0) {
+      await loadAllProjects();
+    }
+    setShowProjectLinking(!showProjectLinking);
+    setProjectSearchQuery('');
+  };
+
+  const getFilteredProjects = () => {
+    const linkedIds = linkedProjects.map(p => p.id || p.airtableId);
+    const unlinkedProjects = allProjects.filter(p => !linkedIds.includes(p.id || p.airtableId));
+
+    if (!projectSearchQuery.trim()) {
+      return unlinkedProjects;
+    }
+
+    const query = projectSearchQuery.toLowerCase();
+    return unlinkedProjects.filter(project =>
+      (project.nome && project.nome.toLowerCase().includes(query)) ||
+      (project.indirizzo && project.indirizzo.toLowerCase().includes(query))
+    );
+  };
+
+  const getFilteredLinkedProjects = () => {
+    if (!linkedProjectsFilter.trim()) {
+      return linkedProjects;
+    }
+
+    const query = linkedProjectsFilter.toLowerCase();
+    return linkedProjects.filter(project =>
+      (project.nome && project.nome.toLowerCase().includes(query)) ||
+      (project.indirizzo && project.indirizzo.toLowerCase().includes(query))
+    );
   };
 
   return (
@@ -491,47 +555,6 @@ const ClientManager = () => {
 
       {/* Content Area */}
       <div style={{ padding: '1.5rem' }}>
-
-        {/* Quick Action: Save Current Quote */}
-        {!showAddForm && !editingClient && (
-          <div style={{
-            background: 'linear-gradient(135deg, #dcfce7 0%, #d1fae5 100%)',
-            padding: '1rem',
-            borderRadius: '0.75rem',
-            marginBottom: '1.5rem',
-            border: '2px solid #86efac',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <div>
-              <h3 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#166534', margin: 0, marginBottom: '0.25rem' }}>
-                💾 Salva Preventivo Corrente
-              </h3>
-              <p style={{ fontSize: '0.75rem', color: '#15803d', margin: 0 }}>
-                Crea cliente e impianto da questo preventivo
-              </p>
-            </div>
-            <button
-              onClick={handleSaveCurrentQuote}
-              disabled={saving || !online}
-              style={{
-                background: saving ? '#9ca3af' : '#10b981',
-                color: 'white',
-                padding: '0.625rem 1rem',
-                borderRadius: '0.5rem',
-                border: 'none',
-                fontWeight: '600',
-                cursor: saving || !online ? 'not-allowed' : 'pointer',
-                opacity: saving || !online ? 0.6 : 1,
-                fontSize: '0.875rem',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {saving ? 'Salvataggio...' : 'Salva'}
-            </button>
-          </div>
-        )}
 
         {/* Add/Edit Form - Compact */}
         {(showAddForm || editingClient) && (
@@ -987,6 +1010,237 @@ const ClientManager = () => {
               </div>
             )}
 
+            {/* Linked Projects Section - Only show when editing a client */}
+            {editingClient && online && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '1rem',
+                backgroundColor: '#f0f9ff',
+                border: '2px solid #3b82f6',
+                borderRadius: '0.5rem'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '0.75rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h4 style={{
+                      fontSize: '0.875rem',
+                      fontWeight: '700',
+                      color: '#1e40af',
+                      margin: 0
+                    }}>
+                      🔗 Progetti Collegati
+                    </h4>
+                    {linkedProjects.length > 0 && (
+                      <span style={{
+                        backgroundColor: '#3b82f6',
+                        color: 'white',
+                        padding: '0.125rem 0.5rem',
+                        borderRadius: '9999px',
+                        fontSize: '0.7rem',
+                        fontWeight: '600'
+                      }}>
+                        {linkedProjects.length}
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={toggleProjectLinking}
+                    style={{
+                      padding: '0.375rem 0.75rem',
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {showProjectLinking ? '✕ Chiudi' : '+ Collega Progetto'}
+                  </button>
+                </div>
+
+                {/* Linked Projects List */}
+                {loadingProjects ? (
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', textAlign: 'center', padding: '1rem' }}>
+                    ⏳ Caricamento progetti...
+                  </div>
+                ) : linkedProjects.length > 0 ? (
+                  <>
+                    {/* Search bar for linked projects */}
+                    <input
+                      type="text"
+                      placeholder="🔍 Filtra progetti collegati..."
+                      value={linkedProjectsFilter}
+                      onChange={(e) => setLinkedProjectsFilter(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #93c5fd',
+                        fontSize: '0.75rem',
+                        marginBottom: '0.5rem',
+                        outline: 'none',
+                        backgroundColor: 'white'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                      onBlur={(e) => e.target.style.borderColor = '#93c5fd'}
+                    />
+
+                    {getFilteredLinkedProjects().length > 0 ? (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                        marginBottom: showProjectLinking ? '0.75rem' : 0
+                      }}>
+                        {getFilteredLinkedProjects().map(project => (
+                      <div
+                        key={project.id || project.airtableId}
+                        style={{
+                          backgroundColor: 'white',
+                          padding: '0.75rem',
+                          borderRadius: '0.375rem',
+                          border: '1px solid #93c5fd',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#1e40af', marginBottom: '0.25rem' }}>
+                            {project.nome || 'Progetto senza nome'}
+                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            {project.indirizzo || 'Indirizzo non specificato'}
+                          </div>
+                          {project.n_moduli_totali && (
+                            <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                              📦 {project.n_moduli_totali} moduli
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleUnlinkProject(project.id || project.airtableId)}
+                          style={{
+                            padding: '0.375rem 0.625rem',
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.375rem',
+                            fontSize: '0.7rem',
+                            fontWeight: '600',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ✕ Scollega
+                        </button>
+                      </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '0.5rem' }}>
+                        {linkedProjectsFilter ? '🔍 Nessun progetto corrisponde alla ricerca' : 'Nessun progetto collegato'}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '0.5rem' }}>
+                    Nessun progetto collegato
+                  </div>
+                )}
+
+                {/* Project Search and Link Interface */}
+                {showProjectLinking && (
+                  <div style={{
+                    marginTop: '0.75rem',
+                    padding: '0.75rem',
+                    backgroundColor: 'white',
+                    borderRadius: '0.375rem',
+                    border: '1px solid #cbd5e1'
+                  }}>
+                    <input
+                      type="text"
+                      placeholder="🔍 Cerca progetto per nome o indirizzo..."
+                      value={projectSearchQuery}
+                      onChange={(e) => setProjectSearchQuery(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #cbd5e1',
+                        fontSize: '0.8125rem',
+                        marginBottom: '0.75rem',
+                        outline: 'none'
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                      onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
+                    />
+
+                    <div style={{
+                      maxHeight: '250px',
+                      overflowY: 'auto',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem'
+                    }}>
+                      {getFilteredProjects().length > 0 ? (
+                        getFilteredProjects().map(project => (
+                          <div
+                            key={project.id || project.airtableId}
+                            style={{
+                              padding: '0.625rem',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '0.375rem',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              backgroundColor: '#f8fafc'
+                            }}
+                          >
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155', marginBottom: '0.25rem' }}>
+                                {project.nome || 'Progetto senza nome'}
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                {project.indirizzo || 'Indirizzo non specificato'}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleLinkProject(project.id || project.airtableId)}
+                              style={{
+                                padding: '0.375rem 0.75rem',
+                                backgroundColor: '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.375rem',
+                                fontSize: '0.7rem',
+                                fontWeight: '600',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              + Collega
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '1rem' }}>
+                          {projectSearchQuery ? 'Nessun progetto trovato' : 'Tutti i progetti sono già collegati'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
               <button
                 type="submit"
@@ -1012,6 +1266,11 @@ const ClientManager = () => {
                   setShowAddForm(false);
                   setDuplicateMatches([]);
                   setShowDuplicateWarning(false);
+                  // Reset project linking state
+                  setLinkedProjects([]);
+                  setShowProjectLinking(false);
+                  setProjectSearchQuery('');
+                  setLinkedProjectsFilter('');
                   setFormData({
                     nome: '',
                     cognome: '',

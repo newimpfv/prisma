@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Prisma triangolare -->
+  <polygon points="256,100 100,380 412,380" fill="#fff" stroke="#333" stroke-width="6"/>
+  
+  <!-- Spettro luminoso all'interno del prisma -->
+  <defs>
+    <linearGradient id="rainbow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff0000"/>
+      <stop offset="14%" stop-color="#ff7f00"/>
+      <stop offset="28%" stop-color="#ffff00"/>
+      <stop offset="42%" stop-color="#00ff00"/>
+      <stop offset="57%" stop-color="#0000ff"/>
+      <stop offset="71%" stop-color="#4b0082"/>
+      <stop offset="85%" stop-color="#9400d3"/>
+      <stop offset="100%" stop-color="#ff00ff"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Strisce di colore all'interno del prisma -->
+  <polygon points="256,130 130,360 382,360" fill="url(#rainbow)" opacity="0.8"/>
+</svg>

@@ -147,7 +147,6 @@ export const createClient = async (clientData, sessionId = null) => {
       'indirizzo impianto': clientData.indirizzo_impianto || '',
       'città impianto': clientData.citta_impianto || '',
       'Data Contatto': clientData.data_contatto || new Date().toISOString().split('T')[0],
-      'Contatto tramite': clientData.contatto_tramite || 'Web App',
       'ulteriori note': clientData.note || ''
     };
 
@@ -159,6 +158,7 @@ export const createClient = async (clientData, sessionId = null) => {
     if (clientData.cap_impianto) fields['CAP impianto'] = clientData.cap_impianto;
     if (clientData.iban) fields.IBAN = clientData.iban;
     if (clientData.data_sopralluogo) fields['data sopralluogo'] = clientData.data_sopralluogo;
+    if (clientData.contatto_tramite) fields['Contatto tramite'] = clientData.contatto_tramite;
     if (sessionId) fields.session_id = sessionId;
 
     const response = await fetch(url, {
