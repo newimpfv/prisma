@@ -384,3 +384,131 @@ export const saveQuoteToAirtable = async (quoteData, sessionId = null) => {
     wasExisting: !!clientDataFromForm.airtableClientId
   };
 };
+
+/**
+ * Link an installation to a client
+ * Updates the "dati cliente" field on the installation record
+ */
+export const linkInstallationToClient = async (installationId, clientId) => {
+  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  if (!isOnline()) {
+    throw new Error('Cannot link installation while offline');
+  }
+
+  try {
+    // First, get the current installation to see existing links
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${INSTALLATIONS_TABLE}/${installationId}`;
+
+    const getResponse = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${AIRTABLE_TOKEN}`
+      }
+    });
+
+    if (!getResponse.ok) {
+      throw new Error(`Failed to fetch installation: ${getResponse.status}`);
+    }
+
+    const installation = await getResponse.json();
+    const currentClients = installation.fields['dati cliente'] || [];
+
+    // Add client if not already linked
+    if (!currentClients.includes(clientId)) {
+      const updatedClients = [...currentClients, clientId];
+
+      const patchResponse = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fields: {
+            'dati cliente': updatedClients
+          }
+        })
+      });
+
+      if (!patchResponse.ok) {
+        const error = await patchResponse.text();
+        throw new Error(`Failed to link installation: ${error}`);
+      }
+
+      // Clear cache
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+
+      return await patchResponse.json();
+    }
+
+    return installation;
+  } catch (error) {
+    console.error('Error linking installation to client:', error);
+    throw error;
+  }
+};
+
+/**
+ * Unlink an installation from a client
+ * Removes the client from the "dati cliente" field on the installation record
+ */
+export const unlinkInstallationFromClient = async (installationId, clientId) => {
+  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE_ID) {
+    throw new Error('Airtable credentials not configured');
+  }
+
+  if (!isOnline()) {
+    throw new Error('Cannot unlink installation while offline');
+  }
+
+  try {
+    // First, get the current installation
+    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${INSTALLATIONS_TABLE}/${installationId}`;
+
+    const getResponse = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${AIRTABLE_TOKEN}`
+      }
+    });
+
+    if (!getResponse.ok) {
+      throw new Error(`Failed to fetch installation: ${getResponse.status}`);
+    }
+
+    const installation = await getResponse.json();
+    const currentClients = installation.fields['dati cliente'] || [];
+
+    // Remove client from the list
+    const updatedClients = currentClients.filter(id => id !== clientId);
+
+    const patchResponse = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: {
+          'dati cliente': updatedClients
+        }
+      })
+    });
+
+    if (!patchResponse.ok) {
+      const error = await patchResponse.text();
+      throw new Error(`Failed to unlink installation: ${error}`);
+    }
+
+    // Clear cache
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+
+    return await patchResponse.json();
+  } catch (error) {
+    console.error('Error unlinking installation from client:', error);
+    throw error;
+  }
+};
