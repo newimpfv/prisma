@@ -67,6 +67,31 @@ function InstallationChecklist() {
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
 
+  // Auto-populate location from selected client
+  useEffect(() => {
+    if (selectedClientRecord) {
+      // Build address from client's installation location
+      const addressParts = [];
+
+      if (selectedClientRecord.indirizzo_impianto) {
+        addressParts.push(selectedClientRecord.indirizzo_impianto);
+      }
+
+      if (selectedClientRecord.citta_impianto) {
+        addressParts.push(selectedClientRecord.citta_impianto);
+      }
+
+      if (selectedClientRecord.cap_impianto) {
+        addressParts.push(selectedClientRecord.cap_impianto);
+      }
+
+      const fullAddress = addressParts.join(', ');
+
+      if (fullAddress && !luogoImpianto) {
+        setLuogoImpianto(fullAddress);
+      }
+    }
+  }, [selectedClientRecord]);
 
   const handlePhotoUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -99,79 +124,95 @@ function InstallationChecklist() {
   };
 
   const getCompletionPercentage = () => {
-    // Count filled fields across all sections
+    // Count only essential/required fields (excluding optional notes)
     let total = 0;
     let filled = 0;
 
-    // Basic fields (4)
+    // Basic fields (4) - All required
     total += 4;
     if (luogoImpianto) filled++;
     if (tecnicoResponsabile) filled++;
     if (condizioniMeteo) filled++;
     if (visitDate) filled++;
 
-    // Section 1 (4 fields)
-    total += 4;
+    // Section 1: Pulizia pannelli (3 essential fields, notes optional)
+    total += 3;
     if (ultimaPulizia) filled++;
     if (statoPannelli) filled++;
     if (interventoNecessario) filled++;
-    if (notePulizia) filled++;
 
-    // Section 2 (4 fields)
-    total += 4;
+    // Section 2: Ispezione visiva (3 essential fields, notes optional)
+    total += 3;
     if (danniFisici) filled++;
     if (telaioSupporti) filled++;
     if (cabblaggiConnettori) filled++;
-    if (noteIspezione) filled++;
 
-    // Section 3 (5 fields)
-    total += 5;
+    // Section 3: Inverter (4 essential fields, notes optional)
+    total += 4;
     if (modelloInverter) filled++;
     if (messaggiErrore) filled++;
     if (produzioneAttuale) filled++;
     if (ventoleRaffreddamento) filled++;
-    if (noteInverter) filled++;
 
-    // Section 4 (3 fields)
-    total += 3;
+    // Section 4: Connessioni elettriche (2 essential fields, notes optional)
+    total += 2;
     if (contattiSerrati) filled++;
     if (quadroElettrico) filled++;
-    if (noteConnessioni) filled++;
 
-    // Section 5 (4 fields)
-    total += 4;
+    // Section 5: Sistema di accumulo (3 essential fields, notes optional)
+    total += 3;
     if (tipoBatteria) filled++;
     if (statoCarica) filled++;
     if (anomalieRilevate) filled++;
-    if (noteAccumulo) filled++;
 
-    // Section 6 (4 fields)
-    total += 4;
+    // Section 6: Produzione e rendimento (3 essential fields, notes optional)
+    total += 3;
     if (produzioneGiornaliera) filled++;
     if (produzioneMensile) filled++;
     if (scostamentoValori) filled++;
-    if (noteProduzione) filled++;
 
-    // Section 7 (4 fields)
-    total += 4;
+    // Section 7: Strutture e sicurezza (3 essential fields, notes optional)
+    total += 3;
     if (supportiStaffe) filled++;
     if (accessoImpianto) filled++;
     if (protezioniSovratensione) filled++;
-    if (noteStrutture) filled++;
 
-    // Section 8 (3 fields)
-    total += 3;
+    // Section 8: Aggiornamenti e firmware (2 essential fields, notes optional)
+    total += 2;
     if (ultimoAggiornamento) filled++;
     if (aggiornamentoNecessario) filled++;
-    if (noteFirmware) filled++;
 
-    // Section 9 & signatures (3 fields)
-    total += 3;
-    if (osservazioniGenerali) filled++;
+    // Signatures (2 fields - osservazioni generali is optional)
+    total += 2;
     if (confermatoTecnico) filled++;
     if (accettazioneProprietario) filled++;
 
+    // Total: 29 essential fields
     return Math.round((filled / total) * 100);
+  };
+
+  const getSectionCompletion = (section) => {
+    // Helper to show completion per section
+    switch(section) {
+      case 1: // Pulizia pannelli
+        return [ultimaPulizia, statoPannelli, interventoNecessario].filter(Boolean).length;
+      case 2: // Ispezione visiva
+        return [danniFisici, telaioSupporti, cabblaggiConnettori].filter(Boolean).length;
+      case 3: // Inverter
+        return [modelloInverter, messaggiErrore, produzioneAttuale, ventoleRaffreddamento].filter(Boolean).length;
+      case 4: // Connessioni elettriche
+        return [contattiSerrati, quadroElettrico].filter(Boolean).length;
+      case 5: // Sistema di accumulo
+        return [tipoBatteria, statoCarica, anomalieRilevate].filter(Boolean).length;
+      case 6: // Produzione e rendimento
+        return [produzioneGiornaliera, produzioneMensile, scostamentoValori].filter(Boolean).length;
+      case 7: // Strutture e sicurezza
+        return [supportiStaffe, accessoImpianto, protezioniSovratensione].filter(Boolean).length;
+      case 8: // Aggiornamenti e firmware
+        return [ultimoAggiornamento, aggiornamentoNecessario].filter(Boolean).length;
+      default:
+        return 0;
+    }
   };
 
   const saveChecklist = () => {
@@ -303,6 +344,16 @@ function InstallationChecklist() {
     setUploadedPhotos([]);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch (e) {
+      return dateString;
+    }
+  };
+
   const generateChecklistHTML = () => {
     const client = selectedClientRecord;
     const completionPercentage = getCompletionPercentage();
@@ -314,42 +365,49 @@ function InstallationChecklist() {
         <meta charset="UTF-8">
         <title>Report di Manutenzione - ${client.nome}</title>
         <style>
+          @page { margin: 15mm; }
           body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-size: 12px;
           }
           .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 3px solid #10b981;
           }
           .company-name {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #10b981;
             margin-bottom: 5px;
           }
           .document-title {
-            font-size: 20px;
+            font-size: 18px;
             color: #1f2937;
-            margin-top: 10px;
+            margin-top: 8px;
           }
           .info-section {
             background-color: #f0fdf4;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
             border: 2px solid #10b981;
           }
-          .info-row {
+          .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+          }
+          .info-item {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
+            padding: 4px 0;
           }
           .info-label {
             font-weight: 600;
@@ -357,59 +415,112 @@ function InstallationChecklist() {
           }
           .info-value {
             color: #047857;
+            text-align: right;
           }
           .section {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             page-break-inside: avoid;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 12px;
+            background-color: #ffffff;
           }
           .section-title {
             color: #1f2937;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             margin-bottom: 10px;
-            border-bottom: 2px solid #10b981;
             padding-bottom: 5px;
+            border-bottom: 2px solid #10b981;
           }
           .field-row {
-            padding: 8px 4px;
-            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 4px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 11px;
+          }
+          .field-row:last-of-type {
+            border-bottom: none;
           }
           .field-label {
             font-weight: 600;
             color: #374151;
+            flex: 1;
           }
           .field-value {
             color: #065f46;
-            margin-left: 10px;
+            font-weight: 500;
+            text-align: right;
+            flex: 0 0 auto;
+            max-width: 50%;
           }
           .notes {
             background-color: #fffbeb;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 14px;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-size: 10px;
             color: #78350f;
             white-space: pre-wrap;
+            border-left: 3px solid #f59e0b;
+          }
+          .notes strong {
+            color: #92400e;
+          }
+          .photos-section {
+            margin-top: 20px;
+            page-break-before: always;
+          }
+          .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+          }
+          .photo-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+          }
+          .photo-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+          }
+          .photo-caption {
+            padding: 5px;
+            font-size: 9px;
+            color: #6b7280;
+            background-color: #f9fafb;
+            text-align: center;
           }
           .signature-section {
-            margin-top: 40px;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
+            page-break-inside: avoid;
           }
           .signature-box {
             width: 45%;
             border-top: 2px solid #374151;
             padding-top: 10px;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #6b7280;
+            min-height: 60px;
+          }
+          .signature-status {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
           }
           .footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 30px;
+            padding-top: 15px;
             border-top: 2px solid #e5e7eb;
             text-align: center;
-            font-size: 12px;
+            font-size: 10px;
             color: #6b7280;
           }
         </style>
@@ -421,25 +532,31 @@ function InstallationChecklist() {
         </div>
 
         <div class="info-section">
-          <div class="info-row">
-            <span class="info-label">Cliente:</span>
-            <span class="info-value">${client.nome || 'N/A'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Data del controllo:</span>
-            <span class="info-value">${new Date(visitDate).toLocaleDateString('it-IT')}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Luogo dell'impianto:</span>
-            <span class="info-value">${luogoImpianto || 'N/A'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Tecnico / Responsabile:</span>
-            <span class="info-value">${tecnicoResponsabile || 'N/A'}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Condizioni meteo:</span>
-            <span class="info-value">${condizioniMeteo || 'N/A'}</span>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Cliente:</span>
+              <span class="info-value">${client.nome || 'N/A'}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Data del controllo:</span>
+              <span class="info-value">${formatDate(visitDate)}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Luogo impianto:</span>
+              <span class="info-value">${luogoImpianto || 'N/A'}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Tecnico:</span>
+              <span class="info-value">${tecnicoResponsabile || 'N/A'}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Condizioni meteo:</span>
+              <span class="info-value">${condizioniMeteo || 'N/A'}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Completamento:</span>
+              <span class="info-value">${completionPercentage}%</span>
+            </div>
           </div>
         </div>
 
@@ -447,7 +564,7 @@ function InstallationChecklist() {
           <div class="section-title">🔹 1. Pulizia pannelli</div>
           <div class="field-row">
             <span class="field-label">Ultima pulizia effettuata:</span>
-            <span class="field-value">${ultimaPulizia || 'N/A'}</span>
+            <span class="field-value">${formatDate(ultimaPulizia)}</span>
           </div>
           <div class="field-row">
             <span class="field-label">Stato pannelli:</span>
@@ -540,7 +657,7 @@ function InstallationChecklist() {
           </div>
           <div class="field-row">
             <span class="field-label">Scostamento dai valori attesi:</span>
-            <span class="field-value">${scostamentoValori ? scostamentoValori + '%' : 'N/A'}</span>
+            <span class="field-value">${scostamentoValori || 'N/A'}</span>
           </div>
           ${noteProduzione ? `<div class="notes"><strong>Note:</strong><br>${noteProduzione}</div>` : ''}
         </div>
@@ -566,7 +683,7 @@ function InstallationChecklist() {
           <div class="section-title">🔹 8. Aggiornamenti e firmware</div>
           <div class="field-row">
             <span class="field-label">Ultimo aggiornamento inverter:</span>
-            <span class="field-value">${ultimoAggiornamento || 'N/A'}</span>
+            <span class="field-value">${formatDate(ultimoAggiornamento)}</span>
           </div>
           <div class="field-row">
             <span class="field-label">Aggiornamento necessario?</span>
@@ -577,21 +694,39 @@ function InstallationChecklist() {
 
         <div class="section">
           <div class="section-title">🔹 9. Osservazioni generali</div>
-          ${osservazioniGenerali ? `<div class="notes">${osservazioniGenerali}</div>` : '<p style="color: #9ca3af; font-style: italic;">Nessuna osservazione</p>'}
+          ${osservazioniGenerali ? `<div class="notes">${osservazioniGenerali}</div>` : '<p style="color: #9ca3af; font-style: italic; margin: 0;">Nessuna osservazione</p>'}
         </div>
+
+        ${uploadedPhotos.length > 0 ? `
+        <div class="photos-section">
+          <div class="section-title">📸 Documentazione Fotografica</div>
+          <div class="photos-grid">
+            ${uploadedPhotos.map((photo, index) => `
+              <div class="photo-item">
+                <img src="${photo.preview}" alt="Foto ${index + 1}" />
+                <div class="photo-caption">Foto ${index + 1} - ${photo.name}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
 
         <div class="signature-section">
           <div class="signature-box">
-            <div>Confermato dal tecnico ${confermatoTecnico ? '☑' : '☐'}</div>
+            <div class="signature-status">${confermatoTecnico ? '☑' : '☐'} Confermato dal tecnico</div>
+            <div style="margin-top: 10px;">_______________________</div>
+            <div style="margin-top: 5px; font-size: 9px;">Firma e data</div>
           </div>
           <div class="signature-box">
-            <div>Accettazione proprietario ${accettazioneProprietario ? '☑' : '☐'}</div>
+            <div class="signature-status">${accettazioneProprietario ? '☑' : '☐'} Accettazione proprietario</div>
+            <div style="margin-top: 10px;">_______________________</div>
+            <div style="margin-top: 5px; font-size: 9px;">Firma e data</div>
           </div>
         </div>
 
         <div class="footer">
           Documento generato automaticamente dal sistema PRISMA<br>
-          Data: ${new Date().toLocaleDateString('it-IT')} - Ora: ${new Date().toLocaleTimeString('it-IT')}
+          Data di generazione: ${new Date().toLocaleDateString('it-IT')} - Ora: ${new Date().toLocaleTimeString('it-IT')}
         </div>
       </body>
       </html>
@@ -797,27 +932,141 @@ function InstallationChecklist() {
       <div style={{
         backgroundColor: 'white',
         borderRadius: '0.5rem',
-        padding: '1rem',
+        padding: '1.5rem',
         marginBottom: '1.5rem',
         boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-          <span style={{ fontWeight: '600', color: '#374151' }}>Completamento Report</span>
-          <span style={{ fontWeight: '700', color: '#10b981' }}>{completionPercentage}%</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div>
+            <span style={{ fontWeight: '700', fontSize: '1.125rem', color: '#1f2937' }}>Completamento Report</span>
+            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+              29 campi essenziali (note escluse)
+            </div>
+          </div>
+          <div style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            color: completionPercentage >= 100 ? '#10b981' : completionPercentage >= 75 ? '#3b82f6' : completionPercentage >= 50 ? '#f59e0b' : '#ef4444'
+          }}>
+            {completionPercentage}%
+          </div>
         </div>
+
+        {/* Main Progress Bar */}
         <div style={{
           width: '100%',
-          height: '1rem',
+          height: '1.5rem',
           backgroundColor: '#e5e7eb',
-          borderRadius: '0.5rem',
-          overflow: 'hidden'
+          borderRadius: '0.75rem',
+          overflow: 'hidden',
+          marginBottom: '1rem',
+          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <div style={{
             width: `${completionPercentage}%`,
             height: '100%',
-            backgroundColor: '#10b981',
-            transition: 'width 0.3s ease'
-          }} />
+            backgroundColor: completionPercentage >= 100 ? '#10b981' : completionPercentage >= 75 ? '#3b82f6' : completionPercentage >= 50 ? '#f59e0b' : '#ef4444',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingRight: '0.5rem',
+            fontSize: '0.75rem',
+            fontWeight: '700',
+            color: 'white'
+          }}>
+            {completionPercentage > 10 && `${completionPercentage}%`}
+          </div>
+        </div>
+
+        {/* Section Breakdown */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '0.5rem',
+          marginTop: '1rem',
+          paddingTop: '1rem',
+          borderTop: '1px solid #e5e7eb'
+        }}>
+          {[
+            { num: 1, name: 'Pulizia pannelli', total: 3 },
+            { num: 2, name: 'Ispezione visiva', total: 3 },
+            { num: 3, name: 'Inverter', total: 4 },
+            { num: 4, name: 'Connessioni', total: 2 },
+            { num: 5, name: 'Accumulo', total: 3 },
+            { num: 6, name: 'Produzione', total: 3 },
+            { num: 7, name: 'Strutture', total: 3 },
+            { num: 8, name: 'Firmware', total: 2 }
+          ].map(section => {
+            const completed = getSectionCompletion(section.num);
+            const isComplete = completed === section.total;
+            return (
+              <div key={section.num} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.75rem',
+                padding: '0.5rem',
+                backgroundColor: isComplete ? '#f0fdf4' : '#f9fafb',
+                borderRadius: '0.375rem',
+                border: `1px solid ${isComplete ? '#10b981' : '#e5e7eb'}`
+              }}>
+                <span style={{
+                  fontSize: '1rem',
+                  color: isComplete ? '#10b981' : '#9ca3af'
+                }}>
+                  {isComplete ? '✓' : '○'}
+                </span>
+                <span style={{
+                  flex: 1,
+                  color: isComplete ? '#065f46' : '#6b7280',
+                  fontWeight: isComplete ? '600' : '400'
+                }}>
+                  {section.name}
+                </span>
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: isComplete ? '#10b981' : '#9ca3af'
+                }}>
+                  {completed}/{section.total}
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Signatures */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '0.75rem',
+            padding: '0.5rem',
+            backgroundColor: (confermatoTecnico && accettazioneProprietario) ? '#f0fdf4' : '#f9fafb',
+            borderRadius: '0.375rem',
+            border: `1px solid ${(confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#e5e7eb'}`
+          }}>
+            <span style={{
+              fontSize: '1rem',
+              color: (confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#9ca3af'
+            }}>
+              {(confermatoTecnico && accettazioneProprietario) ? '✓' : '○'}
+            </span>
+            <span style={{
+              flex: 1,
+              color: (confermatoTecnico && accettazioneProprietario) ? '#065f46' : '#6b7280',
+              fontWeight: (confermatoTecnico && accettazioneProprietario) ? '600' : '400'
+            }}>
+              Firme
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              color: (confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#9ca3af'
+            }}>
+              {[confermatoTecnico, accettazioneProprietario].filter(Boolean).length}/2
+            </span>
+          </div>
         </div>
       </div>
 
@@ -838,10 +1087,9 @@ function InstallationChecklist() {
               Ultima pulizia effettuata
             </label>
             <input
-              type="text"
+              type="date"
               value={ultimaPulizia}
               onChange={(e) => setUltimaPulizia(e.target.value)}
-              placeholder="es. 15/10/2024"
               style={{
                 width: '100%',
                 padding: '0.75rem',
@@ -1637,10 +1885,9 @@ function InstallationChecklist() {
             Ultimo aggiornamento inverter
           </label>
           <input
-            type="text"
+            type="date"
             value={ultimoAggiornamento}
             onChange={(e) => setUltimoAggiornamento(e.target.value)}
-            placeholder="es. 01/10/2024"
             style={{
               width: '100%',
               padding: '0.75rem',

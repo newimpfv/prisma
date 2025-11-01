@@ -17,17 +17,16 @@ export const generateContractHTML = (client, formData) => {
     return months[date.getMonth()];
   };
 
-  const contractDate = new Date(formData.contractDate);
+  const contractDate = new Date(formData.startDate || formData.contractDate);
   const serviceDescriptions = {
     'pulizia': 'Pulizia Impianto Fotovoltaico',
     'service_base': 'Manutenzione Ordinaria SERVICE BASE',
     'service_plus': 'Manutenzione Ordinaria SERVICE PLUS'
   };
 
-  const price1 = parseFloat(formData.price1) || 0;
-  const price2 = parseFloat(formData.price2) || 0;
-  const price3 = parseFloat(formData.price3) || 0;
-  const total = price1 + price2 + price3;
+  // Calculate total from dynamic priceItems array
+  const priceItems = formData.priceItems || [];
+  const total = priceItems.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
 
   return `
 <!DOCTYPE html>
@@ -152,7 +151,7 @@ export const generateContractHTML = (client, formData) => {
         <p><strong>PEC:</strong> ${client.pec || '_________________'}</p>
     </div>
 
-    <p>L'anno ${contractDate.getFullYear()}, addì ${contractDate.getDate()} del mese di ${getItalianMonth(formData.contractDate)} in Torino (TO)</p>
+    <p>L'anno ${contractDate.getFullYear()}, addì ${contractDate.getDate()} del mese di ${getItalianMonth(formData.startDate || formData.contractDate)} in Torino (TO)</p>
 
     <p><strong>tra</strong></p>
 
@@ -298,21 +297,13 @@ export const generateContractHTML = (client, formData) => {
             <th>Descrizione breve</th>
             <th>Prezzo IVA inclusa 10%</th>
         </tr>
+        ${priceItems.map((item, index) => `
         <tr>
-            <td>1</td>
-            <td>${formData.description1 || serviceDescriptions[formData.serviceType] || 'Servizio selezionato'}</td>
-            <td>€ ${price1.toFixed(2)}</td>
+            <td>${index + 1}</td>
+            <td>${item.description || (formData.services && formData.services[index]) || 'Servizio'}</td>
+            <td>€ ${(parseFloat(item.price) || 0).toFixed(2)}</td>
         </tr>
-        <tr>
-            <td>2</td>
-            <td>${formData.description2 || (formData.contractDuration && parseInt(formData.contractDuration) > 1 ? `Durata contratto: ${formData.contractDuration} anni` : '-')}</td>
-            <td>€ ${price2.toFixed(2)}</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>${formData.description3 || (formData.moduleType === 'small' ? 'Maggiorazione moduli &lt; 350WP' : '-')}</td>
-            <td>€ ${price3.toFixed(2)}</td>
-        </tr>
+        `).join('')}
         <tr style="background-color: #f0f0f0; font-weight: bold;">
             <td colspan="2">TOTALE</td>
             <td>€ ${total.toFixed(2)}</td>
@@ -362,7 +353,7 @@ export const generateContractHTML = (client, formData) => {
 
     <div class="signatures">
         <div class="signature-box">
-            <p>Torino, ${formatDate(formData.contractDate)}</p>
+            <p>Torino, ${formatDate(formData.startDate || formData.contractDate)}</p>
             <br><br>
             <p><strong>Sole Facile</strong></p>
             <br><br>
@@ -382,7 +373,7 @@ export const generateContractHTML = (client, formData) => {
         <br>
         <div style="display: flex; justify-content: space-between;">
             <div>
-                <p>Torino, ${formatDate(formData.contractDate)}</p>
+                <p>Torino, ${formatDate(formData.startDate || formData.contractDate)}</p>
             </div>
             <div>
                 <p>Per Accettazione il cliente:</p>

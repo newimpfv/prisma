@@ -11,13 +11,7 @@ function MaintenanceContract() {
     startDate: new Date().toISOString().split('T')[0],
     endDate: '',
     contractDuration: '1',
-    power: '',
-    price1: '',
-    description1: '',
-    price2: '',
-    description2: '',
-    price3: '',
-    description3: ''
+    power: ''
   });
 
   // Service types (checkboxes)
@@ -27,6 +21,11 @@ function MaintenanceContract() {
     intervento_base: false,
     intervento_plus: false
   });
+
+  // Price list items (dynamic array)
+  const [priceItems, setPriceItems] = useState([
+    { id: 1, price: '', description: '' }
+  ]);
 
   // Pre-fill client data if available
   useEffect(() => {
@@ -64,11 +63,29 @@ function MaintenanceContract() {
     return Object.values(services).some(v => v === true);
   };
 
+  // Price item management
+  const addPriceItem = () => {
+    const newId = Math.max(...priceItems.map(item => item.id), 0) + 1;
+    setPriceItems([...priceItems, { id: newId, price: '', description: '' }]);
+  };
+
+  const removePriceItem = (id) => {
+    if (priceItems.length > 1) {
+      setPriceItems(priceItems.filter(item => item.id !== id));
+    }
+  };
+
+  const handlePriceItemChange = (id, field, value) => {
+    setPriceItems(priceItems.map(item =>
+      item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
   const calculateTotal = () => {
-    const p1 = parseFloat(formData.price1) || 0;
-    const p2 = parseFloat(formData.price2) || 0;
-    const p3 = parseFloat(formData.price3) || 0;
-    return (p1 + p2 + p3).toFixed(2);
+    const total = priceItems.reduce((sum, item) => {
+      return sum + (parseFloat(item.price) || 0);
+    }, 0);
+    return total.toFixed(2);
   };
 
   const generatePDF = () => {
@@ -82,8 +99,8 @@ function MaintenanceContract() {
       return;
     }
 
-    // Generate HTML content (pass services as well)
-    const htmlContent = generateContractHTML(selectedClientRecord, { ...formData, services: getSelectedServices() });
+    // Generate HTML content (pass services and priceItems)
+    const htmlContent = generateContractHTML(selectedClientRecord, { ...formData, services: getSelectedServices(), priceItems });
 
     // Create a temporary container
     const tempContainer = document.createElement('div');
@@ -116,6 +133,69 @@ function MaintenanceContract() {
       });
   };
 
+  const generatePDFBlob = async () => {
+    // Generate HTML content
+    const htmlContent = generateContractHTML(selectedClientRecord, { ...formData, services: getSelectedServices(), priceItems });
+
+    // Create a temporary container
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = htmlContent;
+    document.body.appendChild(tempContainer);
+
+    // PDF options
+    const options = {
+      margin: [10, 10, 10, 10],
+      filename: `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.startDate}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Generate PDF as blob
+    return new Promise((resolve, reject) => {
+      html2pdf()
+        .from(tempContainer)
+        .set(options)
+        .outputPdf('blob')
+        .then((blob) => {
+          // Clean up
+          document.body.removeChild(tempContainer);
+          resolve(blob);
+        })
+        .catch((error) => {
+          document.body.removeChild(tempContainer);
+          reject(error);
+        });
+    });
+  };
+
+  const uploadPDFToTemporaryStorage = async (blob, filename) => {
+    // Upload to file.io (temporary file hosting - 1 download, then deleted)
+    const formData = new FormData();
+    formData.append('file', blob, filename);
+
+    try {
+      const response = await fetch('https://file.io', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload PDF to temporary storage');
+      }
+
+      const result = await response.json();
+      if (result.success && result.link) {
+        return result.link;
+      } else {
+        throw new Error('No URL returned from file hosting service');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw new Error('Impossibile caricare il PDF. Prova di nuovo.');
+    }
+  };
+
   const saveContract = async () => {
     if (!selectedClientRecord) {
       alert('⚠️ Seleziona un cliente prima di salvare il contratto');
@@ -130,6 +210,17 @@ function MaintenanceContract() {
     try {
       const selectedServices = getSelectedServices();
 
+      // Show loading message
+      alert('📄 Generazione PDF in corso...');
+
+      // Generate PDF
+      const pdfBlob = await generatePDFBlob();
+      const pdfFilename = `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.startDate}.pdf`;
+
+      // Upload PDF to temporary storage to get public URL
+      alert('☁️ Caricamento PDF in corso...');
+      const pdfUrl = await uploadPDFToTemporaryStorage(pdfBlob, pdfFilename);
+
       // Prepare data for Airtable
       const contractData = {
         fields: {
@@ -139,7 +230,13 @@ function MaintenanceContract() {
           tipo_servizio: selectedServices.join(', '),
           durata_anni: parseInt(formData.contractDuration),
           potenza_impianto_kwp: parseFloat(formData.power),
-          stato: 'Bozza'
+          stato: 'Bozza',
+          contract_pdf: [
+            {
+              url: pdfUrl,
+              filename: pdfFilename
+            }
+          ]
         }
       };
 
@@ -148,23 +245,17 @@ function MaintenanceContract() {
         contractData.fields.fine_contratto = formData.endDate;
       }
 
-      // Add prices and descriptions if provided
-      if (formData.price1) {
-        contractData.fields.prezzo_1 = parseFloat(formData.price1);
-        contractData.fields.descrizione_1 = formData.description1 || '';
-      }
-      if (formData.price2) {
-        contractData.fields.prezzo_2 = parseFloat(formData.price2);
-        contractData.fields.descrizione_2 = formData.description2 || '';
-      }
-      if (formData.price3) {
-        contractData.fields.prezzo_3 = parseFloat(formData.price3);
-        contractData.fields.descrizione_3 = formData.description3 || '';
-      }
+      // Add prices and descriptions from dynamic priceItems array
+      priceItems.forEach((item, index) => {
+        if (item.price) {
+          contractData.fields[`prezzo_${index + 1}`] = parseFloat(item.price);
+          contractData.fields[`descrizione_${index + 1}`] = item.description || '';
+        }
+      });
 
       // Save to Airtable
       const response = await fetch(
-        `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_AIRTABLE_CONTRACTS_TABLE_ID}`,
+        `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/tblXFnfZhmClzRRLz`,
         {
           method: 'POST',
           headers: {
@@ -182,20 +273,14 @@ function MaintenanceContract() {
 
       const result = await response.json();
 
-      alert(`✅ Contratto salvato su Airtable!\n\nID: ${result.id}\nStato: Bozza`);
+      alert(`✅ Contratto e PDF salvati su Airtable!\n\nID: ${result.id}\nStato: Bozza`);
 
       // Reset form
       setFormData({
         startDate: new Date().toISOString().split('T')[0],
         endDate: '',
         contractDuration: '1',
-        power: '',
-        price1: '',
-        description1: '',
-        price2: '',
-        description2: '',
-        price3: '',
-        description3: ''
+        power: ''
       });
 
       // Reset services
@@ -205,6 +290,11 @@ function MaintenanceContract() {
         intervento_base: false,
         intervento_plus: false
       });
+
+      // Reset price items
+      setPriceItems([
+        { id: 1, price: '', description: '' }
+      ]);
 
     } catch (error) {
       console.error('Save error:', error);
@@ -508,144 +598,113 @@ function MaintenanceContract() {
         </div>
 
         <div style={{ borderTop: '2px solid #e5e7eb', marginTop: '1.5rem', paddingTop: '1.5rem' }}>
-          <h4 style={{ fontSize: '1rem', fontWeight: '600', marginBottom: '1rem', color: '#1f2937' }}>
-            Listino Prezzi
-          </h4>
-
-          {/* Price 1 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                Prezzo 1 (€)
-              </label>
-              <input
-                type="number"
-                name="price1"
-                value={formData.price1}
-                onChange={handleInputChange}
-                step="0.01"
-                placeholder="0.00"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                Descrizione 1
-              </label>
-              <input
-                type="text"
-                name="description1"
-                value={formData.description1}
-                onChange={handleInputChange}
-                placeholder="Descrizione servizio"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
+              Listino Prezzi
+            </h4>
+            <button
+              type="button"
+              onClick={addPriceItem}
+              style={{
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: 'white',
+                backgroundColor: '#10b981',
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              + Aggiungi Prezzo
+            </button>
           </div>
 
-          {/* Price 2 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                Prezzo 2 (€)
-              </label>
-              <input
-                type="number"
-                name="price2"
-                value={formData.price2}
-                onChange={handleInputChange}
-                step="0.01"
-                placeholder="0.00"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  outline: 'none'
-                }}
-              />
+          {/* Dynamic Price Items */}
+          {priceItems.map((item, index) => (
+            <div
+              key={item.id}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 2fr auto',
+                gap: '0.75rem',
+                marginBottom: '1rem',
+                padding: '1rem',
+                backgroundColor: '#f9fafb',
+                borderRadius: '0.5rem',
+                border: '1px solid #e5e7eb'
+              }}
+            >
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
+                  Prezzo {index + 1} (€)
+                </label>
+                <input
+                  type="number"
+                  value={item.price}
+                  onChange={(e) => handlePriceItemChange(item.id, 'price', e.target.value)}
+                  step="0.01"
+                  placeholder="0.00"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    fontSize: '1rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
+                  Descrizione {index + 1}
+                </label>
+                <input
+                  type="text"
+                  value={item.description}
+                  onChange={(e) => handlePriceItemChange(item.id, 'description', e.target.value)}
+                  placeholder="Descrizione servizio"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    fontSize: '1rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                {priceItems.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removePriceItem(item.id)}
+                    style={{
+                      padding: '0.75rem',
+                      fontSize: '1.25rem',
+                      color: '#ef4444',
+                      backgroundColor: 'white',
+                      border: '2px solid #ef4444',
+                      borderRadius: '0.5rem',
+                      cursor: 'pointer',
+                      fontWeight: '600',
+                      width: '3rem',
+                      height: '3rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title="Rimuovi prezzo"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
             </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                Descrizione 2
-              </label>
-              <input
-                type="text"
-                name="description2"
-                value={formData.description2}
-                onChange={handleInputChange}
-                placeholder="Descrizione aggiuntiva"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          </div>
-
-          {/* Price 3 */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                Prezzo 3 (€)
-              </label>
-              <input
-                type="number"
-                name="price3"
-                value={formData.price3}
-                onChange={handleInputChange}
-                step="0.01"
-                placeholder="0.00"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                Descrizione 3
-              </label>
-              <input
-                type="text"
-                name="description3"
-                value={formData.description3}
-                onChange={handleInputChange}
-                placeholder="Descrizione aggiuntiva"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '0.5rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          </div>
+          ))}
 
           {/* Total */}
           <div style={{
