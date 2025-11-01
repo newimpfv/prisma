@@ -214,15 +214,15 @@ function App() {
     },
     {
       id: 10,
-      name: 'Checklist Intervento',
-      icon: '✅',
-      component: <InstallationChecklist />
-    },
-    {
-      id: 11,
       name: 'Contratto Manutenzione',
       icon: '🔧',
       component: <MaintenanceContract />
+    },
+    {
+      id: 11,
+      name: 'Checklist Intervento',
+      icon: '✅',
+      component: <InstallationChecklist />
     }
   ];
 
@@ -236,19 +236,19 @@ function App() {
 
   return (
     <FormProvider>
-      <div style={{
+      <div className="app-background" style={{
         background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
         minHeight: '100vh',
-        padding: '1rem',
+        padding: '0.5rem',
         paddingBottom: '80px'
       }}>
-        <div ref={containerRef} style={{
+        <div ref={containerRef} className="app-container" style={{
           maxWidth: '900px',
           margin: '0 auto',
           backgroundColor: 'rgba(255, 255, 255, 0.5)',
           borderRadius: '0.5rem',
           boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-          padding: '1rem'
+          padding: '0.75rem'
         }}>
           <Header />
 
@@ -393,8 +393,8 @@ function App() {
               }
             }}
           >
-            <div ref={formRef} style={{
-              padding: '0 2rem 2rem 2rem',
+            <div ref={formRef} className="tab-content" style={{
+              padding: '0 1.5rem 1.5rem 1.5rem',
               animation: 'fadeIn 0.3s ease-in'
             }}>
               {tabs[selectedIndex].component}
@@ -402,10 +402,10 @@ function App() {
           </div>
 
           {/* Tab Navigation Arrows */}
-          <div style={{
+          <div className="nav-arrows" style={{
             display: 'flex',
             justifyContent: 'space-between',
-            padding: '1rem 2rem',
+            padding: '1rem 1.5rem',
             marginTop: '1rem'
           }}>
             <button
@@ -464,7 +464,7 @@ function App() {
       {/* Duplicate Check Modal - shown once per session */}
       <DuplicateCheckModal />
 
-      {/* Add animations */}
+      {/* Add animations and mobile responsive styles */}
       <style>{`
         @keyframes fadeIn {
           from {
@@ -484,6 +484,123 @@ function App() {
           to {
             opacity: 1;
             transform: translateY(0);
+          }
+        }
+
+        /* Mobile responsive improvements */
+        @media (max-width: 768px) {
+          /* Increase font sizes for better readability */
+          body {
+            font-size: 16px;
+          }
+
+          /* App container - full width on mobile */
+          .app-container {
+            max-width: 100% !important;
+            padding: 0.5rem !important;
+            border-radius: 0 !important;
+          }
+
+          /* Tab content - less padding on mobile */
+          .tab-content {
+            padding: 0 0.75rem 1rem 0.75rem !important;
+          }
+
+          /* Make sections more visible */
+          .mobile-section {
+            font-size: 1.1rem !important;
+            line-height: 1.6 !important;
+            padding: 1.25rem !important;
+          }
+
+          /* Larger input fields */
+          input, select, textarea {
+            font-size: 16px !important;
+            padding: 0.875rem !important;
+            min-height: 48px !important;
+          }
+
+          /* Specific dropdown optimizations */
+          select {
+            appearance: none !important;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 0.75rem center !important;
+            background-size: 1.25rem !important;
+            padding-right: 3rem !important;
+            cursor: pointer !important;
+            font-weight: 500 !important;
+          }
+
+          /* Dropdown options larger */
+          select option {
+            font-size: 16px !important;
+            padding: 0.75rem !important;
+            min-height: 48px !important;
+          }
+
+          /* Larger buttons for easier tapping */
+          button {
+            font-size: 1rem !important;
+            padding: 1rem 1.25rem !important;
+            min-height: 48px !important;
+          }
+
+          /* Label text more readable */
+          label {
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
+            margin-bottom: 0.5rem !important;
+            display: block !important;
+          }
+
+          /* Section headers larger and more prominent */
+          h2 {
+            font-size: 1.5rem !important;
+            margin-bottom: 1rem !important;
+            font-weight: 700 !important;
+          }
+
+          h3 {
+            font-size: 1.3rem !important;
+            margin-bottom: 0.875rem !important;
+            font-weight: 600 !important;
+          }
+
+          h4 {
+            font-size: 1.15rem !important;
+            margin-bottom: 0.75rem !important;
+            font-weight: 600 !important;
+          }
+
+          /* Paragraph text larger */
+          p {
+            font-size: 1.05rem !important;
+            line-height: 1.6 !important;
+          }
+
+          /* White background sections more prominent */
+          div[style*="backgroundColor: 'white'"],
+          div[style*="background-color: white"],
+          div[style*="backgroundColor: white"] {
+            padding: 1.25rem !important;
+            margin-bottom: 1.25rem !important;
+          }
+
+          /* Navigation arrows - less padding on mobile */
+          .nav-arrows {
+            padding: 0.75rem 0.5rem !important;
+            gap: 0.5rem;
+          }
+
+          .nav-arrows button {
+            flex: 1;
+            max-width: 45%;
+          }
+
+          /* Tab navigation buttons - better scrolling */
+          div[style*="overflowX"] {
+            padding: 0.75rem 0 !important;
           }
         }
       `}</style>

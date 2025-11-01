@@ -134,18 +134,81 @@ const UtilityBar = () => {
     input.click();
   };
 
-  const handleClearAll = () => {
-    if (confirm('Sei sicuro di voler cancellare TUTTI i dati di TUTTI i preventivi?')) {
-      const keysToRemove = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('prisma_autosave_')) {
-          keysToRemove.push(key);
+  const handleClearAll = async () => {
+    const confirmMessage = '⚠️ ATTENZIONE ⚠️\n\n' +
+      'Questa operazione cancellerà TUTTI i dati memorizzati:\n\n' +
+      '• Preventivi salvati\n' +
+      '• Cache clienti\n' +
+      '• Cache impianti\n' +
+      '• Report di manutenzione\n' +
+      '• Cache listino prezzi\n' +
+      '• Cache Service Worker\n' +
+      '• Tutti i dati offline\n\n' +
+      'Sei SICURO di voler continuare?';
+
+    if (confirm(confirmMessage)) {
+      try {
+        // 1. Clear ALL localStorage
+        console.log('Clearing localStorage...');
+        const itemsCount = localStorage.length;
+        localStorage.clear();
+
+        // 2. Clear ALL sessionStorage
+        console.log('Clearing sessionStorage...');
+        sessionStorage.clear();
+
+        // 3. Clear Service Worker caches
+        if ('serviceWorker' in navigator && 'caches' in window) {
+          console.log('Clearing Service Worker caches...');
+          const cacheNames = await caches.keys();
+          await Promise.all(
+            cacheNames.map(cacheName => {
+              console.log(`Deleting cache: ${cacheName}`);
+              return caches.delete(cacheName);
+            })
+          );
         }
+
+        // 4. Clear IndexedDB if present
+        if ('indexedDB' in window) {
+          console.log('Clearing IndexedDB...');
+          try {
+            const databases = await indexedDB.databases();
+            await Promise.all(
+              databases.map(db => {
+                console.log(`Deleting database: ${db.name}`);
+                return new Promise((resolve) => {
+                  const request = indexedDB.deleteDatabase(db.name);
+                  request.onsuccess = () => resolve();
+                  request.onerror = () => resolve(); // Continue even if error
+                });
+              })
+            );
+          } catch (e) {
+            console.warn('Could not enumerate IndexedDB databases:', e);
+          }
+        }
+
+        // 5. Unregister Service Workers
+        if ('serviceWorker' in navigator) {
+          console.log('Unregistering Service Workers...');
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(
+            registrations.map(registration => {
+              console.log('Unregistering Service Worker...');
+              return registration.unregister();
+            })
+          );
+        }
+
+        alert(`✅ Cache Svuotata!\n\n${itemsCount} elementi rimossi da localStorage.\nTutte le cache e i dati offline sono stati cancellati.\n\nLa pagina verrà ricaricata.`);
+
+        // Reload the page to start fresh
+        window.location.reload(true); // Force reload from server
+      } catch (error) {
+        console.error('Error clearing cache:', error);
+        alert(`❌ Errore durante la pulizia della cache:\n\n${error.message}\n\nAlcuni dati potrebbero non essere stati cancellati.`);
       }
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      alert('Tutti i dati sono stati cancellati.');
-      window.location.reload();
     }
   };
 
@@ -304,7 +367,7 @@ const UtilityBar = () => {
           )}
         </button>
 
-        {/* Clear All Button - Red with white background */}
+        {/* Clear All Cache Button - Red with white background */}
         <button
           onClick={handleClearAll}
           onMouseEnter={() => setClearHover(true)}
@@ -327,15 +390,14 @@ const UtilityBar = () => {
             cursor: 'pointer',
             transform: clearHover ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)'
           }}
-          title="Cancella Dati Salvati"
+          title="Svuota Cache: Cancella tutti i dati memorizzati (localStorage, Service Worker, IndexedDB)"
         >
           <svg xmlns="http://www.w3.org/2000/svg" style={{ height: '0.95rem', width: '0.95rem' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="3 6 5 6 21 6"></polyline>
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <polyline points="23 20 23 14 17 14"></polyline>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
           </svg>
-          Cancella Tutto
+          Svuota Cache
         </button>
 
         {/* Version Button */}
