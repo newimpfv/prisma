@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from '../../context/FormContext';
+import html2pdf from 'html2pdf.js';
+import { generateContractHTML } from '../../utils/maintenanceContractPDF';
 
 function MaintenanceContract() {
   const { selectedClientRecord } = useForm();
@@ -43,8 +45,48 @@ function MaintenanceContract() {
   };
 
   const generatePDF = () => {
-    // TODO: Implement PDF generation
-    alert('PDF generation coming soon!');
+    if (!selectedClientRecord) {
+      alert('⚠️ Seleziona un cliente prima di generare il PDF');
+      return;
+    }
+
+    if (!formData.serviceType || !formData.power) {
+      alert('⚠️ Compila tutti i campi obbligatori prima di generare il PDF');
+      return;
+    }
+
+    // Generate HTML content
+    const htmlContent = generateContractHTML(selectedClientRecord, formData);
+
+    // Create a temporary container
+    const tempContainer = document.createElement('div');
+    tempContainer.innerHTML = htmlContent;
+    document.body.appendChild(tempContainer);
+
+    // PDF options
+    const options = {
+      margin: [10, 10, 10, 10],
+      filename: `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.contractDate}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Generate PDF
+    html2pdf()
+      .from(tempContainer)
+      .set(options)
+      .save()
+      .then(() => {
+        // Clean up
+        document.body.removeChild(tempContainer);
+        alert('✅ PDF generato con successo!');
+      })
+      .catch((error) => {
+        console.error('PDF generation error:', error);
+        document.body.removeChild(tempContainer);
+        alert('❌ Errore durante la generazione del PDF');
+      });
   };
 
   const saveContract = async () => {
