@@ -1345,7 +1345,7 @@ const ClientManager = () => {
           <>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
               gap: '1rem'
             }}>
               {(() => {
@@ -1409,7 +1409,11 @@ const ClientManager = () => {
                     fontWeight: '700',
                     color: '#1f2937',
                     margin: 0,
-                    lineHeight: 1.3
+                    lineHeight: 1.3,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    maxWidth: 'calc(100% - 70px)'
                   }}>
                     {client.nome}
                   </h4>
@@ -1488,7 +1492,11 @@ const ClientManager = () => {
                       gap: '0.375rem'
                     }}>
                       <span style={{ fontSize: '0.875rem' }}>📱</span>
-                      <span>{client.cellulare}</span>
+                      <span style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>{client.cellulare}</span>
                     </div>
                   )}
                   {client.citta_impianto && (
@@ -1499,7 +1507,11 @@ const ClientManager = () => {
                       gap: '0.375rem'
                     }}>
                       <span style={{ fontSize: '0.875rem' }}>📍</span>
-                      <span>{client.citta_impianto}</span>
+                      <span style={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>{client.citta_impianto}</span>
                     </div>
                   )}
                   {client.impianto && client.impianto.length > 0 && (

@@ -360,7 +360,7 @@ function MaintenanceContract() {
         </h3>
 
         {/* Contract Dates */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
           <div>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
               Inizio Contratto *
@@ -628,9 +628,6 @@ function MaintenanceContract() {
             <div
               key={item.id}
               style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 2fr auto',
-                gap: '0.75rem',
                 marginBottom: '1rem',
                 padding: '1rem',
                 backgroundColor: '#f9fafb',
@@ -638,71 +635,77 @@ function MaintenanceContract() {
                 border: '1px solid #e5e7eb'
               }}
             >
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                  Prezzo {index + 1} (€)
-                </label>
-                <input
-                  type="number"
-                  value={item.price}
-                  onChange={(e) => handlePriceItemChange(item.id, 'price', e.target.value)}
-                  step="0.01"
-                  placeholder="0.00"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    fontSize: '1rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '0.5rem',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                  Descrizione {index + 1}
-                </label>
-                <input
-                  type="text"
-                  value={item.description}
-                  onChange={(e) => handlePriceItemChange(item.id, 'description', e.target.value)}
-                  placeholder="Descrizione servizio"
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    fontSize: '1rem',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '0.5rem',
-                    outline: 'none'
-                  }}
-                />
-              </div>
-              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                {priceItems.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removePriceItem(item.id)}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
+                gap: '0.75rem',
+                marginBottom: priceItems.length > 1 ? '0.75rem' : '0'
+              }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
+                    Prezzo {index + 1} (€)
+                  </label>
+                  <input
+                    type="number"
+                    value={item.price}
+                    onChange={(e) => handlePriceItemChange(item.id, 'price', e.target.value)}
+                    step="0.01"
+                    placeholder="0.00"
                     style={{
+                      width: '100%',
                       padding: '0.75rem',
-                      fontSize: '1.25rem',
-                      color: '#ef4444',
-                      backgroundColor: 'white',
-                      border: '2px solid #ef4444',
+                      fontSize: '1rem',
+                      border: '2px solid #e5e7eb',
                       borderRadius: '0.5rem',
-                      cursor: 'pointer',
-                      fontWeight: '600',
-                      width: '3rem',
-                      height: '3rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+                      outline: 'none'
                     }}
-                    title="Rimuovi prezzo"
-                  >
-                    ×
-                  </button>
-                )}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
+                    Descrizione {index + 1}
+                  </label>
+                  <input
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => handlePriceItemChange(item.id, 'description', e.target.value)}
+                    placeholder="Descrizione servizio"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      fontSize: '1rem',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '0.5rem',
+                      outline: 'none'
+                    }}
+                  />
+                </div>
               </div>
+              {priceItems.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removePriceItem(item.id)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    fontSize: '1rem',
+                    color: '#ef4444',
+                    backgroundColor: 'white',
+                    border: '2px solid #ef4444',
+                    borderRadius: '0.5rem',
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                  title="Rimuovi prezzo"
+                >
+                  <span style={{ fontSize: '1.25rem' }}>×</span>
+                  <span>Rimuovi</span>
+                </button>
+              )}
             </div>
           ))}
 
