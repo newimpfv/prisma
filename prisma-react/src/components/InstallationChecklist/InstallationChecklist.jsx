@@ -2579,8 +2579,8 @@ function InstallationChecklist() {
                   style={{
                     border: '1px solid #e5e7eb',
                     borderRadius: '0.5rem',
-                    width: '100%',
-                    maxWidth: '400px',
+                    width: '320px',
+                    height: '120px',
                     backgroundColor: 'white'
                   }}
                 />
@@ -2608,13 +2608,15 @@ function InstallationChecklist() {
                   border: '2px dashed #d1d5db',
                   borderRadius: '0.5rem',
                   backgroundColor: 'white',
-                  display: 'inline-block'
+                  display: 'inline-block',
+                  maxWidth: '100%',
+                  overflow: 'hidden'
                 }}>
                   <SignatureCanvas
                     ref={tecnicoSigPad}
                     canvasProps={{
-                      width: 400,
-                      height: 150,
+                      width: 320,
+                      height: 120,
                       className: 'signature-canvas'
                     }}
                     backgroundColor="white"
@@ -2697,8 +2699,8 @@ function InstallationChecklist() {
                   style={{
                     border: '1px solid #e5e7eb',
                     borderRadius: '0.5rem',
-                    width: '100%',
-                    maxWidth: '400px',
+                    width: '320px',
+                    height: '120px',
                     backgroundColor: 'white'
                   }}
                 />
@@ -2726,13 +2728,15 @@ function InstallationChecklist() {
                   border: '2px dashed #d1d5db',
                   borderRadius: '0.5rem',
                   backgroundColor: 'white',
-                  display: 'inline-block'
+                  display: 'inline-block',
+                  maxWidth: '100%',
+                  overflow: 'hidden'
                 }}>
                   <SignatureCanvas
                     ref={proprietarioSigPad}
                     canvasProps={{
-                      width: 400,
-                      height: 150,
+                      width: 320,
+                      height: 120,
                       className: 'signature-canvas'
                     }}
                     backgroundColor="white"
