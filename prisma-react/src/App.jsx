@@ -368,29 +368,12 @@ function App() {
             ))}
           </div>
 
-          {/* Tab Content with Swipe Support */}
+          {/* Tab Content */}
           <div
             style={{
               position: 'relative',
               overflow: 'hidden',
               minHeight: '400px'
-            }}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              containerRef.current.touchStartX = touch.clientX;
-            }}
-            onTouchEnd={(e) => {
-              const touch = e.changedTouches[0];
-              const diff = containerRef.current.touchStartX - touch.clientX;
-
-              // Swipe left (next tab)
-              if (diff > 50 && selectedIndex < tabs.length - 1) {
-                handleTabChange(selectedIndex + 1);
-              }
-              // Swipe right (previous tab)
-              else if (diff < -50 && selectedIndex > 0) {
-                handleTabChange(selectedIndex - 1);
-              }
             }}
           >
             <div ref={formRef} className="tab-content" style={{

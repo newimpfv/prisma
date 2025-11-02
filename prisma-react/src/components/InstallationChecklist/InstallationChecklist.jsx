@@ -927,149 +927,6 @@ function InstallationChecklist() {
           </div>
         </div>
       </div>
-
-      {/* Progress Bar */}
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '0.5rem',
-        padding: '1.5rem',
-        marginBottom: '1.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div>
-            <span style={{ fontWeight: '700', fontSize: '1.125rem', color: '#1f2937' }}>Completamento Report</span>
-            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
-              29 campi essenziali (note escluse)
-            </div>
-          </div>
-          <div style={{
-            fontSize: '2rem',
-            fontWeight: '700',
-            color: completionPercentage >= 100 ? '#10b981' : completionPercentage >= 75 ? '#3b82f6' : completionPercentage >= 50 ? '#f59e0b' : '#ef4444'
-          }}>
-            {completionPercentage}%
-          </div>
-        </div>
-
-        {/* Main Progress Bar */}
-        <div style={{
-          width: '100%',
-          height: '1.5rem',
-          backgroundColor: '#e5e7eb',
-          borderRadius: '0.75rem',
-          overflow: 'hidden',
-          marginBottom: '1rem',
-          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <div style={{
-            width: `${completionPercentage}%`,
-            height: '100%',
-            backgroundColor: completionPercentage >= 100 ? '#10b981' : completionPercentage >= 75 ? '#3b82f6' : completionPercentage >= 50 ? '#f59e0b' : '#ef4444',
-            transition: 'all 0.3s ease',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingRight: '0.5rem',
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            color: 'white'
-          }}>
-            {completionPercentage > 10 && `${completionPercentage}%`}
-          </div>
-        </div>
-
-        {/* Section Breakdown */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '0.5rem',
-          marginTop: '1rem',
-          paddingTop: '1rem',
-          borderTop: '1px solid #e5e7eb'
-        }}>
-          {[
-            { num: 1, name: 'Pulizia pannelli', total: 3 },
-            { num: 2, name: 'Ispezione visiva', total: 3 },
-            { num: 3, name: 'Inverter', total: 4 },
-            { num: 4, name: 'Connessioni', total: 2 },
-            { num: 5, name: 'Accumulo', total: 3 },
-            { num: 6, name: 'Produzione', total: 3 },
-            { num: 7, name: 'Strutture', total: 3 },
-            { num: 8, name: 'Firmware', total: 2 }
-          ].map(section => {
-            const completed = getSectionCompletion(section.num);
-            const isComplete = completed === section.total;
-            return (
-              <div key={section.num} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                fontSize: '0.75rem',
-                padding: '0.5rem',
-                backgroundColor: isComplete ? '#f0fdf4' : '#f9fafb',
-                borderRadius: '0.375rem',
-                border: `1px solid ${isComplete ? '#10b981' : '#e5e7eb'}`
-              }}>
-                <span style={{
-                  fontSize: '1rem',
-                  color: isComplete ? '#10b981' : '#9ca3af'
-                }}>
-                  {isComplete ? '✓' : '○'}
-                </span>
-                <span style={{
-                  flex: 1,
-                  color: isComplete ? '#065f46' : '#6b7280',
-                  fontWeight: isComplete ? '600' : '400'
-                }}>
-                  {section.name}
-                </span>
-                <span style={{
-                  fontSize: '0.75rem',
-                  fontWeight: '600',
-                  color: isComplete ? '#10b981' : '#9ca3af'
-                }}>
-                  {completed}/{section.total}
-                </span>
-              </div>
-            );
-          })}
-
-          {/* Signatures */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            fontSize: '0.75rem',
-            padding: '0.5rem',
-            backgroundColor: (confermatoTecnico && accettazioneProprietario) ? '#f0fdf4' : '#f9fafb',
-            borderRadius: '0.375rem',
-            border: `1px solid ${(confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#e5e7eb'}`
-          }}>
-            <span style={{
-              fontSize: '1rem',
-              color: (confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#9ca3af'
-            }}>
-              {(confermatoTecnico && accettazioneProprietario) ? '✓' : '○'}
-            </span>
-            <span style={{
-              flex: 1,
-              color: (confermatoTecnico && accettazioneProprietario) ? '#065f46' : '#6b7280',
-              fontWeight: (confermatoTecnico && accettazioneProprietario) ? '600' : '400'
-            }}>
-              Firme
-            </span>
-            <span style={{
-              fontSize: '0.75rem',
-              fontWeight: '600',
-              color: (confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#9ca3af'
-            }}>
-              {[confermatoTecnico, accettazioneProprietario].filter(Boolean).length}/2
-            </span>
-          </div>
-        </div>
-      </div>
-
       {/* Section 1: Pulizia pannelli */}
       <div style={{
         backgroundColor: 'white',
@@ -2177,6 +2034,148 @@ function InstallationChecklist() {
             Nessuna foto caricata. Carica foto dell'impianto per la documentazione.
           </div>
         )}
+      </div>
+
+      {/* Progress Bar */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '0.5rem',
+        padding: '1.5rem',
+        marginBottom: '1.5rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div>
+            <span style={{ fontWeight: '700', fontSize: '1.125rem', color: '#1f2937' }}>Completamento Report</span>
+            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+              29 campi essenziali (note escluse)
+            </div>
+          </div>
+          <div style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            color: completionPercentage >= 100 ? '#10b981' : completionPercentage >= 75 ? '#3b82f6' : completionPercentage >= 50 ? '#f59e0b' : '#ef4444'
+          }}>
+            {completionPercentage}%
+          </div>
+        </div>
+
+        {/* Main Progress Bar */}
+        <div style={{
+          width: '100%',
+          height: '1.5rem',
+          backgroundColor: '#e5e7eb',
+          borderRadius: '0.75rem',
+          overflow: 'hidden',
+          marginBottom: '1rem',
+          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <div style={{
+            width: `${completionPercentage}%`,
+            height: '100%',
+            backgroundColor: completionPercentage >= 100 ? '#10b981' : completionPercentage >= 75 ? '#3b82f6' : completionPercentage >= 50 ? '#f59e0b' : '#ef4444',
+            transition: 'all 0.3s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingRight: '0.5rem',
+            fontSize: '0.75rem',
+            fontWeight: '700',
+            color: 'white'
+          }}>
+            {completionPercentage > 10 && `${completionPercentage}%`}
+          </div>
+        </div>
+
+        {/* Section Breakdown */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '0.5rem',
+          marginTop: '1rem',
+          paddingTop: '1rem',
+          borderTop: '1px solid #e5e7eb'
+        }}>
+          {[
+            { num: 1, name: 'Pulizia pannelli', total: 3 },
+            { num: 2, name: 'Ispezione visiva', total: 3 },
+            { num: 3, name: 'Inverter', total: 4 },
+            { num: 4, name: 'Connessioni', total: 2 },
+            { num: 5, name: 'Accumulo', total: 3 },
+            { num: 6, name: 'Produzione', total: 3 },
+            { num: 7, name: 'Strutture', total: 3 },
+            { num: 8, name: 'Firmware', total: 2 }
+          ].map(section => {
+            const completed = getSectionCompletion(section.num);
+            const isComplete = completed === section.total;
+            return (
+              <div key={section.num} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                fontSize: '0.75rem',
+                padding: '0.5rem',
+                backgroundColor: isComplete ? '#f0fdf4' : '#f9fafb',
+                borderRadius: '0.375rem',
+                border: `1px solid ${isComplete ? '#10b981' : '#e5e7eb'}`
+              }}>
+                <span style={{
+                  fontSize: '1rem',
+                  color: isComplete ? '#10b981' : '#9ca3af'
+                }}>
+                  {isComplete ? '✓' : '○'}
+                </span>
+                <span style={{
+                  flex: 1,
+                  color: isComplete ? '#065f46' : '#6b7280',
+                  fontWeight: isComplete ? '600' : '400'
+                }}>
+                  {section.name}
+                </span>
+                <span style={{
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: isComplete ? '#10b981' : '#9ca3af'
+                }}>
+                  {completed}/{section.total}
+                </span>
+              </div>
+            );
+          })}
+
+          {/* Signatures */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '0.75rem',
+            padding: '0.5rem',
+            backgroundColor: (confermatoTecnico && accettazioneProprietario) ? '#f0fdf4' : '#f9fafb',
+            borderRadius: '0.375rem',
+            border: `1px solid ${(confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#e5e7eb'}`
+          }}>
+            <span style={{
+              fontSize: '1rem',
+              color: (confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#9ca3af'
+            }}>
+              {(confermatoTecnico && accettazioneProprietario) ? '✓' : '○'}
+            </span>
+            <span style={{
+              flex: 1,
+              color: (confermatoTecnico && accettazioneProprietario) ? '#065f46' : '#6b7280',
+              fontWeight: (confermatoTecnico && accettazioneProprietario) ? '600' : '400'
+            }}>
+              Firme
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              fontWeight: '600',
+              color: (confermatoTecnico && accettazioneProprietario) ? '#10b981' : '#9ca3af'
+            }}>
+              {[confermatoTecnico, accettazioneProprietario].filter(Boolean).length}/2
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Action Buttons */}
