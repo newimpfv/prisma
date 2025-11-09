@@ -14,12 +14,12 @@ function MaintenanceContract() {
     power: ''
   });
 
-  // Service types (checkboxes)
+  // Service types (checkboxes) with prices per kW
   const [services, setServices] = useState({
-    lavaggio_pannelli: false,
-    monitoraggio_remoto: false,
-    intervento_base: false,
-    intervento_plus: false
+    pulizia: { selected: false, pricePerKw: '' },
+    service_base: { selected: false, pricePerKw: '' },
+    service_plus: { selected: false, pricePerKw: '' },
+    monitoraggio_remoto: { selected: false, pricePerKw: '' }
   });
 
   // Price list items (dynamic array)
@@ -46,21 +46,34 @@ function MaintenanceContract() {
   const handleServiceChange = (serviceName) => {
     setServices(prev => ({
       ...prev,
-      [serviceName]: !prev[serviceName]
+      [serviceName]: {
+        ...prev[serviceName],
+        selected: !prev[serviceName].selected
+      }
+    }));
+  };
+
+  const handleServicePriceChange = (serviceName, price) => {
+    setServices(prev => ({
+      ...prev,
+      [serviceName]: {
+        ...prev[serviceName],
+        pricePerKw: price
+      }
     }));
   };
 
   const getSelectedServices = () => {
     const selected = [];
-    if (services.lavaggio_pannelli) selected.push('Lavaggio Pannelli');
-    if (services.monitoraggio_remoto) selected.push('Monitoraggio Remoto');
-    if (services.intervento_base) selected.push('Intervento Base (1x/anno)');
-    if (services.intervento_plus) selected.push('Intervento Plus (2x/anno)');
+    if (services.pulizia.selected) selected.push('Pulizia Impianto Fotovoltaico');
+    if (services.service_base.selected) selected.push('Manutenzione Ordinaria SERVICE BASE');
+    if (services.service_plus.selected) selected.push('Manutenzione Ordinaria SERVICE PLUS');
+    if (services.monitoraggio_remoto.selected) selected.push('Monitoraggio Remoto');
     return selected;
   };
 
   const hasSelectedServices = () => {
-    return Object.values(services).some(v => v === true);
+    return Object.values(services).some(v => v.selected === true);
   };
 
   // Price item management
@@ -81,11 +94,27 @@ function MaintenanceContract() {
     ));
   };
 
+  const calculateServicesPrices = () => {
+    const power = parseFloat(formData.power) || 0;
+    let servicesTotal = 0;
+
+    Object.entries(services).forEach(([key, value]) => {
+      if (value.selected && value.pricePerKw) {
+        servicesTotal += (parseFloat(value.pricePerKw) || 0) * power;
+      }
+    });
+
+    return servicesTotal;
+  };
+
   const calculateTotal = () => {
-    const total = priceItems.reduce((sum, item) => {
+    const priceItemsTotal = priceItems.reduce((sum, item) => {
       return sum + (parseFloat(item.price) || 0);
     }, 0);
-    return total.toFixed(2);
+
+    const servicesTotal = calculateServicesPrices();
+
+    return (priceItemsTotal + servicesTotal).toFixed(2);
   };
 
   const generatePDF = () => {
@@ -285,10 +314,10 @@ function MaintenanceContract() {
 
       // Reset services
       setServices({
-        lavaggio_pannelli: false,
-        monitoraggio_remoto: false,
-        intervento_base: false,
-        intervento_plus: false
+        pulizia: { selected: false, pricePerKw: '' },
+        service_base: { selected: false, pricePerKw: '' },
+        service_plus: { selected: false, pricePerKw: '' },
+        monitoraggio_remoto: { selected: false, pricePerKw: '' }
       });
 
       // Reset price items
@@ -408,129 +437,209 @@ function MaintenanceContract() {
             Tipo di Servizio * (seleziona uno o più)
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <label style={{
+            <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.75rem',
               padding: '0.75rem',
               borderRadius: '0.5rem',
-              backgroundColor: services.lavaggio_pannelli ? '#eff6ff' : '#f9fafb',
-              border: `2px solid ${services.lavaggio_pannelli ? '#3b82f6' : '#e5e7eb'}`,
-              cursor: 'pointer',
+              backgroundColor: services.pulizia.selected ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.pulizia.selected ? '#3b82f6' : '#e5e7eb'}`,
               transition: 'all 0.2s'
             }}>
               <input
                 type="checkbox"
-                checked={services.lavaggio_pannelli}
-                onChange={() => handleServiceChange('lavaggio_pannelli')}
+                checked={services.pulizia.selected}
+                onChange={() => handleServiceChange('pulizia')}
                 style={{
                   width: '1.25rem',
                   height: '1.25rem',
                   cursor: 'pointer',
-                  accentColor: '#3b82f6'
+                  accentColor: '#3b82f6',
+                  flexShrink: 0
                 }}
               />
               <span style={{
                 fontSize: '0.875rem',
-                color: services.lavaggio_pannelli ? '#1e40af' : '#374151',
-                fontWeight: services.lavaggio_pannelli ? '600' : '400'
+                color: services.pulizia.selected ? '#1e40af' : '#374151',
+                fontWeight: services.pulizia.selected ? '600' : '400',
+                flex: 1
               }}>
-                Lavaggio Pannelli
+                PULIZIA - Pulizia Impianto Fotovoltaico
               </span>
-            </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="number"
+                  value={services.pulizia.pricePerKw}
+                  onChange={(e) => handleServicePriceChange('pulizia', e.target.value)}
+                  step="0.01"
+                  placeholder="€/kW"
+                  style={{
+                    width: '100px',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    outline: 'none'
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#6b7280', whiteSpace: 'nowrap' }}>€/kW</span>
+              </div>
+            </div>
 
-            <label style={{
+            <div style={{
               display: 'flex',
               alignItems: 'center',
               gap: '0.75rem',
               padding: '0.75rem',
               borderRadius: '0.5rem',
-              backgroundColor: services.monitoraggio_remoto ? '#eff6ff' : '#f9fafb',
-              border: `2px solid ${services.monitoraggio_remoto ? '#3b82f6' : '#e5e7eb'}`,
-              cursor: 'pointer',
+              backgroundColor: services.service_base.selected ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.service_base.selected ? '#3b82f6' : '#e5e7eb'}`,
               transition: 'all 0.2s'
             }}>
               <input
                 type="checkbox"
-                checked={services.monitoraggio_remoto}
+                checked={services.service_base.selected}
+                onChange={() => handleServiceChange('service_base')}
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6',
+                  flexShrink: 0
+                }}
+              />
+              <span style={{
+                fontSize: '0.875rem',
+                color: services.service_base.selected ? '#1e40af' : '#374151',
+                fontWeight: services.service_base.selected ? '600' : '400',
+                flex: 1
+              }}>
+                SERVICE BASE - Manutenzione Ordinaria
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="number"
+                  value={services.service_base.pricePerKw}
+                  onChange={(e) => handleServicePriceChange('service_base', e.target.value)}
+                  step="0.01"
+                  placeholder="€/kW"
+                  style={{
+                    width: '100px',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    outline: 'none'
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#6b7280', whiteSpace: 'nowrap' }}>€/kW</span>
+              </div>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              backgroundColor: services.service_plus.selected ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.service_plus.selected ? '#3b82f6' : '#e5e7eb'}`,
+              transition: 'all 0.2s'
+            }}>
+              <input
+                type="checkbox"
+                checked={services.service_plus.selected}
+                onChange={() => handleServiceChange('service_plus')}
+                style={{
+                  width: '1.25rem',
+                  height: '1.25rem',
+                  cursor: 'pointer',
+                  accentColor: '#3b82f6',
+                  flexShrink: 0
+                }}
+              />
+              <span style={{
+                fontSize: '0.875rem',
+                color: services.service_plus.selected ? '#1e40af' : '#374151',
+                fontWeight: services.service_plus.selected ? '600' : '400',
+                flex: 1
+              }}>
+                SERVICE PLUS - Manutenzione Ordinaria con servizi aggiuntivi
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="number"
+                  value={services.service_plus.pricePerKw}
+                  onChange={(e) => handleServicePriceChange('service_plus', e.target.value)}
+                  step="0.01"
+                  placeholder="€/kW"
+                  style={{
+                    width: '100px',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    outline: 'none'
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#6b7280', whiteSpace: 'nowrap' }}>€/kW</span>
+              </div>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              backgroundColor: services.monitoraggio_remoto.selected ? '#eff6ff' : '#f9fafb',
+              border: `2px solid ${services.monitoraggio_remoto.selected ? '#3b82f6' : '#e5e7eb'}`,
+              transition: 'all 0.2s'
+            }}>
+              <input
+                type="checkbox"
+                checked={services.monitoraggio_remoto.selected}
                 onChange={() => handleServiceChange('monitoraggio_remoto')}
                 style={{
                   width: '1.25rem',
                   height: '1.25rem',
                   cursor: 'pointer',
-                  accentColor: '#3b82f6'
+                  accentColor: '#3b82f6',
+                  flexShrink: 0
                 }}
               />
               <span style={{
                 fontSize: '0.875rem',
-                color: services.monitoraggio_remoto ? '#1e40af' : '#374151',
-                fontWeight: services.monitoraggio_remoto ? '600' : '400'
+                color: services.monitoraggio_remoto.selected ? '#1e40af' : '#374151',
+                fontWeight: services.monitoraggio_remoto.selected ? '600' : '400',
+                flex: 1
               }}>
-                Monitoraggio Remoto
+                MONITORAGGIO REMOTO
               </span>
-            </label>
-
-            <label style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.75rem',
-              borderRadius: '0.5rem',
-              backgroundColor: services.intervento_base ? '#eff6ff' : '#f9fafb',
-              border: `2px solid ${services.intervento_base ? '#3b82f6' : '#e5e7eb'}`,
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}>
-              <input
-                type="checkbox"
-                checked={services.intervento_base}
-                onChange={() => handleServiceChange('intervento_base')}
-                style={{
-                  width: '1.25rem',
-                  height: '1.25rem',
-                  cursor: 'pointer',
-                  accentColor: '#3b82f6'
-                }}
-              />
-              <span style={{
-                fontSize: '0.875rem',
-                color: services.intervento_base ? '#1e40af' : '#374151',
-                fontWeight: services.intervento_base ? '600' : '400'
-              }}>
-                Intervento Base di Manutenzione (una volta all'anno)
-              </span>
-            </label>
-
-            <label style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.75rem',
-              borderRadius: '0.5rem',
-              backgroundColor: services.intervento_plus ? '#eff6ff' : '#f9fafb',
-              border: `2px solid ${services.intervento_plus ? '#3b82f6' : '#e5e7eb'}`,
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}>
-              <input
-                type="checkbox"
-                checked={services.intervento_plus}
-                onChange={() => handleServiceChange('intervento_plus')}
-                style={{
-                  width: '1.25rem',
-                  height: '1.25rem',
-                  cursor: 'pointer',
-                  accentColor: '#3b82f6'
-                }}
-              />
-              <span style={{
-                fontSize: '0.875rem',
-                color: services.intervento_plus ? '#1e40af' : '#374151',
-                fontWeight: services.intervento_plus ? '600' : '400'
-              }}>
-                Intervento Plus di Manutenzione (2 volte all'anno)
-              </span>
-            </label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input
+                  type="number"
+                  value={services.monitoraggio_remoto.pricePerKw}
+                  onChange={(e) => handleServicePriceChange('monitoraggio_remoto', e.target.value)}
+                  step="0.01"
+                  placeholder="€/kW"
+                  style={{
+                    width: '100px',
+                    padding: '0.5rem',
+                    fontSize: '0.875rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '0.5rem',
+                    outline: 'none'
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <span style={{ fontSize: '0.75rem', color: '#6b7280', whiteSpace: 'nowrap' }}>€/kW</span>
+              </div>
+            </div>
           </div>
 
           {hasSelectedServices() && (
@@ -598,7 +707,7 @@ function MaintenanceContract() {
         </div>
 
         <div style={{ borderTop: '2px solid #e5e7eb', marginTop: '1.5rem', paddingTop: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
             <h4 style={{ fontSize: '1rem', fontWeight: '600', color: '#1f2937' }}>
               Listino Prezzi
             </h4>
@@ -622,6 +731,9 @@ function MaintenanceContract() {
               + Aggiungi Prezzo
             </button>
           </div>
+          <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem' }}>
+            Aggiungi altri prodotti e servizi a quelli standard
+          </p>
 
           {/* Dynamic Price Items */}
           {priceItems.map((item, index) => (
@@ -643,14 +755,13 @@ function MaintenanceContract() {
               }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                    Prezzo {index + 1} (€)
+                    Descrizione {index + 1}
                   </label>
                   <input
-                    type="number"
-                    value={item.price}
-                    onChange={(e) => handlePriceItemChange(item.id, 'price', e.target.value)}
-                    step="0.01"
-                    placeholder="0.00"
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => handlePriceItemChange(item.id, 'description', e.target.value)}
+                    placeholder="Descrizione servizio"
                     style={{
                       width: '100%',
                       padding: '0.75rem',
@@ -663,13 +774,14 @@ function MaintenanceContract() {
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
-                    Descrizione {index + 1}
+                    Prezzo {index + 1} (€)
                   </label>
                   <input
-                    type="text"
-                    value={item.description}
-                    onChange={(e) => handlePriceItemChange(item.id, 'description', e.target.value)}
-                    placeholder="Descrizione servizio"
+                    type="number"
+                    value={item.price}
+                    onChange={(e) => handlePriceItemChange(item.id, 'price', e.target.value)}
+                    step="0.01"
+                    placeholder="0.00"
                     style={{
                       width: '100%',
                       padding: '0.75rem',
@@ -709,6 +821,60 @@ function MaintenanceContract() {
             </div>
           ))}
 
+          {/* Services Prices */}
+          {hasSelectedServices() && formData.power && (
+            <div style={{
+              marginTop: '1rem',
+              padding: '1rem',
+              backgroundColor: '#f0f9ff',
+              borderRadius: '0.5rem',
+              border: '2px solid #3b82f6'
+            }}>
+              <h5 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#1e40af', marginBottom: '0.75rem' }}>
+                Servizi Standard Selezionati (Potenza: {formData.power} kW)
+              </h5>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {services.pulizia.selected && services.pulizia.pricePerKw && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#374151' }}>
+                    <span>PULIZIA - Pulizia Impianto Fotovoltaico ({services.pulizia.pricePerKw}€/kW × {formData.power} kW)</span>
+                    <span style={{ fontWeight: '600' }}>€ {((parseFloat(services.pulizia.pricePerKw) || 0) * (parseFloat(formData.power) || 0)).toFixed(2)}</span>
+                  </div>
+                )}
+                {services.service_base.selected && services.service_base.pricePerKw && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#374151' }}>
+                    <span>SERVICE BASE - Manutenzione Ordinaria ({services.service_base.pricePerKw}€/kW × {formData.power} kW)</span>
+                    <span style={{ fontWeight: '600' }}>€ {((parseFloat(services.service_base.pricePerKw) || 0) * (parseFloat(formData.power) || 0)).toFixed(2)}</span>
+                  </div>
+                )}
+                {services.service_plus.selected && services.service_plus.pricePerKw && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#374151' }}>
+                    <span>SERVICE PLUS - Manutenzione Ordinaria con servizi aggiuntivi ({services.service_plus.pricePerKw}€/kW × {formData.power} kW)</span>
+                    <span style={{ fontWeight: '600' }}>€ {((parseFloat(services.service_plus.pricePerKw) || 0) * (parseFloat(formData.power) || 0)).toFixed(2)}</span>
+                  </div>
+                )}
+                {services.monitoraggio_remoto.selected && services.monitoraggio_remoto.pricePerKw && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem', color: '#374151' }}>
+                    <span>MONITORAGGIO REMOTO ({services.monitoraggio_remoto.pricePerKw}€/kW × {formData.power} kW)</span>
+                    <span style={{ fontWeight: '600' }}>€ {((parseFloat(services.monitoraggio_remoto.pricePerKw) || 0) * (parseFloat(formData.power) || 0)).toFixed(2)}</span>
+                  </div>
+                )}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: '0.875rem',
+                  color: '#1e40af',
+                  fontWeight: '700',
+                  borderTop: '1px solid #93c5fd',
+                  paddingTop: '0.5rem',
+                  marginTop: '0.25rem'
+                }}>
+                  <span>Subtotale Servizi:</span>
+                  <span>€ {calculateServicesPrices().toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Total */}
           <div style={{
             backgroundColor: '#f3f4f6',
@@ -718,7 +884,8 @@ function MaintenanceContract() {
             justifyContent: 'space-between',
             alignItems: 'center',
             fontWeight: '700',
-            fontSize: '1.125rem'
+            fontSize: '1.125rem',
+            marginTop: '1rem'
           }}>
             <span>Totale:</span>
             <span style={{ color: '#10b981' }}>€ {calculateTotal()}</span>
