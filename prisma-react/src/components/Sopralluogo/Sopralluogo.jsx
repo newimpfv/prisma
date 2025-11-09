@@ -420,6 +420,35 @@ function Sopralluogo() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
+  // Recalculate GPS position manually
+  const handleRecalculatePosition = () => {
+    if ('geolocation' in navigator) {
+      setLoading(true);
+      showMessage('info', '📍 Rilevamento posizione in corso...');
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = `${position.coords.latitude.toFixed(6)},${position.coords.longitude.toFixed(6)}`;
+          setCoordinates(coords);
+          setLoading(false);
+          showMessage('success', '📍 Posizione aggiornata!');
+        },
+        (error) => {
+          console.error('GPS error:', error);
+          setLoading(false);
+          showMessage('error', '❌ Impossibile rilevare la posizione GPS');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 30000,
+          maximumAge: 0 // Don't use cached position for manual refresh
+        }
+      );
+    } else {
+      showMessage('error', '❌ GPS non disponibile su questo dispositivo');
+    }
+  };
+
   return (
     <div
       style={{
@@ -934,7 +963,8 @@ function Sopralluogo() {
             fontSize: '1rem',
             border: '2px solid #e5e7eb',
             borderRadius: '0.5rem',
-            outline: 'none'
+            outline: 'none',
+            marginBottom: '0.75rem'
           }}
           onFocus={(e) => {
             e.target.style.borderColor = '#3b82f6';
@@ -943,6 +973,39 @@ function Sopralluogo() {
             e.target.style.borderColor = '#e5e7eb';
           }}
         />
+        <button
+          onClick={handleRecalculatePosition}
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            color: 'white',
+            backgroundColor: loading ? '#9ca3af' : '#3b82f6',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            if (!loading) {
+              e.target.style.backgroundColor = '#2563eb';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!loading) {
+              e.target.style.backgroundColor = '#3b82f6';
+            }
+          }}
+        >
+          <span style={{ fontSize: '1.25rem' }}>📍</span>
+          <span>{loading ? 'Rilevamento in corso...' : 'Ricalcola Posizione GPS'}</span>
+        </button>
         {loading && (
           <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
             Rilevamento posizione in corso...
@@ -1131,7 +1194,6 @@ function Sopralluogo() {
           ref={photoInputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           multiple
           onChange={handlePhotoSelect}
           style={{ display: 'none' }}
@@ -1255,7 +1317,6 @@ function Sopralluogo() {
           ref={videoInputRef}
           type="file"
           accept="video/*"
-          capture="environment"
           multiple
           onChange={handleVideoSelect}
           style={{ display: 'none' }}

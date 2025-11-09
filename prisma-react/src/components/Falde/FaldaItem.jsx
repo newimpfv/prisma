@@ -1,8 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GruppoModuli from './GruppoModuli';
+import { useModules } from '../../hooks/useProductData';
 
 const FaldaItem = ({ falda, onRemove, onUpdate }) => {
-  const [gruppoCounter, setGruppoCounter] = useState(1);
+  const { modules } = useModules();
+  const [gruppoCounter, setGruppoCounter] = useState(() => {
+    // Inizializza il counter basandosi sul massimo ID esistente nei gruppi
+    if (!falda.gruppiModuli || falda.gruppiModuli.length === 0) return 1;
+    const maxId = Math.max(...falda.gruppiModuli.map(g => g.id || 0));
+    return maxId + 1;
+  });
+
+  // Aggiorna il counter quando i gruppi cambiano
+  useEffect(() => {
+    if (falda.gruppiModuli && falda.gruppiModuli.length > 0) {
+      const maxId = Math.max(...falda.gruppiModuli.map(g => g.id || 0));
+      setGruppoCounter(prev => Math.max(prev, maxId + 1));
+    }
+  }, [falda.gruppiModuli?.length]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,6 +48,21 @@ const FaldaItem = ({ falda, onRemove, onUpdate }) => {
       g.id === gruppoId ? { ...g, ...updatedData } : g
     );
     onUpdate(falda.id, { gruppiModuli: updatedGruppi });
+  };
+
+  // Calcola la potenza totale della falda sommando le potenze di tutti i gruppi
+  const calculateTotalPower = () => {
+    if (!falda.gruppiModuli || falda.gruppiModuli.length === 0) {
+      return 0;
+    }
+
+    const totalPower = falda.gruppiModuli.reduce((sum, gruppo) => {
+      const selectedModule = modules.find(m => m.id === gruppo.modulo) || modules[0];
+      const gruppoPower = (gruppo.numeroFile * gruppo.moduliPerFila * selectedModule.potenza) / 1000;
+      return sum + gruppoPower;
+    }, 0);
+
+    return totalPower;
   };
 
   return (
@@ -130,7 +160,9 @@ const FaldaItem = ({ falda, onRemove, onUpdate }) => {
 
         <div className="form-group mt-4">
           <label className="form-label">Potenza Totale Falda</label>
-          <p className="text-lg font-semibold p-2 bg-gray-100 rounded">0 kW</p>
+          <p className="text-lg font-semibold p-2 bg-green-100 rounded text-green-800">
+            {calculateTotalPower().toFixed(2)} kW
+          </p>
         </div>
       </div>
     </div>

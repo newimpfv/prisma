@@ -1,10 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from '../../context/FormContext';
 import FaldaItem from './FaldaItem';
 
 const Falde = () => {
   const { falde, setFalde } = useForm();
-  const [faldaCounter, setFaldaCounter] = useState(1);
+  const [faldaCounter, setFaldaCounter] = useState(() => {
+    // Inizializza il counter basandosi sul massimo ID esistente
+    if (falde.length === 0) return 1;
+    const maxId = Math.max(...falde.map(f => f.id || 0));
+    return maxId + 1;
+  });
+
+  // Aggiorna il counter quando le falde cambiano (es. dopo un caricamento da context)
+  useEffect(() => {
+    if (falde.length > 0) {
+      const maxId = Math.max(...falde.map(f => f.id || 0));
+      setFaldaCounter(prev => Math.max(prev, maxId + 1));
+    }
+  }, [falde.length]);
 
   const addFalda = () => {
     const newFalda = {

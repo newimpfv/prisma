@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { calculateAllResults } from '../utils/calculations';
+import { useProducts } from './ProductsContext';
 
 const FormContext = createContext();
 
@@ -17,6 +18,9 @@ const generateSessionId = () => {
 };
 
 export const FormProvider = ({ children }) => {
+  // Get products from ProductsContext
+  const { products } = useProducts();
+
   // Session Management
   const [sessionId, setSessionId] = useState(() => generateSessionId());
   const [hasCheckedDuplicates, setHasCheckedDuplicates] = useState(false);
@@ -145,6 +149,12 @@ export const FormProvider = ({ children }) => {
 
   // Auto-calculate results when data changes
   useEffect(() => {
+    // Skip calculations if products haven't loaded yet
+    if (!products) {
+      console.log('[FormContext] Waiting for products to load...');
+      return;
+    }
+
     try {
       const formData = {
         falde,
@@ -159,7 +169,8 @@ export const FormProvider = ({ children }) => {
         quoteData
       };
 
-      const calculatedResults = calculateAllResults(formData);
+      // Pass products data from Airtable to calculations
+      const calculatedResults = calculateAllResults(formData, products);
       setResults(calculatedResults);
     } catch (error) {
       console.error('Calculation error:', error);
@@ -174,7 +185,8 @@ export const FormProvider = ({ children }) => {
     unitCosts,
     energyData,
     economicParams,
-    quoteData
+    quoteData,
+    products // Recalculate when products from Airtable change
   ]);
 
   // Auto-save to localStorage every 30 seconds

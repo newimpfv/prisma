@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { FormProvider } from './context/FormContext';
 import { useAuth } from './context/AuthContext';
+import { useProducts } from './context/ProductsContext';
 import Login from './components/Login/Login';
 import Header from './components/Header/Header';
 import ClientManager from './components/ClientManager/ClientManager';
@@ -30,6 +31,7 @@ import { getOfflineQueue } from './services/offlineQueue';
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { products, loading: productsLoading, error: productsError, refresh: refreshProducts } = useProducts();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [syncStatus, setSyncStatus] = useState(null);
@@ -312,6 +314,69 @@ function App() {
             </div>
           )}
 
+          {/* Products Loading Indicator */}
+          {productsLoading && (
+            <div style={{
+              backgroundColor: '#8b5cf6',
+              color: 'white',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              animation: 'slideInDown 0.3s ease-out'
+            }}>
+              <span style={{ fontSize: '1.25rem' }}>⏳</span>
+              <span>Caricamento listino prezzi da Airtable...</span>
+            </div>
+          )}
+
+          {/* Products Error Indicator */}
+          {productsError && (
+            <div style={{
+              backgroundColor: '#ef4444',
+              color: 'white',
+              padding: '0.75rem 1rem',
+              borderRadius: '0.5rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>⚠️</span>
+                <span>Errore nel caricamento del listino: {productsError}. Uso dati in cache.</span>
+              </div>
+              <button
+                onClick={() => refreshProducts(true)}
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  border: '1px solid white',
+                  color: 'white',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.375rem',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+              >
+                🔄 Riprova
+              </button>
+            </div>
+          )}
+
           {/* Utility Buttons */}
           <UtilityBar />
 
@@ -368,29 +433,12 @@ function App() {
             ))}
           </div>
 
-          {/* Tab Content with Swipe Support */}
+          {/* Tab Content */}
           <div
             style={{
               position: 'relative',
               overflow: 'hidden',
               minHeight: '400px'
-            }}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              containerRef.current.touchStartX = touch.clientX;
-            }}
-            onTouchEnd={(e) => {
-              const touch = e.changedTouches[0];
-              const diff = containerRef.current.touchStartX - touch.clientX;
-
-              // Swipe left (next tab)
-              if (diff > 50 && selectedIndex < tabs.length - 1) {
-                handleTabChange(selectedIndex + 1);
-              }
-              // Swipe right (previous tab)
-              else if (diff < -50 && selectedIndex > 0) {
-                handleTabChange(selectedIndex - 1);
-              }
             }}
           >
             <div ref={formRef} className="tab-content" style={{

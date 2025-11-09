@@ -141,3 +141,20 @@ To modify the component database, locate the relevant select elements in the HTM
 
 © 2025 Newimp for SoleFacile S.r.l.
 All rights reserved.
+
+## costi standard manutenzione
+
+### <= 6 kW
+pulizia di base = 250/anno + IVA
+service base = 150/anno + IVA
+service plus = 400/aano + IVA
+monitoraggio remoto = 50/anno + IVA
+
+### > 6 kW <= 20 kW
+pulizia di base = 350/anno + IVA
+service base = 250/anno + IVA
+service plus = 600/aano + IVA
+monitoraggio remoto = 50/anno + IVA
+
+### > 20 kW
+manuale

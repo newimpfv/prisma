@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useForm } from '../../context/FormContext';
-import { generatePDFFromTemplate } from '../../services/pdfGenerator';
 
 const ExportButtons = () => {
   const [saveStatus, setSaveStatus] = useState('');
@@ -84,55 +83,44 @@ const ExportButtons = () => {
     }
   };
 
-  const handleGeneratePDF = async () => {
+  const handleSavePDF = async () => {
     try {
       setSaveStatus('⏳ Generazione PDF in corso...');
 
-      // Prepare all form data
-      const formData = {
-        clientData,
-        structureData,
-        falde,
-        inverters,
-        batteries,
-        components,
-        laborSafety,
-        unitCosts,
-        energyData,
-        economicParams,
-        quoteData,
-        customText,
-        pvgisData,
-        renderImages,
-        results
+      // Generate filename
+      const clientName = clientData.nome && clientData.cognome
+        ? `${clientData.nome}_${clientData.cognome}`
+        : clientData.nome || 'Cliente';
+      const riferimento = quoteData.riferimentoPreventivo || 'draft';
+
+      // Generate HTML preventivo
+      const quoteHTML = generateQuoteHTML();
+
+      // Open in new window for printing (preserves text selection)
+      const printWindow = window.open('', '_blank');
+
+      if (!printWindow) {
+        throw new Error('Popup bloccato. Abilita i popup per questo sito.');
+      }
+
+      printWindow.document.write(quoteHTML);
+      printWindow.document.close();
+
+      // Wait for content to load
+      printWindow.onload = () => {
+        // Trigger print dialog after a short delay
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
       };
 
-      // Try to generate PDF using PRISMA template
-      await generatePDFFromTemplate(formData);
+      setSaveStatus('✅ Finestra di stampa aperta. Usa "Salva come PDF" come destinazione.');
+      setTimeout(() => setSaveStatus(''), 5000);
 
-      setSaveStatus('✅ PDF generato con successo!');
-      setTimeout(() => setSaveStatus(''), 3000);
     } catch (error) {
-      console.error('Error generating PDF from template:', error);
-      setSaveStatus('⚠️ Errore template, uso versione semplificata...');
-
-      // Fallback to simple HTML version
-      setTimeout(() => {
-        try {
-          const quoteHTML = generateQuoteHTML();
-          const printWindow = window.open('', '_blank');
-          printWindow.document.write(quoteHTML);
-          printWindow.document.close();
-          printWindow.onload = () => {
-            printWindow.print();
-          };
-          setSaveStatus('✅ PDF semplificato generato!');
-          setTimeout(() => setSaveStatus(''), 3000);
-        } catch (fallbackError) {
-          setSaveStatus('❌ Errore nella generazione del PDF');
-          setTimeout(() => setSaveStatus(''), 3000);
-        }
-      }, 1000);
+      console.error('PDF generation error:', error);
+      setSaveStatus('❌ Errore: ' + error.message);
+      setTimeout(() => setSaveStatus(''), 5000);
     }
   };
 
@@ -162,149 +150,181 @@ const ExportButtons = () => {
   <meta charset="UTF-8">
   <title>Preventivo Impianto Fotovoltaico - ${clientName}</title>
   <style>
-    :root {
-      --primary-color: #0F3460;
-      --secondary-color: #2E8B57;
-      --accent-color: #E6B31E;
-      --light-bg: #f8f9fa;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       color: #333;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
+      margin: 0;
+      padding: 20mm 16mm;
       background-color: #fff;
+      font-size: 14px;
     }
 
     .header {
-      background: linear-gradient(135deg, #0F3460, #243b55);
+      background-color: #0F3460;
       color: white;
-      border-radius: 12px;
-      padding: 30px;
-      margin-bottom: 40px;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .header-info {
       text-align: right;
+      font-size: 14px;
     }
 
     .doc-title {
       color: white;
       font-weight: 700;
-      font-size: 24px;
-      margin-bottom: 15px;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      margin: 15px 0 10px 0;
+      color: #0F3460;
+    }
+
+    p {
+      margin: 5px 0;
     }
 
     .two-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      width: 100%;
       margin-bottom: 30px;
+      page-break-inside: avoid;
+      page-break-after: avoid;
     }
 
     .client-box, .tech-box {
-      background-color: var(--light-bg);
+      background-color: #f8f9fa;
       border-radius: 8px;
-      padding: 25px;
-      border-left: 4px solid var(--primary-color);
+      padding: 18px;
+      margin-bottom: 15px;
+      border-left: 4px solid #0F3460;
+      page-break-inside: avoid;
     }
 
     .section-title {
-      color: var(--primary-color);
-      font-size: 20px;
+      color: #0F3460;
+      font-size: 18px;
       font-weight: 600;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--secondary-color);
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #2E8B57;
     }
 
     .info-label {
       color: #718096;
-      font-size: 14px;
-      margin-bottom: 4px;
+      font-size: 13px;
+      margin: 10px 0 3px 0;
     }
 
     .info-value {
       font-weight: 600;
-      font-size: 16px;
+      font-size: 15px;
       color: #2D3748;
-      margin-bottom: 15px;
+      margin-bottom: 8px;
     }
 
     .eco-impact {
       background-color: #f0f9ff;
       border-radius: 8px;
       padding: 15px;
-      margin-top: 20px;
-      border-left: 4px solid var(--secondary-color);
+      margin-top: 15px;
+      border-left: 4px solid #2E8B57;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .eco-title {
       font-weight: 600;
-      color: var(--secondary-color);
+      color: #2E8B57;
       margin-bottom: 10px;
+      font-size: 14px;
     }
 
     .eco-stats {
-      display: flex;
-      justify-content: space-around;
+      width: 100%;
       text-align: center;
     }
 
+    .eco-stat-item {
+      display: inline-block;
+      width: 30%;
+      text-align: center;
+      margin: 5px;
+    }
+
     .eco-value {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
-      color: var(--secondary-color);
+      color: #2E8B57;
+      display: block;
     }
 
     .eco-label {
-      font-size: 12px;
+      font-size: 11px;
       color: #718096;
+      display: block;
     }
 
     .details-box {
       background-color: #fff;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 20px;
-      margin: 20px 0;
-      box-shadow: 0 4px 6px rgba(15, 52, 96, 0.05);
+      margin: 25px 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      page-break-inside: avoid;
     }
 
     .details-heading {
-      background-color: #f8f9fc;
-      margin: -20px -20px 20px -20px;
-      padding: 15px 20px;
+      background-color: #0F3460;
+      margin: -20px -20px 15px -20px;
+      padding: 12px 20px;
       font-weight: 600;
-      color: var(--primary-color);
+      color: white;
+      font-size: 16px;
+      border-radius: 10px 10px 0 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
-      border-radius: 8px;
-      overflow: hidden;
+      margin: 15px 0;
+      page-break-inside: avoid;
     }
 
     th {
       background-color: #0F3460;
       color: white;
-      font-weight: 500;
-      text-transform: uppercase;
-      font-size: 14px;
-      padding: 12px;
+      font-weight: bold;
+      font-size: 13px;
+      padding: 10px;
       text-align: left;
+      border: 1px solid #0F3460;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #edf2f7;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
       text-align: left;
+      font-size: 13px;
     }
 
     tr:nth-child(even) {
@@ -313,116 +333,130 @@ const ExportButtons = () => {
 
     .total-row {
       font-weight: bold;
-      background-color: #eef2ff !important;
-      border-top: 2px solid var(--primary-color);
+      background-color: #e3f2fd !important;
+      border-top: 2px solid #0F3460;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .final-price-container {
-      background: linear-gradient(135deg, #0F3460, #243b55);
+      background-color: #0F3460;
       color: white;
-      border-radius: 12px;
-      padding: 30px;
-      margin-top: 30px;
+      border-radius: 10px;
+      padding: 25px;
+      margin-top: 25px;
       text-align: right;
+      page-break-inside: avoid;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .final-price {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
       color: white;
+      margin-top: 10px;
     }
 
     .note-container {
-      margin-top: 30px;
-      padding: 20px;
+      margin-top: 25px;
+      padding: 18px;
       background-color: #fffde7;
       border-radius: 8px;
       border-left: 4px solid #f9a825;
+      page-break-inside: avoid;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .note-title {
       color: #f57f17;
       font-weight: 600;
-      margin-top: 0;
+      margin: 0 0 12px 0;
+      font-size: 16px;
     }
 
     .note-list {
       padding-left: 20px;
+      margin: 0;
     }
 
     .note-list li {
       margin-bottom: 8px;
+      line-height: 1.5;
     }
 
     .signature-area {
-      margin-top: 60px;
-      padding-top: 40px;
+      margin-top: 50px;
+      padding-top: 30px;
       border-top: 1px dashed rgba(15, 52, 96, 0.2);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
+      width: 100%;
+      page-break-inside: avoid;
     }
 
     .signature-box {
-      min-height: 100px;
-      border-bottom: 1px solid rgba(15, 52, 96, 0.2);
-      padding-bottom: 15px;
+      display: inline-block;
+      width: 45%;
+      min-height: 80px;
+      border-bottom: 1px solid rgba(15, 52, 96, 0.3);
+      padding-bottom: 10px;
+      margin: 10px 2%;
+      vertical-align: top;
     }
 
     .signature-label {
-      font-size: 14px;
+      font-size: 13px;
       color: #666;
       margin-top: 10px;
+      display: block;
     }
 
     .footer {
       background-color: #0F3460;
       color: white;
-      border-radius: 12px;
-      padding: 30px;
-      margin-top: 40px;
+      border-radius: 10px;
+      padding: 25px;
+      margin-top: 30px;
       text-align: center;
+      page-break-inside: avoid;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .contact-info {
-      margin-top: 15px;
+      margin-top: 12px;
       font-size: 0.9em;
     }
 
-    .print-button {
-      background-color: #1a56db;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 20px 0;
-    }
-
-    .print-button:hover {
-      background-color: #1e40af;
+    h4 {
+      margin: 20px 0 10px 0;
+      font-size: 15px;
     }
 
     @media print {
+      body {
+        padding: 0;
+        margin: 0;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .details-box, .client-box, .tech-box, .note-container, .signature-area {
+        page-break-inside: avoid;
+      }
+
       @page {
         margin: 20mm 16mm;
         size: A4;
       }
 
-      body {
-        padding: 0;
-        margin: 0;
-        font-size: 14px;
-      }
-
-      .print-button {
-        display: none;
-      }
-
-      .header, .footer {
+      /* Ensure colors print correctly */
+      * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
     }
   </style>
@@ -477,17 +511,17 @@ const ExportButtons = () => {
       <div class="eco-impact">
         <p class="eco-title">Impatto Ambientale</p>
         <div class="eco-stats">
-          <div>
-            <div class="eco-value">${Math.round(co2Saved / 1000)}</div>
-            <div class="eco-label">Tonn. CO₂</div>
+          <div class="eco-stat-item">
+            <span class="eco-value">${Math.round(co2Saved / 1000)}</span>
+            <span class="eco-label">Tonn. CO₂</span>
           </div>
-          <div>
-            <div class="eco-value">${treesEquivalent}</div>
-            <div class="eco-label">Alberi equiv.</div>
+          <div class="eco-stat-item">
+            <span class="eco-value">${treesEquivalent}</span>
+            <span class="eco-label">Alberi equiv.</span>
           </div>
-          <div>
-            <div class="eco-value">${carsAvoided}</div>
-            <div class="eco-label">Viaggi evitati</div>
+          <div class="eco-stat-item">
+            <span class="eco-value">${carsAvoided}</span>
+            <span class="eco-label">Viaggi evitati</span>
           </div>
         </div>
       </div>
@@ -511,74 +545,225 @@ const ExportButtons = () => {
   <div class="details-box">
     <h3 class="details-heading">Configurazione Impianto</h3>
 
-    <h4>Moduli Fotovoltaici</h4>
-    <table>
+    <h4 style="color: #0F3460; margin-top: 20px; margin-bottom: 15px; font-size: 16px;">Moduli Fotovoltaici - Dettaglio Falde</h4>
+    ${falde.map((falda, idx) => {
+      const totalePotenzaFalda = falda.gruppiModuli.reduce((sum, g) => {
+        const modulo = g.modulo;
+        const numeroModuli = g.numeroFile * g.moduliPerFila;
+        return sum + (modulo ? numeroModuli * (modulo.potenza / 1000) : 0);
+      }, 0);
+      const totaleModuliFalda = falda.gruppiModuli.reduce((sum, g) => sum + (g.numeroFile * g.moduliPerFila), 0);
+
+      return `
+        <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #2E8B57; page-break-inside: avoid;">
+          <h5 style="color: #0F3460; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">${falda.nomeFalda || `Falda ${idx + 1}`}</h5>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px;">
+            <div>
+              <span style="color: #718096; font-size: 12px;">Inclinazione:</span>
+              <span style="font-weight: 600; display: block;">${falda.inclinazione || 0}°</span>
+            </div>
+            <div>
+              <span style="color: #718096; font-size: 12px;">Orientamento:</span>
+              <span style="font-weight: 600; display: block;">${falda.orientamento || 0}°</span>
+            </div>
+            <div>
+              <span style="color: #718096; font-size: 12px;">Dimensioni:</span>
+              <span style="font-weight: 600; display: block;">${falda.lunghezza || 0}m × ${falda.larghezza || 0}m</span>
+            </div>
+            <div>
+              <span style="color: #718096; font-size: 12px;">N° Moduli:</span>
+              <span style="font-weight: 600; display: block; color: #2E8B57;">${totaleModuliFalda}</span>
+            </div>
+            <div>
+              <span style="color: #718096; font-size: 12px;">Potenza Totale:</span>
+              <span style="font-weight: 600; display: block; color: #2E8B57;">${totalePotenzaFalda.toFixed(2)} kWp</span>
+            </div>
+          </div>
+          ${falda.gruppiModuli && falda.gruppiModuli.length > 0 ? `
+            <div style="margin-top: 10px;">
+              <span style="color: #718096; font-size: 12px; font-weight: 600;">Gruppi Moduli:</span>
+              ${falda.gruppiModuli.map((gruppo, gIdx) => {
+                const modulo = gruppo.modulo;
+                const numModuli = gruppo.numeroFile * gruppo.moduliPerFila;
+                const potenzaGruppo = modulo ? (numModuli * modulo.potenza / 1000).toFixed(2) : 0;
+                return `
+                  <div style="background-color: white; padding: 8px; margin-top: 8px; border-radius: 4px; font-size: 12px;">
+                    <strong>Gruppo ${gIdx + 1}:</strong> ${modulo?.marca || ''} ${modulo?.modello || ''} (${modulo?.potenza || 0}W)
+                    <br><span style="color: #718096;">${gruppo.numeroFile} file × ${gruppo.moduliPerFila} moduli = ${numModuli} moduli → ${potenzaGruppo} kWp</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('')}
+
+    <h4 style="color: #0F3460; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">Riepilogo Moduli</h4>
+    <table style="margin-top: 10px;">
       <thead>
         <tr>
           <th>Falda</th>
-          <th>Moduli</th>
-          <th>Potenza</th>
+          <th style="text-align: center;">N° Moduli</th>
+          <th style="text-align: center;">Potenza (kWp)</th>
         </tr>
       </thead>
       <tbody>
-        ${falde.map(falda => {
+        ${falde.map((falda, idx) => {
           const totalePotenzaFalda = falda.gruppiModuli.reduce((sum, g) => {
             const modulo = g.modulo;
             const numeroModuli = g.numeroFile * g.moduliPerFila;
             return sum + (modulo ? numeroModuli * (modulo.potenza / 1000) : 0);
           }, 0);
+          const totaleModuliFalda = falda.gruppiModuli.reduce((sum, g) => sum + (g.numeroFile * g.moduliPerFila), 0);
 
           return `
             <tr>
-              <td>${falda.nomeFalda}</td>
-              <td>${falda.gruppiModuli.reduce((sum, g) => sum + (g.numeroFile * g.moduliPerFila), 0)}</td>
-              <td>${totalePotenzaFalda.toFixed(2)} kW</td>
+              <td>${falda.nomeFalda || `Falda ${idx + 1}`}</td>
+              <td style="text-align: center; font-weight: 600;">${totaleModuliFalda}</td>
+              <td style="text-align: center; font-weight: 600; color: #2E8B57;">${totalePotenzaFalda.toFixed(2)}</td>
             </tr>
           `;
         }).join('')}
+        <tr style="background-color: #eef2ff; font-weight: bold; border-top: 2px solid #0F3460;">
+          <td>TOTALE</td>
+          <td style="text-align: center;">${falde.reduce((sum, f) => sum + f.gruppiModuli.reduce((s, g) => s + (g.numeroFile * g.moduliPerFila), 0), 0)}</td>
+          <td style="text-align: center; color: #2E8B57;">${potenzaTotale.toFixed(2)}</td>
+        </tr>
       </tbody>
     </table>
 
     ${inverters.length > 0 ? `
-    <h4 style="margin-top: 20px;">Inverter</h4>
+    <h4 style="color: #0F3460; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">Inverter</h4>
     <table>
       <thead>
         <tr>
           <th>Modello</th>
-          <th>Stringhe</th>
-          <th>Quantità</th>
+          <th style="text-align: center;">Potenza</th>
+          <th style="text-align: center;">Stringhe</th>
+          <th style="text-align: center;">Quantità</th>
+          <th style="text-align: right;">Costo</th>
         </tr>
       </thead>
       <tbody>
-        ${inverters.map(inv => `
+        ${inverters.map(inv => {
+          const costoUnitario = inv.modello?.prezzo || 0;
+          const costoTotale = (costoUnitario * (inv.quantita || 1)).toFixed(2);
+          return `
           <tr>
             <td>${inv.modello?.marca || ''} ${inv.modello?.modello || ''}</td>
-            <td>${inv.stringhe}</td>
-            <td>${inv.quantita}</td>
+            <td style="text-align: center;">${inv.modello?.potenza || '-'} kW</td>
+            <td style="text-align: center;">${inv.stringhe || '-'}</td>
+            <td style="text-align: center; font-weight: 600;">${inv.quantita || 1}</td>
+            <td style="text-align: right;">€ ${costoTotale}</td>
           </tr>
-        `).join('')}
+        `;
+        }).join('')}
       </tbody>
     </table>
     ` : ''}
 
     ${batteries.length > 0 ? `
-    <h4 style="margin-top: 20px;">Sistema di Accumulo</h4>
+    <h4 style="color: #0F3460; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">Sistema di Accumulo</h4>
     <table>
       <thead>
         <tr>
           <th>Modello</th>
-          <th>Capacità</th>
-          <th>Quantità</th>
+          <th style="text-align: center;">Capacità (kWh)</th>
+          <th style="text-align: center;">Tensione (V)</th>
+          <th style="text-align: center;">Quantità</th>
+          <th style="text-align: right;">Costo</th>
         </tr>
       </thead>
       <tbody>
-        ${batteries.map(batt => `
+        ${batteries.map(batt => {
+          const costoUnitario = batt.modello?.prezzo || 0;
+          const costoTotale = (costoUnitario * (batt.quantita || 1)).toFixed(2);
+          return `
           <tr>
             <td>${batt.modello?.marca || ''} ${batt.modello?.modello || ''}</td>
-            <td>${batt.modello?.capacita || ''} kWh</td>
-            <td>${batt.quantita}</td>
+            <td style="text-align: center; font-weight: 600;">${batt.modello?.capacita || '-'}</td>
+            <td style="text-align: center;">${batt.modello?.tensione || '-'}</td>
+            <td style="text-align: center; font-weight: 600;">${batt.quantita || 1}</td>
+            <td style="text-align: right;">€ ${costoTotale}</td>
           </tr>
-        `).join('')}
+        `;
+        }).join('')}
+        <tr style="background-color: #f0f9ff; font-weight: bold;">
+          <td colspan="3">Capacità Totale</td>
+          <td style="text-align: center; color: #2E8B57;">
+            ${batteries.reduce((sum, b) => sum + ((b.modello?.capacita || 0) * (b.quantita || 1)), 0).toFixed(1)} kWh
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    ` : ''}
+
+    ${(components?.evCharger && components.evCharger !== 'none') ||
+      (components?.essCabinet && components.essCabinet !== 'none') ||
+      (components?.parallelBox && components.parallelBox !== 'none') ||
+      (components?.connettivita && components.connettivita !== 'none') ||
+      (components?.backupControllo && components.backupControllo !== 'none') ? `
+    <h4 style="color: #0F3460; margin-top: 25px; margin-bottom: 10px; font-size: 16px;">Accessori e Componenti Aggiuntivi</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th style="text-align: center;">Modello</th>
+          <th style="text-align: center;">Quantità</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${components?.evCharger && components.evCharger !== 'none' ? `
+          <tr>
+            <td>Caricatore EV</td>
+            <td style="text-align: center;">${components.evCharger}</td>
+            <td style="text-align: center;">${components.numeroEvCharger || 1}</td>
+          </tr>
+        ` : ''}
+        ${components?.essCabinet && components.essCabinet !== 'none' ? `
+          <tr>
+            <td>ESS Cabinet</td>
+            <td style="text-align: center;">${components.essCabinet}</td>
+            <td style="text-align: center;">${components.numeroEssCabinet || 1}</td>
+          </tr>
+        ` : ''}
+        ${components?.parallelBox && components.parallelBox !== 'none' ? `
+          <tr>
+            <td>Parallel Box</td>
+            <td style="text-align: center;">${components.parallelBox}</td>
+            <td style="text-align: center;">${components.numeroParallelBox || 1}</td>
+          </tr>
+        ` : ''}
+        ${components?.connettivita && components.connettivita !== 'none' ? `
+          <tr>
+            <td>Connettività</td>
+            <td style="text-align: center;">${components.connettivita}</td>
+            <td style="text-align: center;">${components.numeroConnettivita || 1}</td>
+          </tr>
+        ` : ''}
+        ${components?.backupControllo && components.backupControllo !== 'none' ? `
+          <tr>
+            <td>Backup Controllo</td>
+            <td style="text-align: center;">${components.backupControllo}</td>
+            <td style="text-align: center;">${components.numeroBackupControllo || 1}</td>
+          </tr>
+        ` : ''}
+        ${components?.meterCT && components.meterCT !== 'none' ? `
+          <tr>
+            <td>Meter CT</td>
+            <td style="text-align: center;">${components.meterCT}</td>
+            <td style="text-align: center;">${components.numeroMeterCT || 1}</td>
+          </tr>
+        ` : ''}
+        ${components?.caviAccessori && components.caviAccessori !== 'none' ? `
+          <tr>
+            <td>Cavi e Accessori</td>
+            <td style="text-align: center;">${components.caviAccessori}</td>
+            <td style="text-align: center;">${components.numeroCaviAccessori || 1}</td>
+          </tr>
+        ` : ''}
       </tbody>
     </table>
     ` : ''}
@@ -655,9 +840,9 @@ const ExportButtons = () => {
   ${renderImages.some(img => img) ? `
   <div class="details-box">
     <h3 class="details-heading">Render dell'Impianto</h3>
-    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+    <div style="text-align: center;">
       ${renderImages.map((img, index) => img ? `
-        <img src="${img}" alt="Render ${index + 1}" style="max-width: 45%; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <img src="${img}" alt="Render ${index + 1}" style="max-width: 90%; margin: 10px auto; display: block; border: 1px solid #ccc;">
       ` : '').join('')}
     </div>
   </div>
@@ -689,27 +874,24 @@ const ExportButtons = () => {
   <!-- Why Choose SoleFacile -->
   <div class="details-box">
     <h3 class="details-heading">Perché Scegliere SoleFacile</h3>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-      <div>
-        <p><strong>✓ Esperienza Comprovata</strong></p>
-        <p style="color: #666; font-size: 14px;">Oltre 500 impianti installati in tutta Italia</p>
+    <div>
+      <p><strong>✓ Esperienza Comprovata</strong></p>
+      <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Oltre 500 impianti installati in tutta Italia</p>
 
-        <p><strong>✓ Assistenza Continuativa</strong></p>
-        <p style="color: #666; font-size: 14px;">Supporto tecnico dedicato per 5 anni</p>
+      <p><strong>✓ Assistenza Continuativa</strong></p>
+      <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Supporto tecnico dedicato per 5 anni</p>
 
-        <p><strong>✓ Materiali Premium</strong></p>
-        <p style="color: #666; font-size: 14px;">Utilizziamo solo componenti certificati di alta qualità</p>
-      </div>
-      <div>
-        <p><strong>✓ Installatori Qualificati</strong></p>
-        <p style="color: #666; font-size: 14px;">Team di tecnici specializzati e certificati</p>
+      <p><strong>✓ Materiali Premium</strong></p>
+      <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Utilizziamo solo componenti certificati di alta qualità</p>
 
-        <p><strong>✓ Monitoraggio Avanzato</strong></p>
-        <p style="color: #666; font-size: 14px;">Sistema di controllo remoto incluso</p>
+      <p><strong>✓ Installatori Qualificati</strong></p>
+      <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Team di tecnici specializzati e certificati</p>
 
-        <p><strong>✓ Pratiche Amministrative</strong></p>
-        <p style="color: #666; font-size: 14px;">Gestiamo tutte le procedure burocratiche</p>
-      </div>
+      <p><strong>✓ Monitoraggio Avanzato</strong></p>
+      <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Sistema di controllo remoto incluso</p>
+
+      <p><strong>✓ Pratiche Amministrative</strong></p>
+      <p style="color: #666; font-size: 13px; margin-bottom: 12px;">Gestiamo tutte le procedure burocratiche</p>
     </div>
   </div>
 
@@ -725,6 +907,14 @@ const ExportButtons = () => {
     </div>
   </div>
 
+  <!-- Print Button (shown on screen, hidden on print) -->
+  <div style="text-align: center; margin: 30px 0; padding: 20px; background: #f0f9ff; border-radius: 8px;" class="no-print">
+    <button onclick="window.print()" style="background: #0F3460; color: white; padding: 15px 40px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+      🖨️ Stampa / Salva come PDF
+    </button>
+    <p style="margin-top: 10px; color: #718096; font-size: 14px;">Usa "Salva come PDF" come destinazione nella finestra di stampa</p>
+  </div>
+
   <!-- Footer -->
   <div class="footer">
     <p><strong>SoleFacile S.r.l.</strong> - P.IVA IT 09557480010</p>
@@ -733,9 +923,6 @@ const ExportButtons = () => {
       <p>Tel: +39 3200103380 | Email: solefacilesrl@gmail.com</p>
       <p>Web: www.solefacilesrl.com</p>
     </div>
-    <p style="margin-top: 20px;">
-      <button class="print-button" onclick="window.print()">Stampa / Salva come PDF</button>
-    </p>
   </div>
 </body>
 </html>`;
@@ -743,7 +930,7 @@ const ExportButtons = () => {
 
   return (
     <div className="mt-6 mb-6 flex flex-col items-center gap-4">
-      {/* Save File Button */}
+      {/* Export .prisma File Button */}
       <button
         onClick={handleSaveFile}
         className="bg-blue-900 hover:bg-blue-950 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 flex items-center w-full max-w-xs"
@@ -753,25 +940,27 @@ const ExportButtons = () => {
           <polyline points="17 21 17 13 7 13 7 21"></polyline>
           <polyline points="7 3 7 8 15 8"></polyline>
         </svg>
-        Salva File
+        Esporta file .prisma
       </button>
 
-      {/* Generate PDF Button */}
+      {/* Save PDF Button */}
       <button
-        onClick={handleGeneratePDF}
+        onClick={handleSavePDF}
         className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300 flex items-center w-full max-w-xs"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
-        Genera Preventivo
+        Salva PDF
       </button>
 
       {/* Status Message */}
       {saveStatus && (
-        <div className={`mt-2 p-3 rounded-lg transition-opacity ${
+        <div className={`mt-2 p-3 rounded-lg transition-opacity text-center ${
           saveStatus.startsWith('✅')
             ? 'bg-green-100 text-green-800'
+            : saveStatus.startsWith('⏳')
+            ? 'bg-blue-100 text-blue-800'
             : 'bg-red-100 text-red-800'
         }`}>
           {saveStatus}
