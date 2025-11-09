@@ -1,4 +1,7 @@
 .DS_Store
 other/
 */.env
+*/.env.local
+*/.env.production
+*/.env.development
 prisma-react/package-lock.json
