@@ -1,11 +1,10 @@
 /**
  * PRISMA Calculation Engine
  * All calculation functions for solar installation quoting
+ *
+ * Now uses dynamic product data from Airtable instead of static imports
  */
 
-import { modules } from '../data/modules';
-import { inverters } from '../data/inverters';
-import { batteries } from '../data/batteries';
 import {
   essCabinet,
   parallelBox,
@@ -18,13 +17,17 @@ import {
 
 // Helper function to find product by ID
 const findProductById = (data, id) => {
+  if (!data) return null;
+
   if (Array.isArray(data)) {
     return data.find(item => item.id === id);
   }
   // If data is object with categories
   for (const category of Object.values(data)) {
-    const found = category.find(item => item.id === id);
-    if (found) return found;
+    if (Array.isArray(category)) {
+      const found = category.find(item => item.id === id);
+      if (found) return found;
+    }
   }
   return null;
 };
@@ -37,7 +40,8 @@ export const calculateTotalModules = (falde) => {
   let total = 0;
   falde.forEach(falda => {
     falda.gruppiModuli.forEach(gruppo => {
-      total += gruppo.numeroModuli || 0;
+      const numeroModuli = (gruppo.numeroFile || 0) * (gruppo.moduliPerFila || 0);
+      total += numeroModuli;
     });
   });
   return total;
@@ -47,13 +51,14 @@ export const calculateTotalModules = (falde) => {
  * 2. Calculate Total Power (kW)
  * Total power from all modules
  */
-export const calculateTotalPower = (falde) => {
+export const calculateTotalPower = (falde, modulesData = []) => {
   let totalWatts = 0;
   falde.forEach(falda => {
     falda.gruppiModuli.forEach(gruppo => {
-      const module = modules.find(m => m.id === gruppo.modulo);
+      const module = modulesData.find(m => m.id === gruppo.modulo);
       if (module) {
-        totalWatts += (module.potenza * (gruppo.numeroModuli || 0));
+        const numeroModuli = (gruppo.numeroFile || 0) * (gruppo.moduliPerFila || 0);
+        totalWatts += (module.potenza * numeroModuli);
       }
     });
   });
@@ -64,13 +69,14 @@ export const calculateTotalPower = (falde) => {
  * 3. Calculate Module Costs
  * Total cost of all solar modules
  */
-export const calculateModuleCosts = (falde) => {
+export const calculateModuleCosts = (falde, modulesData = []) => {
   let total = 0;
   falde.forEach(falda => {
     falda.gruppiModuli.forEach(gruppo => {
-      const module = modules.find(m => m.id === gruppo.modulo);
+      const module = modulesData.find(m => m.id === gruppo.modulo);
       if (module) {
-        total += (module.prezzo * (gruppo.numeroModuli || 0));
+        const numeroModuli = (gruppo.numeroFile || 0) * (gruppo.moduliPerFila || 0);
+        total += (module.prezzo * numeroModuli);
       }
     });
   });
@@ -81,11 +87,11 @@ export const calculateModuleCosts = (falde) => {
  * 4. Calculate Inverter Costs
  * Total cost of all inverters
  */
-export const calculateInverterCosts = (invertersList) => {
+export const calculateInverterCosts = (invertersList, invertersData = []) => {
   let total = 0;
   invertersList.forEach(inv => {
     if (inv.tipo !== 'none') {
-      const inverter = findProductById(inverters, inv.tipo);
+      const inverter = findProductById(invertersData, inv.tipo);
       if (inverter) {
         total += (inverter.prezzo * (inv.quantita || 1));
       }
@@ -98,11 +104,11 @@ export const calculateInverterCosts = (invertersList) => {
  * 5. Calculate Battery Costs
  * Total cost of all batteries
  */
-export const calculateBatteryCosts = (batteriesList) => {
+export const calculateBatteryCosts = (batteriesList, batteriesData = []) => {
   let total = 0;
   batteriesList.forEach(bat => {
     if (bat.tipo !== 'none') {
-      const battery = findProductById(batteries, bat.tipo);
+      const battery = findProductById(batteriesData, bat.tipo);
       if (battery) {
         total += (battery.prezzo * (bat.quantita || 1));
       }
@@ -181,7 +187,7 @@ export const calculateAccessoryCosts = (components) => {
  * 7. Calculate Structural Components
  * Rails, clamps, brackets based on modules and roof type
  */
-export const calculateStructuralComponents = (falde, structureData, unitCosts, totalModules) => {
+export const calculateStructuralComponents = (falde, structureData, unitCosts, totalModules, modulesData = []) => {
   const tipoTetto = structureData.tipoTetto;
   const lunghezzaGuida = 3.1; // meters per rail
 
@@ -207,7 +213,7 @@ export const calculateStructuralComponents = (falde, structureData, unitCosts, t
         morsettiFinali += morsettiFinaliPerFila * numeroFile;
 
         // Calculate rails based on actual module dimensions
-        const module = modules.find(m => m.id === gruppo.modulo);
+        const module = modulesData.find(m => m.id === gruppo.modulo);
         if (module) {
           const orientamento = gruppo.orientamento || 'verticale';
           const larghezzaEffettiva = orientamento === 'verticale' ? module.larghezza : module.altezza;
@@ -453,8 +459,10 @@ export const calculateROI = (totalWithIVA, annualSavings, economicParams) => {
 /**
  * MASTER CALCULATION FUNCTION
  * Performs all calculations and returns complete results
+ * @param {Object} formData - Form data from FormContext
+ * @param {Object} productsData - Products data from Airtable (modules, inverters, batteries)
  */
-export const calculateAllResults = (formData) => {
+export const calculateAllResults = (formData, productsData = {}) => {
   const {
     falde,
     inverters: invertersList,
@@ -468,18 +476,23 @@ export const calculateAllResults = (formData) => {
     quoteData
   } = formData;
 
+  // Extract product arrays from organized data
+  const modules = productsData.modules || [];
+  const inverters = productsData.inverters || [];
+  const batteries = productsData.batteries || [];
+
   // Basic calculations
   const totaleModuli = calculateTotalModules(falde);
-  const potenzaTotaleKw = calculateTotalPower(falde);
+  const potenzaTotaleKw = calculateTotalPower(falde, modules);
 
   // Cost calculations
-  const costoModuli = calculateModuleCosts(falde);
-  const costoInverter = calculateInverterCosts(invertersList);
-  const costoBatterie = calculateBatteryCosts(batteriesList);
+  const costoModuli = calculateModuleCosts(falde, modules);
+  const costoInverter = calculateInverterCosts(invertersList, inverters);
+  const costoBatterie = calculateBatteryCosts(batteriesList, batteries);
   const costoAccessori = calculateAccessoryCosts(components);
 
   // Structural calculations
-  const strutturale = calculateStructuralComponents(falde, structureData, unitCosts, totaleModuli);
+  const strutturale = calculateStructuralComponents(falde, structureData, unitCosts, totaleModuli, modules);
   const cavi = calculateCableLengths(structureData, unitCosts, totaleModuli);
 
   // Labor

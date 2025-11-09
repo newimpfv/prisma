@@ -1,6 +1,8 @@
-import { modules } from '../../data/modules';
+import { useModules } from '../../hooks/useProductData';
 
 const GruppoModuli = ({ gruppo, faldaId, onRemove, onUpdate }) => {
+  const { modules, loading } = useModules();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     onUpdate(gruppo.id, { [name]: value });
@@ -52,16 +54,25 @@ const GruppoModuli = ({ gruppo, faldaId, onRemove, onUpdate }) => {
             value={gruppo.modulo}
             onChange={handleChange}
             className="form-select"
+            disabled={loading}
           >
-            {modules.map((module) => (
-              <option key={module.id} value={module.id}>
-                {module.name} (€{module.prezzo.toFixed(2)})
-              </option>
-            ))}
+            {loading ? (
+              <option>Caricamento moduli...</option>
+            ) : modules.length === 0 ? (
+              <option>Nessun modulo disponibile</option>
+            ) : (
+              modules.map((module) => (
+                <option key={module.airtableId || module.id} value={module.id}>
+                  {module.name} (€{module.prezzo.toFixed(2)})
+                </option>
+              ))
+            )}
           </select>
-          <p className="text-xs text-gray-600 mt-1">
-            Dimensioni: {selectedModule.larghezza}m x {selectedModule.altezza}m - {selectedModule.potenza}W
-          </p>
+          {!loading && selectedModule && (
+            <p className="text-xs text-gray-600 mt-1">
+              Dimensioni: {selectedModule.larghezza}m x {selectedModule.altezza}m - {selectedModule.potenza}W
+            </p>
+          )}
         </div>
 
         <div className="form-group">

@@ -22,6 +22,14 @@ function MaintenanceContract() {
     monitoraggio_remoto: { selected: false, pricePerKw: '' }
   });
 
+  // Track if prices have been manually modified
+  const [pricesManuallyModified, setPricesManuallyModified] = useState({
+    pulizia: false,
+    service_base: false,
+    service_plus: false,
+    monitoraggio_remoto: false
+  });
+
   // Price list items (dynamic array)
   const [priceItems, setPriceItems] = useState([
     { id: 1, price: '', description: '' }
@@ -34,6 +42,87 @@ function MaintenanceContract() {
       // You can pre-fill power from installation data if available
     }
   }, [selectedClientRecord]);
+
+  // Calculate default prices based on power (only if not manually modified)
+  const calculateDefaultPrices = (power) => {
+    const powerNum = parseFloat(power);
+
+    if (!powerNum || powerNum <= 0) {
+      return null;
+    }
+
+    // Over 20 kW = manual entry (no defaults)
+    if (powerNum > 20) {
+      return null;
+    }
+
+    let defaultPrices;
+
+    if (powerNum <= 6) {
+      // <= 6 kW
+      defaultPrices = {
+        pulizia_total: 250,
+        service_base_total: 150,
+        service_plus_total: 400,
+        monitoraggio_remoto_total: 50
+      };
+    } else if (powerNum > 6 && powerNum <= 20) {
+      // > 6 kW and <= 20 kW
+      defaultPrices = {
+        pulizia_total: 350,
+        service_base_total: 250,
+        service_plus_total: 600,
+        monitoraggio_remoto_total: 50
+      };
+    }
+
+    // Convert total prices to price per kW
+    return {
+      pulizia: (defaultPrices.pulizia_total / powerNum).toFixed(2),
+      service_base: (defaultPrices.service_base_total / powerNum).toFixed(2),
+      service_plus: (defaultPrices.service_plus_total / powerNum).toFixed(2),
+      monitoraggio_remoto: (defaultPrices.monitoraggio_remoto_total / powerNum).toFixed(2)
+    };
+  };
+
+  // Auto-fill prices when power changes (only if not manually modified)
+  useEffect(() => {
+    if (formData.power) {
+      const defaultPrices = calculateDefaultPrices(formData.power);
+
+      if (defaultPrices) {
+        setServices(prev => ({
+          pulizia: {
+            selected: prev.pulizia.selected,
+            pricePerKw: pricesManuallyModified.pulizia ? prev.pulizia.pricePerKw : defaultPrices.pulizia
+          },
+          service_base: {
+            selected: prev.service_base.selected,
+            pricePerKw: pricesManuallyModified.service_base ? prev.service_base.pricePerKw : defaultPrices.service_base
+          },
+          service_plus: {
+            selected: prev.service_plus.selected,
+            pricePerKw: pricesManuallyModified.service_plus ? prev.service_plus.pricePerKw : defaultPrices.service_plus
+          },
+          monitoraggio_remoto: {
+            selected: prev.monitoraggio_remoto.selected,
+            pricePerKw: pricesManuallyModified.monitoraggio_remoto ? prev.monitoraggio_remoto.pricePerKw : defaultPrices.monitoraggio_remoto
+          }
+        }));
+      } else if (parseFloat(formData.power) > 20) {
+        // Clear prices for manual entry when power > 20 kW
+        if (!pricesManuallyModified.pulizia && !pricesManuallyModified.service_base &&
+            !pricesManuallyModified.service_plus && !pricesManuallyModified.monitoraggio_remoto) {
+          setServices(prev => ({
+            pulizia: { selected: prev.pulizia.selected, pricePerKw: '' },
+            service_base: { selected: prev.service_base.selected, pricePerKw: '' },
+            service_plus: { selected: prev.service_plus.selected, pricePerKw: '' },
+            monitoraggio_remoto: { selected: prev.monitoraggio_remoto.selected, pricePerKw: '' }
+          }));
+        }
+      }
+    }
+  }, [formData.power]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +143,12 @@ function MaintenanceContract() {
   };
 
   const handleServicePriceChange = (serviceName, price) => {
+    // Mark as manually modified when user changes the price
+    setPricesManuallyModified(prev => ({
+      ...prev,
+      [serviceName]: true
+    }));
+
     setServices(prev => ({
       ...prev,
       [serviceName]: {
@@ -320,6 +415,14 @@ function MaintenanceContract() {
         monitoraggio_remoto: { selected: false, pricePerKw: '' }
       });
 
+      // Reset manual modification tracking
+      setPricesManuallyModified({
+        pulizia: false,
+        service_base: false,
+        service_plus: false,
+        monitoraggio_remoto: false
+      });
+
       // Reset price items
       setPriceItems([
         { id: 1, price: '', description: '' }
@@ -433,9 +536,12 @@ function MaintenanceContract() {
 
         {/* Service Types - Checkboxes */}
         <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.75rem' }}>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', color: '#374151', marginBottom: '0.5rem' }}>
             Tipo di Servizio * (seleziona uno o più)
           </label>
+          <p style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+            I prezzi vengono calcolati automaticamente in base alla potenza dell'impianto ma sono sempre modificabili
+          </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{
               display: 'flex',
@@ -704,6 +810,40 @@ function MaintenanceContract() {
               outline: 'none'
             }}
           />
+
+          {/* Show pricing tier indicator */}
+          {formData.power && (
+            <div style={{
+              marginTop: '0.5rem',
+              padding: '0.75rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+              backgroundColor: parseFloat(formData.power) <= 6 ? '#dbeafe' :
+                              parseFloat(formData.power) <= 20 ? '#e0e7ff' : '#fef3c7',
+              color: parseFloat(formData.power) <= 6 ? '#1e40af' :
+                     parseFloat(formData.power) <= 20 ? '#4338ca' : '#92400e',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              {parseFloat(formData.power) <= 6 ? (
+                <>
+                  <span>💡</span>
+                  <span><strong>Fascia 1:</strong> Impianto ≤ 6 kW - Prezzi standard applicati automaticamente</span>
+                </>
+              ) : parseFloat(formData.power) <= 20 ? (
+                <>
+                  <span>⚡</span>
+                  <span><strong>Fascia 2:</strong> Impianto 6-20 kW - Prezzi standard applicati automaticamente</span>
+                </>
+              ) : (
+                <>
+                  <span>⚠️</span>
+                  <span><strong>Fascia 3:</strong> Impianto &gt; 20 kW - Inserire prezzi manualmente</span>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         <div style={{ borderTop: '2px solid #e5e7eb', marginTop: '1.5rem', paddingTop: '1.5rem' }}>

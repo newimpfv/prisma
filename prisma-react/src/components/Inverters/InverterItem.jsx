@@ -1,6 +1,8 @@
-import { inverters } from '../../data/inverters';
+import { useInvertersByCategory } from '../../hooks/useProductData';
 
 const InverterItem = ({ inverter, onRemove, onUpdate }) => {
+  const { invertersByCategory, loading } = useInvertersByCategory();
+
   return (
     <div className="gruppo-moduli-item">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -11,18 +13,25 @@ const InverterItem = ({ inverter, onRemove, onUpdate }) => {
             className="form-select"
             value={inverter.tipo}
             onChange={(e) => onUpdate(inverter.id, 'tipo', e.target.value)}
+            disabled={loading}
           >
             <option value="none">Nessun Inverter</option>
 
-            {Object.entries(inverters).map(([category, items]) => (
-              <optgroup key={category} label={category}>
-                {items.map((inv) => (
-                  <option key={inv.id} value={inv.id} data-prezzo={inv.prezzo} data-potenza={inv.potenza}>
-                    {inv.nome} - {inv.descrizione} (€{inv.prezzo}/cad)
-                  </option>
-                ))}
-              </optgroup>
-            ))}
+            {loading ? (
+              <option>Caricamento inverter...</option>
+            ) : Object.keys(invertersByCategory).length === 0 ? (
+              <option>Nessun inverter disponibile</option>
+            ) : (
+              Object.entries(invertersByCategory).map(([category, items]) => (
+                <optgroup key={category} label={category}>
+                  {items.map((inv) => (
+                    <option key={inv.airtableId || inv.id} value={inv.id} data-prezzo={inv.prezzo} data-potenza={inv.potenza}>
+                      {inv.name} (€{inv.prezzo}/cad)
+                    </option>
+                  ))}
+                </optgroup>
+              ))
+            )}
           </select>
         </div>
 

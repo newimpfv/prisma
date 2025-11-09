@@ -280,34 +280,179 @@ export const populatePrismaTemplate = (templateHTML, formData) => {
   const scripts = doc.querySelectorAll('script');
   scripts.forEach(script => script.remove());
 
-  // Add print-specific styles
+  // Remove external CSS links (like Tailwind) that might have unsupported features
+  const links = doc.querySelectorAll('link[rel="stylesheet"]');
+  links.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href && (href.includes('tailwind') || href.includes('cdn'))) {
+      link.remove();
+    }
+  });
+
+  // Remove or convert unsupported CSS color functions (oklch, etc.) for html2pdf
+  const styles = doc.querySelectorAll('style');
+  styles.forEach(style => {
+    if (style.textContent) {
+      // Replace oklch colors with fallback colors
+      style.textContent = style.textContent
+        .replace(/oklch\([^)]+\)/g, '#0F3460') // Replace oklch with primary color
+        .replace(/color-mix\([^)]+\)/g, 'rgba(15, 52, 96, 0.1)') // Replace color-mix with fallback
+        .replace(/lab\([^)]+\)/g, '#0F3460') // Replace lab colors
+        .replace(/lch\([^)]+\)/g, '#0F3460'); // Replace lch colors
+    }
+  });
+
+  // Remove inline style attributes with unsupported color functions
+  const elementsWithStyle = doc.querySelectorAll('[style]');
+  elementsWithStyle.forEach(element => {
+    const styleAttr = element.getAttribute('style');
+    if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('color-mix') || styleAttr.includes('lab(') || styleAttr.includes('lch('))) {
+      const cleanedStyle = styleAttr
+        .replace(/oklch\([^)]+\)/g, '#0F3460')
+        .replace(/color-mix\([^)]+\)/g, 'rgba(15, 52, 96, 0.1)')
+        .replace(/lab\([^)]+\)/g, '#0F3460')
+        .replace(/lch\([^)]+\)/g, '#0F3460');
+      element.setAttribute('style', cleanedStyle);
+    }
+  });
+
+  // Add print-specific styles matching PRISMA template formatting
   const printStyles = doc.createElement('style');
   printStyles.textContent = `
     @media print {
       @page {
-        margin: 15mm 10mm;
+        margin: 20mm 16mm;
         size: A4;
       }
 
       body {
         padding: 0;
         margin: 0;
+        font-size: 14px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
 
       /* Hide interactive elements */
-      button, .save-controls, #aggiungiFalda, #aggiungiInverter {
+      button, .save-controls, #aggiungiFalda, #aggiungiInverter, .no-print {
         display: none !important;
       }
 
-      /* Ensure colors print correctly */
+      /* Ensure colors print correctly everywhere */
       * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+
+      /* Prevent page breaks inside important sections */
+      .form-section, .falda-item, .client-box, .tech-box, .details-box {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      /* Header styling with gradient */
+      .header {
+        background: linear-gradient(135deg, #0F3460, #243b55) !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+      }
+
+      /* Footer styling */
+      .footer, .footer-info {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        background: linear-gradient(135deg, #0F3460, #243b55) !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        border-radius: 12px;
+        padding: 30px;
+        margin-top: 30px;
+      }
+
+      /* Section titles */
+      .section-title, h2 {
+        background-color: #0F3460 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding: 8px !important;
+        font-size: 18px;
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      /* Tables */
+      table {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      table th {
+        background-color: #0F3460 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        padding: 8px !important;
+      }
+
+      th, td {
+        background-color: transparent !important;
+        print-color-adjust: exact !important;
+        text-align: center;
+      }
+
+      /* Gradients and backgrounds */
+      [style*="background:"],
+      [style*="background-color:"],
+      [style*="background: linear-gradient"] {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
 
-      /* Prevent page breaks inside important sections */
-      .form-section {
+      /* Price and highlight boxes */
+      .final-price-container, .highlight-box {
+        background: linear-gradient(135deg, #0F3460, #243b55) !important;
+        color: white !important;
         page-break-inside: avoid;
+        break-inside: avoid;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Note containers */
+      .note-container {
+        background-color: #fffde7 !important;
+        border-left: 4px solid #f9a825 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* Signature area */
+      .signature-area, .signature-box {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-top: 60px !important;
+      }
+
+      /* Badges */
+      .badge-eco {
+        background-color: #2E8B57 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .badge-accent {
+        background-color: #E6B31E !important;
+        color: #2D3748 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   `;
@@ -402,24 +547,29 @@ export const generatePDFFromTemplate = async (formData) => {
     // Populate it with form data
     const populatedHTML = populatePrismaTemplate(template, formData);
 
-    // Open in new window
-    const printWindow = window.open('', '_blank');
+    // Create blob and open in new tab (more reliable than popup)
+    const blob = new Blob([populatedHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const printWindow = window.open(url, '_blank');
+
     if (!printWindow) {
-      throw new Error('Failed to open print window. Please allow popups for this site.');
+      // If popup blocked, download as HTML file
+      const clientName = formData.clientData?.nome || 'Cliente';
+      const riferimento = formData.quoteData?.riferimentoPreventivo || 'draft';
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Preventivo_PRISMA_${clientName}_${riferimento}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      throw new Error('Popup blocked. Preventivo HTML downloaded instead.');
     }
 
-    printWindow.document.write(populatedHTML);
-    printWindow.document.close();
-
-    // Wait for content to load, then auto-print
-    printWindow.onload = () => {
-      // Small delay to ensure all styles are applied
-      setTimeout(() => {
-        printWindow.focus();
-        // Don't auto-print, let user click the button
-        // printWindow.print();
-      }, 500);
-    };
+    // Cleanup blob URL after a delay
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 10000);
 
     return printWindow;
   } catch (error) {

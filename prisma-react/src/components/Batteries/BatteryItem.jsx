@@ -1,6 +1,8 @@
-import { batteries } from '../../data/batteries';
+import { useBatteriesByCategory } from '../../hooks/useProductData';
 
 const BatteryItem = ({ battery, onRemove, onUpdate }) => {
+  const { batteriesByGroup, loading } = useBatteriesByCategory();
+
   return (
     <div className="gruppo-moduli-item">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -11,18 +13,27 @@ const BatteryItem = ({ battery, onRemove, onUpdate }) => {
             className="form-select"
             value={battery.tipo}
             onChange={(e) => onUpdate(battery.id, 'tipo', e.target.value)}
+            disabled={loading}
           >
             <option value="none">Nessuna Batteria</option>
 
-            {Object.entries(batteries).map(([category, items]) => (
-              <optgroup key={category} label={category}>
-                {items.map((bat) => (
-                  <option key={bat.id} value={bat.id} data-prezzo={bat.prezzo}>
-                    {bat.nome} - {bat.descrizione} (€{bat.prezzo}/cad)
-                  </option>
-                ))}
-              </optgroup>
-            ))}
+            {loading ? (
+              <option>Caricamento batterie...</option>
+            ) : Object.keys(batteriesByGroup).length === 0 ? (
+              <option>Nessuna batteria disponibile</option>
+            ) : (
+              Object.entries(batteriesByGroup).map(([category, items]) => (
+                items.length > 0 && (
+                  <optgroup key={category} label={category.toUpperCase()}>
+                    {items.map((bat) => (
+                      <option key={bat.airtableId || bat.id} value={bat.id} data-prezzo={bat.prezzo}>
+                        {bat.name} (€{bat.prezzo}/cad)
+                      </option>
+                    ))}
+                  </optgroup>
+                )
+              ))
+            )}
           </select>
         </div>
 

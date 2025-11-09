@@ -41,6 +41,7 @@ export const fetchProductsFromAirtable = async () => {
 
     // Transform Airtable records to our app format
     const products = data.records.map(record => ({
+      airtableId: record.id, // Always unique Airtable record ID
       id: record.fields.id_component || record.id,
       name: record.fields.nome || '',
       description: record.fields.descrizione || '',
@@ -245,12 +246,31 @@ export const organizeProductsByCategory = (products) => {
     caviAccessori: []
   };
 
+  // Track IDs to detect duplicates
+  const seenIds = {
+    modules: new Set(),
+    inverters: new Set(),
+    batteries: new Set()
+  };
+
   products.forEach(product => {
     const category = product.category?.toLowerCase();
     const group = product.group?.toLowerCase();
 
     if (category === 'moduli' || group === 'moduli') {
+      // Check for duplicates
+      if (seenIds.modules.has(product.id)) {
+        console.warn(`[organizeProductsByCategory] Duplicate module ID found: ${product.id}`, {
+          name: product.name,
+          category: product.category,
+          group: product.group,
+          airtableId: product.airtableId
+        });
+        return; // Skip duplicate
+      }
+      seenIds.modules.add(product.id);
       organized.modules.push({
+        airtableId: product.airtableId,
         id: product.id,
         name: product.name,
         potenza: product.potenza,
@@ -259,18 +279,46 @@ export const organizeProductsByCategory = (products) => {
         altezza: product.altezza
       });
     } else if (category === 'inverter' || group === 'inverter') {
+      // Check for duplicates
+      if (seenIds.inverters.has(product.id)) {
+        console.warn(`[organizeProductsByCategory] Duplicate inverter ID found: ${product.id}`, {
+          name: product.name,
+          category: product.category,
+          group: product.group,
+          airtableId: product.airtableId
+        });
+        return; // Skip duplicate
+      }
+      seenIds.inverters.add(product.id);
       organized.inverters.push({
+        airtableId: product.airtableId,
         id: product.id,
         name: product.name,
         potenza: product.potenza,
-        prezzo: product.prezzo
+        prezzo: product.prezzo,
+        category: product.category,
+        group: product.group
       });
     } else if (category === 'batterie' || group === 'batterie') {
+      // Check for duplicates
+      if (seenIds.batteries.has(product.id)) {
+        console.warn(`[organizeProductsByCategory] Duplicate battery ID found: ${product.id}`, {
+          name: product.name,
+          category: product.category,
+          group: product.group,
+          airtableId: product.airtableId
+        });
+        return; // Skip duplicate
+      }
+      seenIds.batteries.add(product.id);
       organized.batteries.push({
+        airtableId: product.airtableId,
         id: product.id,
         name: product.name,
         capacita: product.potenza, // Using potenza field for capacity
-        prezzo: product.prezzo
+        prezzo: product.prezzo,
+        category: product.category,
+        group: product.group
       });
     } else if (category === 'ess cabinet' || group === 'ess') {
       organized.essCabinet.push({
