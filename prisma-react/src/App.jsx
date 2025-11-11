@@ -5,6 +5,7 @@ import { useProducts } from './context/ProductsContext';
 import Login from './components/Login/Login';
 import Header from './components/Header/Header';
 import ClientManager from './components/ClientManager/ClientManager';
+import ImpiantiManager from './components/ImpiantiManager/ImpiantiManager';
 import ClientData from './components/ClientData/ClientData';
 import StructureData from './components/StructureData/StructureData';
 import Falde from './components/Falde/Falde';
@@ -135,12 +136,18 @@ function App() {
     },
     {
       id: 1,
+      name: 'Gestione Impianti',
+      icon: '⚡',
+      component: <ImpiantiManager />
+    },
+    {
+      id: 2,
       name: 'Sopralluogo',
       icon: '📸',
       component: <Sopralluogo />
     },
     {
-      id: 2,
+      id: 3,
       name: 'Cliente e Struttura',
       icon: '👤',
       component: (
@@ -151,19 +158,19 @@ function App() {
       )
     },
     {
-      id: 3,
+      id: 4,
       name: 'Configurazione Tetto',
       icon: '🏠',
       component: <Falde />
     },
     {
-      id: 4,
+      id: 5,
       name: 'Apparecchiature',
-      icon: '⚡',
+      icon: '🔌',
       component: <Components />
     },
     {
-      id: 5,
+      id: 6,
       name: 'Costi',
       icon: '💰',
       component: (
@@ -174,7 +181,7 @@ function App() {
       )
     },
     {
-      id: 6,
+      id: 7,
       name: 'Energia ed Economia',
       icon: '📊',
       component: (
@@ -185,13 +192,13 @@ function App() {
       )
     },
     {
-      id: 7,
+      id: 8,
       name: 'Preventivo',
       icon: '📋',
       component: <QuoteData />
     },
     {
-      id: 8,
+      id: 9,
       name: 'Personalizzazione',
       icon: '✏️',
       component: (
@@ -204,7 +211,7 @@ function App() {
       )
     },
     {
-      id: 9,
+      id: 10,
       name: 'Risultati ed Export',
       icon: '📄',
       component: (
@@ -215,13 +222,13 @@ function App() {
       )
     },
     {
-      id: 10,
+      id: 11,
       name: 'Contratto Manutenzione',
       icon: '🔧',
       component: <MaintenanceContract />
     },
     {
-      id: 11,
+      id: 12,
       name: 'Checklist Intervento',
       icon: '✅',
       component: <InstallationChecklist />
