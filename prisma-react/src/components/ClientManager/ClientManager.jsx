@@ -326,7 +326,7 @@ const ClientManager = () => {
   };
 
   // Project management functions
-  const loadLinkedProjects = async (clientId) => {
+  const loadLinkedProjects = async (clientId, forceRefresh = false) => {
     if (!online) {
       setLinkedProjects([]);
       return;
@@ -334,6 +334,10 @@ const ClientManager = () => {
 
     setLoadingProjects(true);
     try {
+      // Force refresh installations if requested
+      if (forceRefresh) {
+        await getInstallations(true);
+      }
       const projects = await getInstallationsForClient(clientId);
       setLinkedProjects(projects);
     } catch (error) {
@@ -365,7 +369,8 @@ const ClientManager = () => {
     try {
       await linkInstallationToClient(projectId, editingClient.id || editingClient.airtableId);
       alert('✅ Progetto collegato con successo!');
-      await loadLinkedProjects(editingClient.id || editingClient.airtableId);
+      // Force refresh to get updated data from Airtable
+      await loadLinkedProjects(editingClient.id || editingClient.airtableId, true);
       setShowProjectLinking(false);
       setProjectSearchQuery('');
     } catch (error) {
@@ -381,7 +386,8 @@ const ClientManager = () => {
     try {
       await unlinkInstallationFromClient(projectId, editingClient.id || editingClient.airtableId);
       alert('✅ Progetto scollegato con successo!');
-      await loadLinkedProjects(editingClient.id || editingClient.airtableId);
+      // Force refresh to get updated data from Airtable
+      await loadLinkedProjects(editingClient.id || editingClient.airtableId, true);
     } catch (error) {
       alert(`❌ Errore: ${error.message}`);
     }
@@ -535,6 +541,26 @@ const ClientManager = () => {
           .client-manager-container .linked-search {
             font-size: 0.875rem !important;
             padding: 0.625rem !important;
+          }
+          .project-modal {
+            max-height: 90vh !important;
+            width: calc(100% - 1rem) !important;
+            padding: 1rem !important;
+            border-radius: 0.75rem !important;
+          }
+          .project-modal h3 {
+            font-size: 1.125rem !important;
+          }
+          .project-modal .linked-item {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 0.75rem !important;
+          }
+          .project-modal .linked-item-content {
+            margin-bottom: 0 !important;
+          }
+          .project-modal .linked-item button {
+            width: 100% !important;
           }
         }
       `}</style>
@@ -1272,90 +1298,6 @@ const ClientManager = () => {
                   </div>
                 )}
 
-                {/* Project Search and Link Interface */}
-                {showProjectLinking && (
-                  <div style={{
-                    marginTop: '0.75rem',
-                    padding: '0.75rem',
-                    backgroundColor: 'white',
-                    borderRadius: '0.375rem',
-                    border: '1px solid #cbd5e1'
-                  }}>
-                    <input
-                      type="text"
-                      className="linked-search"
-                      placeholder="🔍 Cerca progetto per nome o indirizzo..."
-                      value={projectSearchQuery}
-                      onChange={(e) => setProjectSearchQuery(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.5rem',
-                        borderRadius: '0.375rem',
-                        border: '1px solid #cbd5e1',
-                        fontSize: '0.8125rem',
-                        marginBottom: '0.75rem',
-                        outline: 'none'
-                      }}
-                      onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                      onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
-                    />
-
-                    <div style={{
-                      maxHeight: '250px',
-                      overflowY: 'auto',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.5rem'
-                    }}>
-                      {getFilteredProjects().length > 0 ? (
-                        getFilteredProjects().map(project => (
-                          <div
-                            key={project.id || project.airtableId}
-                            className="linked-item"
-                            style={{
-                              padding: '0.625rem',
-                              border: '1px solid #e2e8f0',
-                              borderRadius: '0.375rem',
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              backgroundColor: '#f8fafc'
-                            }}
-                          >
-                            <div className="linked-item-content" style={{ flex: 1 }}>
-                              <div className="linked-item-title" style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155', marginBottom: '0.25rem' }}>
-                                {project.nome || 'Progetto senza nome'}
-                              </div>
-                              <div className="linked-item-text" style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                                {project.indirizzo || 'Indirizzo non specificato'}
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleLinkProject(project.id || project.airtableId)}
-                              style={{
-                                padding: '0.375rem 0.75rem',
-                                backgroundColor: '#10b981',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '0.375rem',
-                                fontSize: '0.7rem',
-                                fontWeight: '600',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              + Collega
-                            </button>
-                          </div>
-                        ))
-                      ) : (
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '1rem' }}>
-                          {projectSearchQuery ? 'Nessun progetto trovato' : 'Tutti i progetti sono già collegati'}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 
@@ -1708,6 +1650,193 @@ const ClientManager = () => {
           </>
         )}
       </div>
+
+      {/* Project Linking Modal */}
+      {showProjectLinking && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem'
+          }}
+          onClick={toggleProjectLinking}
+        >
+          <div
+            className="project-modal"
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              padding: '1.5rem',
+              maxWidth: '600px',
+              width: '100%',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1rem',
+              paddingBottom: '1rem',
+              borderBottom: '2px solid #e5e7eb'
+            }}>
+              <h3 style={{
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#1f2937',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                🔗 Collega Progetto
+              </h3>
+              <button
+                type="button"
+                onClick={toggleProjectLinking}
+                style={{
+                  background: '#f3f4f6',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.5rem',
+                  fontSize: '1.25rem',
+                  borderRadius: '0.5rem',
+                  color: '#6b7280',
+                  lineHeight: 1,
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#e5e7eb';
+                  e.target.style.color = '#374151';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#f3f4f6';
+                  e.target.style.color = '#6b7280';
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div>
+              <input
+                type="text"
+                className="linked-search"
+                placeholder="🔍 Cerca progetto per nome o indirizzo..."
+                value={projectSearchQuery}
+                onChange={(e) => setProjectSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: '0.5rem',
+                  border: '2px solid #e5e7eb',
+                  fontSize: '0.9375rem',
+                  marginBottom: '1rem',
+                  outline: 'none'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              />
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem'
+              }}>
+                {getFilteredProjects().length > 0 ? (
+                  getFilteredProjects().map(project => (
+                    <div
+                      key={project.id || project.airtableId}
+                      className="linked-item"
+                      style={{
+                        padding: '1rem',
+                        border: '2px solid #e5e7eb',
+                        borderRadius: '0.5rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: '#f9fafb',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#3b82f6';
+                        e.currentTarget.style.backgroundColor = '#eff6ff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                        e.currentTarget.style.backgroundColor = '#f9fafb';
+                      }}
+                    >
+                      <div className="linked-item-content" style={{ flex: 1 }}>
+                        <div className="linked-item-title" style={{ fontSize: '0.9375rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+                          {project.nome || 'Progetto senza nome'}
+                        </div>
+                        <div className="linked-item-text" style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                          {project.indirizzo || 'Indirizzo non specificato'}
+                        </div>
+                        {project.n_moduli_totali && (
+                          <div className="linked-item-text" style={{ fontSize: '0.8125rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                            📦 {project.n_moduli_totali} moduli
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleLinkProject(project.id || project.airtableId)}
+                        style={{
+                          padding: '0.625rem 1rem',
+                          backgroundColor: '#10b981',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          flexShrink: 0
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = '#059669';
+                          e.target.style.transform = 'scale(1.05)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#10b981';
+                          e.target.style.transform = 'scale(1)';
+                        }}
+                      >
+                        + Collega
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ fontSize: '0.875rem', color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>
+                    {projectSearchQuery ? '🔍 Nessun progetto trovato' : 'Tutti i progetti sono già collegati'}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
