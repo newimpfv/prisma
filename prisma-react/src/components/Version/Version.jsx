@@ -89,6 +89,7 @@ const Version = () => {
       {/* Version Modal */}
       {showModal && (
         <div
+          className="version-modal-overlay"
           style={{
             position: 'fixed',
             top: 0,
@@ -105,12 +106,14 @@ const Version = () => {
           onClick={() => setShowModal(false)}
         >
           <div
+            className="version-modal-container"
             style={{
               backgroundColor: 'white',
               borderRadius: '12px',
-              maxWidth: '800px',
+              maxWidth: '900px',
               width: '100%',
-              maxHeight: '90vh',
+              maxHeight: '92vh',
+              height: '92vh',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
@@ -120,61 +123,35 @@ const Version = () => {
           >
             {/* Header */}
             <div
+              className="version-modal-header"
               style={{
                 background: 'linear-gradient(135deg, #3b82f6 0%, #10b981 100%)',
                 color: 'white',
                 padding: '24px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                textAlign: 'center'
               }}
             >
-              <div>
-                <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>
-                  {versionData.appName}
-                </h2>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', opacity: 0.9 }}>
-                  {versionData.subtitle}
-                </p>
-                <p style={{ margin: '8px 0 0 0', fontSize: '0.875rem', fontWeight: '600' }}>
-                  Version {versionData.version} - {new Date(versionData.releaseDate).toLocaleDateString('it-IT')}
-                </p>
-              </div>
-              <button
-                onClick={() => setShowModal(false)}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  fontSize: '1.25rem',
-                  color: 'white',
-                  transition: 'all 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
-                }}
-              >
-                ×
-              </button>
+              <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>
+                {versionData.appName}
+              </h2>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.875rem', opacity: 0.9 }}>
+                {versionData.subtitle}
+              </p>
+              <p style={{ margin: '8px 0 0 0', fontSize: '0.875rem', fontWeight: '600' }}>
+                Version {versionData.version} - {new Date(versionData.releaseDate).toLocaleDateString('it-IT')}
+              </p>
             </div>
 
             {/* Version Tabs */}
             <div
+              className="version-modal-tabs"
               style={{
                 display: 'flex',
                 gap: '8px',
-                padding: '16px 24px',
+                padding: '16px 24px 20px 24px',
                 borderBottom: '1px solid #e5e7eb',
-                overflowX: 'auto'
+                overflowX: 'auto',
+                overflowY: 'hidden'
               }}
             >
               {versionData.changelog.map((version, index) => (
@@ -211,6 +188,7 @@ const Version = () => {
 
             {/* Content */}
             <div
+              className="version-modal-content"
               style={{
                 flex: 1,
                 overflow: 'auto',
@@ -249,6 +227,7 @@ const Version = () => {
                       {versionData.changelog[selectedVersion].features.map((feature, index) => (
                         <div
                           key={index}
+                          className="version-feature-card"
                           style={{
                             backgroundColor: '#f9fafb',
                             padding: '16px',
@@ -257,9 +236,9 @@ const Version = () => {
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '1.5rem' }}>{getFeatureIcon(feature.type)}</span>
+                            <span className="version-feature-icon" style={{ fontSize: '1.5rem' }}>{getFeatureIcon(feature.type)}</span>
                             <div style={{ flex: 1 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                              <div className="version-feature-header" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                                 <span
                                   style={{
                                     fontSize: '0.75rem',
@@ -272,6 +251,7 @@ const Version = () => {
                                   {feature.type.toUpperCase()}
                                 </span>
                                 <h4
+                                  className="version-feature-title"
                                   style={{
                                     margin: 0,
                                     fontSize: '1rem',
@@ -283,6 +263,7 @@ const Version = () => {
                                 </h4>
                               </div>
                               <p
+                                className="version-feature-description"
                                 style={{
                                   margin: 0,
                                   fontSize: '0.875rem',
@@ -302,6 +283,7 @@ const Version = () => {
                   {/* About Section (only show on latest version) */}
                   {selectedVersion === 0 && (
                     <div
+                      className="version-about-section"
                       style={{
                         backgroundColor: '#eff6ff',
                         padding: '20px',
@@ -322,7 +304,7 @@ const Version = () => {
                       <p style={{ fontSize: '0.875rem', color: '#1e40af', lineHeight: '1.6', marginBottom: '16px' }}>
                         {versionData.about.description}
                       </p>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.875rem' }}>
+                      <div className="version-about-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.875rem' }}>
                         <div>
                           <strong style={{ color: '#1e40af' }}>Company:</strong>
                           <p style={{ margin: '4px 0 0 0', color: '#3730a3' }}>{versionData.about.company}</p>
@@ -348,6 +330,7 @@ const Version = () => {
 
             {/* Footer */}
             <div
+              className="version-modal-footer"
               style={{
                 padding: '16px 24px',
                 borderTop: '1px solid #e5e7eb',
@@ -356,6 +339,7 @@ const Version = () => {
               }}
             >
               <button
+                className="version-close-btn"
                 onClick={() => setShowModal(false)}
                 style={{
                   backgroundColor: '#3b82f6',
@@ -382,7 +366,7 @@ const Version = () => {
         </div>
       )}
 
-      {/* Inline styles for badge colors */}
+      {/* Inline styles for badge colors and mobile optimization */}
       <style>{`
         .bg-green-100 { background-color: #dcfce7; }
         .text-green-800 { color: #166534; }
@@ -392,6 +376,147 @@ const Version = () => {
         .text-red-800 { color: #991b1b; }
         .bg-gray-100 { background-color: #f3f4f6; }
         .text-gray-800 { color: #1f2937; }
+
+        /* Hide scrollbar for version tabs while keeping scroll functionality */
+        .version-modal-tabs {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE and Edge */
+          position: relative;
+        }
+        .version-modal-tabs::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera */
+        }
+
+        /* Visual indicator for scrollable content */
+        .version-modal-tabs::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          width: 40px;
+          background: linear-gradient(to left, rgba(255,255,255,0.95), transparent);
+          pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+          .version-modal-overlay {
+            padding: 8px !important;
+            background-color: rgba(0, 0, 0, 0.7) !important;
+          }
+          .version-modal-container {
+            max-width: 100% !important;
+            width: 100% !important;
+            max-height: calc(100vh - 16px) !important;
+            height: calc(100vh - 16px) !important;
+            margin: 0 !important;
+            border-radius: 16px !important;
+          }
+          .version-modal-header {
+            padding: 20px 16px !important;
+            text-align: center !important;
+            border-radius: 16px 16px 0 0 !important;
+          }
+          .version-modal-header h2 {
+            font-size: 1.25rem !important;
+          }
+          .version-modal-header p {
+            font-size: 0.8125rem !important;
+            margin: 6px 0 0 0 !important;
+          }
+          .version-modal-header p:last-child {
+            margin-top: 8px !important;
+          }
+          .version-modal-tabs {
+            padding: 14px 16px !important;
+            padding-bottom: 18px !important;
+            gap: 8px !important;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+          }
+          .version-modal-tabs button {
+            padding: 10px 16px !important;
+            font-size: 0.875rem !important;
+            min-width: fit-content !important;
+            flex-shrink: 0 !important;
+            border-radius: 8px !important;
+          }
+          .version-modal-content {
+            padding: 20px 16px !important;
+            -webkit-overflow-scrolling: touch;
+          }
+          .version-modal-content h3 {
+            font-size: 1.125rem !important;
+            margin-bottom: 8px !important;
+          }
+          .version-modal-content > div > p {
+            font-size: 0.875rem !important;
+            margin-bottom: 20px !important;
+          }
+          .version-feature-card {
+            padding: 14px !important;
+            margin-bottom: 12px !important;
+            border-radius: 10px !important;
+          }
+          .version-feature-card > div {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 10px !important;
+          }
+          .version-feature-icon {
+            font-size: 1.5rem !important;
+            margin-bottom: 0 !important;
+          }
+          .version-feature-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+            width: 100% !important;
+          }
+          .version-feature-header span {
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            font-size: 0.75rem !important;
+          }
+          .version-feature-title {
+            font-size: 1rem !important;
+            line-height: 1.4 !important;
+          }
+          .version-feature-description {
+            font-size: 0.875rem !important;
+            line-height: 1.6 !important;
+          }
+          .version-about-section {
+            padding: 18px !important;
+            margin-top: 20px !important;
+            border-radius: 10px !important;
+          }
+          .version-about-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          .version-about-section h4 {
+            font-size: 1rem !important;
+            margin-bottom: 10px !important;
+          }
+          .version-about-section p {
+            font-size: 0.875rem !important;
+            line-height: 1.6 !important;
+          }
+          .version-modal-footer {
+            padding: 16px !important;
+            background: white !important;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05) !important;
+            border-radius: 0 0 16px 16px !important;
+          }
+          .version-close-btn {
+            width: 100% !important;
+            padding: 14px 24px !important;
+            font-size: 1rem !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+          }
+        }
       `}</style>
     </>
   );

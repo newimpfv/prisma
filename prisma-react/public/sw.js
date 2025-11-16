@@ -117,8 +117,8 @@ async function handleAirtableRequest(request) {
     // Prova prima con la rete
     const response = await fetch(request);
 
-    // Se successo, salva in cache per reference
-    if (response && response.status === 200) {
+    // Se successo, salva in cache per reference (solo GET requests)
+    if (response && response.status === 200 && request.method === 'GET') {
       const responseClone = response.clone();
       caches.open('airtable-cache').then((cache) => {
         cache.put(request, responseClone);

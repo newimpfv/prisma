@@ -142,7 +142,6 @@ export const createInstallation = async (installationData, clientId = null, sess
     const fields = {
       nome: installationData.nome || '',
       indirizzo: installationData.indirizzo || '',
-      'dettagli moduli e note': installationData.dettagli_moduli || '',
       'n moduli totali': installationData.n_moduli_totali || 0,
       'status offerta': installationData.status_offerta || 'in preparazione',
       'status realizzazione': installationData.status_realizzazione || 'non iniziato',
@@ -150,6 +149,9 @@ export const createInstallation = async (installationData, clientId = null, sess
       'impianto completato': installationData.impianto_completato || false,
       Compenso: installationData.compenso || 0
     };
+
+    // Add optional text fields only if they have values
+    if (installationData.dettagli_moduli) fields['dettagli moduli e note'] = installationData.dettagli_moduli;
 
     // Add optional fields
     if (installationData.coordinate) fields.coordinate = installationData.coordinate;
@@ -209,14 +211,22 @@ export const updateInstallation = async (installationId, installationData, clien
     const fields = {
       nome: installationData.nome || '',
       indirizzo: installationData.indirizzo || '',
-      'dettagli moduli e note': installationData.dettagli_moduli || '',
       'n moduli totali': installationData.n_moduli_totali || 0,
-      'status offerta': installationData.status_offerta || '',
-      'status realizzazione': installationData.status_realizzazione || '',
-      'simulazione/render': installationData.simulazione_render || '',
       'impianto completato': installationData.impianto_completato || false,
       Compenso: installationData.compenso || 0
     };
+
+    // Add optional text fields only if they have values
+    if (installationData.dettagli_moduli) fields['dettagli moduli e note'] = installationData.dettagli_moduli;
+    if (installationData.simulazione_render) fields['simulazione/render'] = installationData.simulazione_render;
+
+    // Add select fields only if they have non-empty values (to avoid Airtable errors)
+    if (installationData.status_offerta && installationData.status_offerta !== '') {
+      fields['status offerta'] = installationData.status_offerta;
+    }
+    if (installationData.status_realizzazione && installationData.status_realizzazione !== '') {
+      fields['status realizzazione'] = installationData.status_realizzazione;
+    }
 
     // Add optional fields
     if (installationData.coordinate) fields.coordinate = installationData.coordinate;

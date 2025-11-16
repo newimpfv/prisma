@@ -432,14 +432,14 @@ const ClientManager = () => {
       <style>{`
         @media (max-width: 768px) {
           .client-manager-container {
-            border-radius: 0 !important;
-            margin: 0 -1.5rem !important;
-            width: calc(100% + 3rem) !important;
-            max-width: calc(100% + 3rem) !important;
+            border-radius: 1rem !important;
+            margin: 0 0.5rem !important;
+            width: calc(100% - 1rem) !important;
+            max-width: calc(100% - 1rem) !important;
           }
           .client-manager-container .header-section {
             padding: 1rem !important;
-            border-radius: 0 !important;
+            border-radius: 1rem 1rem 0 0 !important;
           }
           .client-manager-container .header-title {
             font-size: 1.375rem !important;

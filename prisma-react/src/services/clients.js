@@ -140,25 +140,38 @@ export const createClient = async (clientData, sessionId = null) => {
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${CLIENTS_TABLE}`;
 
     const fields = {
-      'nome / ragione sociale': clientData.nome || '',
+      'nome / ragione sociale': clientData.nome || clientData['nome / ragione sociale'] || '',
       email: clientData.email || '',
       cellulare: clientData.cellulare || '',
       telefono: clientData.telefono || '',
-      'indirizzo impianto': clientData.indirizzo_impianto || '',
-      'città impianto': clientData.citta_impianto || '',
-      'Data Contatto': clientData.data_contatto || new Date().toISOString().split('T')[0],
-      'ulteriori note': clientData.note || ''
+      'indirizzo impianto': clientData.indirizzo_impianto || clientData['indirizzo impianto'] || '',
+      'Data Contatto': clientData.data_contatto || new Date().toISOString().split('T')[0]
     };
 
-    // Add optional fields
+    // Add optional text fields
+    if (clientData.note) fields['ulteriori note'] = clientData.note;
     if (clientData.nome_first) fields.nome = clientData.nome_first;
     if (clientData.cognome) fields.cognome = clientData.cognome;
     if (clientData.indirizzo_residenza) fields['indirizzo di residenza'] = clientData.indirizzo_residenza;
-    if (clientData.citta_residenza) fields['città di residenza'] = clientData.citta_residenza;
     if (clientData.cap_impianto) fields['CAP impianto'] = clientData.cap_impianto;
     if (clientData.iban) fields.IBAN = clientData.iban;
     if (clientData.data_sopralluogo) fields['data sopralluogo'] = clientData.data_sopralluogo;
-    if (clientData.contatto_tramite) fields['Contatto tramite'] = clientData.contatto_tramite;
+
+    // Add select/dropdown fields only if they have non-empty values
+    if (clientData.citta_impianto && clientData.citta_impianto !== '') {
+      fields['città impianto'] = clientData.citta_impianto;
+    } else if (clientData['città impianto'] && clientData['città impianto'] !== '') {
+      fields['città impianto'] = clientData['città impianto'];
+    }
+
+    if (clientData.citta_residenza && clientData.citta_residenza !== '') {
+      fields['città di residenza'] = clientData.citta_residenza;
+    }
+
+    if (clientData.contatto_tramite && clientData.contatto_tramite !== '') {
+      fields['Contatto tramite'] = clientData.contatto_tramite;
+    }
+
     if (sessionId) fields.session_id = sessionId;
 
     const response = await fetch(url, {

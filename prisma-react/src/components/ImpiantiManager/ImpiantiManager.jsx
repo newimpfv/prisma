@@ -341,16 +341,89 @@ const ImpiantiManager = () => {
       overflow: 'hidden'
     }}>
       <style>{`
+        /* Toggle Switch Styles */
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 26px;
+          flex-shrink: 0;
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #cbd5e1;
+          transition: 0.3s;
+          border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 20px;
+          width: 20px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: 0.3s;
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+          background-color: #10b981;
+        }
+
+        input:checked + .toggle-slider:before {
+          transform: translateX(24px);
+        }
+
+        .toggle-slider:hover {
+          background-color: #94a3b8;
+        }
+
+        input:checked + .toggle-slider:hover {
+          background-color: #059669;
+        }
+
         @media (max-width: 768px) {
+          .toggle-switch {
+            width: 56px;
+            height: 30px;
+          }
+
+          .toggle-slider:before {
+            height: 24px;
+            width: 24px;
+          }
+
+          input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+          }
+
+          .impianto-completato-wrapper label {
+            padding: 1rem !important;
+            font-size: 0.9375rem !important;
+          }
+
+          .impianto-completato-wrapper span {
+            font-size: 1rem !important;
+          }
+
           .impianti-manager-container {
-            border-radius: 0 !important;
-            margin: 0 -1.5rem !important;
-            width: calc(100% + 3rem) !important;
-            max-width: calc(100% + 3rem) !important;
+            border-radius: 1rem !important;
+            margin: 0 0.5rem !important;
+            width: calc(100% - 1rem) !important;
+            max-width: calc(100% - 1rem) !important;
           }
           .impianti-manager-container .header-section {
             padding: 1rem !important;
-            border-radius: 0 !important;
+            border-radius: 1rem 1rem 0 0 !important;
           }
           .impianti-manager-container .header-title {
             font-size: 1.375rem !important;
@@ -845,19 +918,35 @@ const ImpiantiManager = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', fontWeight: '600', color: '#374151', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={formData.impianto_completato}
-                      onChange={(e) => setFormData({ ...formData, impianto_completato: e.target.checked })}
-                      style={{
-                        width: '1.125rem',
-                        height: '1.125rem',
-                        cursor: 'pointer'
-                      }}
-                    />
-                    ✅ Impianto Completato
+                <div className="impianto-completato-wrapper">
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '1rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                    cursor: 'pointer',
+                    padding: '0.75rem',
+                    backgroundColor: formData.impianto_completato ? '#dcfce7' : '#f9fafb',
+                    borderRadius: '8px',
+                    border: `2px solid ${formData.impianto_completato ? '#10b981' : '#e5e7eb'}`,
+                    transition: 'all 0.2s'
+                  }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1.25rem' }}>{formData.impianto_completato ? '✅' : '⬜'}</span>
+                      Impianto Completato
+                    </span>
+                    <label className="toggle-switch" style={{ margin: 0 }}>
+                      <input
+                        type="checkbox"
+                        checked={formData.impianto_completato}
+                        onChange={(e) => setFormData({ ...formData, impianto_completato: e.target.checked })}
+                        style={{ display: 'none' }}
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
                   </label>
                 </div>
 

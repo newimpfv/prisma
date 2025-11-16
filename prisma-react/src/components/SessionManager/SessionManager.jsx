@@ -11,6 +11,8 @@ const SessionManager = () => {
   const [offline, setOffline] = useState(false);
   const {
     setClientData,
+    setSelectedClientRecord,
+    setSelectedInstallation,
     setStructureData,
     setFalde,
     setInverters,
@@ -156,6 +158,8 @@ const SessionManager = () => {
 
   const restoreSession = (session) => {
     setClientData(session.clientData || {});
+    setSelectedClientRecord(session.selectedClientRecord || null);
+    setSelectedInstallation(session.selectedInstallation || null);
     setStructureData(session.structureData || {});
     setFalde(session.falde || []);
     setInverters(session.inverters || []);

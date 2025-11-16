@@ -33,12 +33,16 @@ export const FormProvider = ({ children }) => {
     indirizzo: '',
     email: '',
     telefono: '',
-    comune: '',
-    airtableClientId: '' // Store the Airtable client ID for linking
+    nomeImpianto: '', // Required: Installation name
+    airtableClientId: '', // Store the Airtable client ID for linking
+    airtableInstallationId: '' // Store the Airtable installation ID for linking
   });
 
   // Selected Client Record (full client object from Gestione Clienti)
   const [selectedClientRecord, setSelectedClientRecord] = useState(null);
+
+  // Selected Installation Record (full installation object from Gestione Impianti)
+  const [selectedInstallation, setSelectedInstallation] = useState(null);
 
   // Structure Data
   const [structureData, setStructureData] = useState({
@@ -197,6 +201,7 @@ export const FormProvider = ({ children }) => {
           sessionId,
           clientData,
           selectedClientRecord,
+          selectedInstallation,
           structureData,
           falde,
           inverters,
@@ -231,6 +236,7 @@ export const FormProvider = ({ children }) => {
     sessionId,
     clientData,
     selectedClientRecord,
+    selectedInstallation,
     structureData,
     falde,
     inverters,
@@ -276,6 +282,8 @@ export const FormProvider = ({ children }) => {
           riferimento_preventivo: quoteData.riferimentoPreventivo || '',
           session_data: {
             clientData,
+            selectedClientRecord,
+            selectedInstallation,
             structureData,
             falde,
             inverters,
@@ -318,6 +326,8 @@ export const FormProvider = ({ children }) => {
     sessionId,
     hasCheckedDuplicates,
     clientData,
+    selectedClientRecord,
+    selectedInstallation,
     structureData,
     falde,
     inverters,
@@ -344,6 +354,8 @@ export const FormProvider = ({ children }) => {
     setClientData,
     selectedClientRecord,
     setSelectedClientRecord,
+    selectedInstallation,
+    setSelectedInstallation,
     structureData,
     setStructureData,
     falde,

@@ -560,12 +560,12 @@ function App() {
           .app-container {
             max-width: 100% !important;
             padding: 0.5rem !important;
-            border-radius: 0 !important;
+            border-radius: 1rem !important;
           }
 
           /* Tab content - less padding on mobile */
           .tab-content {
-            padding: 0 0.75rem 1rem 0.75rem !important;
+            padding: 0.5rem !important;
           }
 
           /* Make sections more visible */
@@ -647,6 +647,7 @@ function App() {
           div[style*="backgroundColor: white"] {
             padding: 1.25rem !important;
             margin-bottom: 1.25rem !important;
+            border-radius: 1rem !important;
           }
 
           /* Navigation arrows - less padding on mobile */

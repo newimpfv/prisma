@@ -456,6 +456,15 @@ function Sopralluogo() {
         fontFamily: 'system-ui, -apple-system, sans-serif'
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .sopralluogo-date-time-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+          }
+        }
+      `}</style>
+
       <h2
         style={{
           fontSize: '1.5rem',
@@ -1039,7 +1048,7 @@ function Sopralluogo() {
             📅 Programma Sopralluogo
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+          <div className="sopralluogo-date-time-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
             <div>
               <label
                 style={{
