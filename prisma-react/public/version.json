@@ -1,9 +1,76 @@
 {
-  "version": "5.0.0",
-  "releaseDate": "2025-10-30",
+  "version": "5.4.0",
+  "releaseDate": "2025-11-16",
   "appName": "PRISMA Solar",
   "subtitle": "Pricing Reliable Intelligence System for Management and Analysis",
   "changelog": [
+    {
+      "version": "5.4.0",
+      "date": "2025-11-16",
+      "title": "Mobile-First Design & Smart Data Management",
+      "features": [
+        {
+          "type": "new",
+          "title": "Rounded Corners Everywhere",
+          "description": "Design completamente rinnovato con angoli arrotondati su tutte le sezioni e componenti. Interfaccia moderna in stile iOS per un'esperienza visiva premium su mobile e desktop."
+        },
+        {
+          "type": "new",
+          "title": "Smart Client-Installation Linking",
+          "description": "Auto-selezione intelligente dell'impianto collegato quando selezioni un cliente. Il sistema carica automaticamente tutti i dati dell'impianto già salvato, riducendo il tempo di inserimento dati."
+        },
+        {
+          "type": "new",
+          "title": "Dynamic Save Button",
+          "description": "Pulsante 'Salva e Collega' intelligente che cambia colore, icona e messaggio in base al contesto: verde per nuovo impianto, blu per nuovo cliente, arancione per aggiornamenti, con testi dinamici che guidano l'utente."
+        },
+        {
+          "type": "new",
+          "title": "Installation Name Required",
+          "description": "Campo 'Nome Impianto' ora obbligatorio per una migliore organizzazione. Tutti gli impianti devono avere un nome identificativo chiaro per facilitare la ricerca e gestione."
+        },
+        {
+          "type": "new",
+          "title": "Modern Toggle Switch",
+          "description": "Checkbox 'Impianto Completato' trasformato in elegante toggle switch iOS-style con card colorata (verde quando attivo). Design touch-friendly ottimizzato per mobile con icone dinamiche."
+        },
+        {
+          "type": "new",
+          "title": "Enhanced Session Management",
+          "description": "Salvataggio e ripristino automatico di cliente e impianto selezionati nelle sessioni. Non dovrai più riselezionare i dati quando riprendi il lavoro - tutto resta come lo hai lasciato."
+        },
+        {
+          "type": "improved",
+          "title": "Mobile-Optimized Version Popup",
+          "description": "Popup versione completamente ridisegnato per mobile: fullscreen con angoli arrotondati, scrollbar nascosta, testo più grande, tap target ottimizzati. Chiusura X rimossa - usa il pulsante Close in basso."
+        },
+        {
+          "type": "improved",
+          "title": "Sopralluogo Layout Optimization",
+          "description": "Campi Data e Ora nel Programma Sopralluogo ora si dispongono verticalmente su mobile per un input più facile e preciso. Layout intelligente che si adatta automaticamente alle dimensioni dello schermo."
+        },
+        {
+          "type": "improved",
+          "title": "Streamlined Data Structure",
+          "description": "Rimosso campo Comune ridondante - la città viene salvata solo nei dati cliente per evitare duplicazioni. Struttura dati più pulita e manutenibile."
+        },
+        {
+          "type": "fixed",
+          "title": "Airtable Save Errors",
+          "description": "Risolti errori di salvataggio Airtable per campi select vuoti e campo 'comune' inesistente. Ora invia solo campi con valori validi, eliminando gli errori 422 Unprocessable Content."
+        },
+        {
+          "type": "fixed",
+          "title": "Service Worker Cache",
+          "description": "Corretto errore cache del service worker che tentava di salvare richieste PATCH/POST/PUT. Ora cache solo richieste GET valide, migliorando affidabilità e prestazioni offline."
+        },
+        {
+          "type": "fixed",
+          "title": "Version Popup Scrollbar",
+          "description": "Rimossa scrollbar visibile sopra i pulsanti versione. Scrolling ora invisibile ma funzionante con indicatore gradiente per mostrare contenuto nascosto."
+        }
+      ]
+    },
     {
       "version": "5.0.0",
       "date": "2025-10-30",
