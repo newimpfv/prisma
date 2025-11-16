@@ -413,7 +413,8 @@ const ImpiantiManager = () => {
               border: '2px solid rgba(255, 255, 255, 0.3)',
               fontSize: '0.875rem',
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(10px)',
+              color: '#1f2937'
             }}
           />
           <span style={{
