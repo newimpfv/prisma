@@ -206,6 +206,19 @@ export const updateInstallation = async (installationId, installationData, clien
   }
 
   try {
+    // First, fetch the current record to compare values
+    const getUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${INSTALLATIONS_TABLE}/${installationId}`;
+    const getResponse = await fetch(getUrl, {
+      headers: {
+        'Authorization': `Bearer ${AIRTABLE_TOKEN}`
+      }
+    });
+
+    let currentRecord = null;
+    if (getResponse.ok) {
+      currentRecord = await getResponse.json();
+    }
+
     const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${INSTALLATIONS_TABLE}/${installationId}`;
 
     const fields = {
@@ -217,25 +230,86 @@ export const updateInstallation = async (installationId, installationData, clien
     };
 
     // Add optional text fields only if they have values
-    if (installationData.dettagli_moduli) fields['dettagli moduli e note'] = installationData.dettagli_moduli;
-    if (installationData.simulazione_render) fields['simulazione/render'] = installationData.simulazione_render;
-
-    // Add select fields only if they have non-empty values (to avoid Airtable errors)
-    if (installationData.status_offerta && installationData.status_offerta !== '') {
-      fields['status offerta'] = installationData.status_offerta;
-    }
-    if (installationData.status_realizzazione && installationData.status_realizzazione !== '') {
-      fields['status realizzazione'] = installationData.status_realizzazione;
+    if (installationData.dettagli_moduli) {
+      fields['dettagli moduli e note'] = String(installationData.dettagli_moduli).trim();
     }
 
     // Add optional fields
     if (installationData.coordinate) fields.coordinate = installationData.coordinate;
     if (sessionId) fields.session_id = sessionId;
 
+    // Handle select fields - only update if value is different from current OR if we don't have current record
+    // This avoids permission errors when value hasn't changed
+    if (installationData.simulazione_render) {
+      let cleanValue = installationData.simulazione_render;
+      // Remove any accidental JSON encoding
+      if (typeof cleanValue === 'string' && cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
+        cleanValue = cleanValue.slice(1, -1);
+      }
+      cleanValue = String(cleanValue).trim();
+      const currentValue = currentRecord?.fields?.['simulazione/render'];
+      console.log('simulazione_render - current:', currentValue, 'new:', cleanValue);
+      if (!currentRecord || cleanValue !== currentValue) {
+        fields['simulazione/render'] = cleanValue;
+      }
+    }
+
+    if (installationData.status_offerta && installationData.status_offerta !== '') {
+      let cleanValue = installationData.status_offerta;
+      // Remove any accidental JSON encoding
+      if (typeof cleanValue === 'string' && cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
+        cleanValue = cleanValue.slice(1, -1);
+      }
+      cleanValue = String(cleanValue).trim();
+      const currentValue = currentRecord?.fields?.['status offerta'];
+      console.log('status_offerta - current:', JSON.stringify(currentValue), 'new:', JSON.stringify(cleanValue), 'equal:', currentValue === cleanValue);
+
+      // Skip if current value is undefined (field not set in Airtable or no permission)
+      if (currentValue === undefined) {
+        console.log('Skipping status_offerta - field is undefined in Airtable (no permission or not set)');
+      } else if (currentRecord && cleanValue !== currentValue) {
+        // Only include if value has actually changed
+        fields['status offerta'] = cleanValue;
+      } else if (!currentRecord) {
+        // If we don't have current record, skip this field to avoid errors
+        console.log('Skipping status_offerta - no current record to compare');
+      } else {
+        console.log('Skipping status_offerta - value unchanged');
+      }
+    }
+
+    if (installationData.status_realizzazione && installationData.status_realizzazione !== '') {
+      let cleanValue = installationData.status_realizzazione;
+      // Remove any accidental JSON encoding
+      if (typeof cleanValue === 'string' && cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
+        cleanValue = cleanValue.slice(1, -1);
+      }
+      cleanValue = String(cleanValue).trim();
+      const currentValue = currentRecord?.fields?.['status realizzazione'];
+      console.log('status_realizzazione - current:', JSON.stringify(currentValue), 'new:', JSON.stringify(cleanValue), 'equal:', currentValue === cleanValue);
+
+      // Skip if current value is undefined (field not set in Airtable or no permission)
+      if (currentValue === undefined) {
+        console.log('Skipping status_realizzazione - field is undefined in Airtable (no permission or not set)');
+      } else if (currentRecord && cleanValue !== currentValue) {
+        // Only include if value has actually changed
+        fields['status realizzazione'] = cleanValue;
+      } else if (!currentRecord) {
+        // If we don't have current record, skip this field to avoid errors
+        console.log('Skipping status_realizzazione - no current record to compare');
+      } else {
+        console.log('Skipping status_realizzazione - value unchanged');
+      }
+    }
+
     // Update client link if provided
     if (clientId) {
       fields['dati cliente'] = [clientId];
     }
+
+    // Debug log to see what's being sent
+    console.log('Current record from Airtable:', currentRecord?.fields);
+    console.log('Sending update to Airtable:', JSON.stringify({ fields }, null, 2));
 
     const response = await fetch(url, {
       method: 'PATCH',

@@ -111,6 +111,10 @@ const ImpiantiManager = () => {
     }
 
     try {
+      console.log('Form data being sent:', formData);
+      console.log('Type of status_offerta:', typeof formData.status_offerta);
+      console.log('Value of status_offerta:', JSON.stringify(formData.status_offerta));
+
       await updateInstallation(editingInstallation.id, formData);
       alert('✅ Impianto aggiornato con successo!');
       setEditingInstallation(null);
@@ -118,6 +122,7 @@ const ImpiantiManager = () => {
       resetClientLinkingState();
       loadInstallations();
     } catch (error) {
+      console.error('Update error:', error);
       alert(`❌ Errore: ${error.message}`);
     }
   };
@@ -142,6 +147,10 @@ const ImpiantiManager = () => {
   };
 
   const handleEditClick = async (installation) => {
+    console.log('Installation being edited:', installation);
+    console.log('status_offerta value:', JSON.stringify(installation.status_offerta));
+    console.log('status_realizzazione value:', JSON.stringify(installation.status_realizzazione));
+
     setEditingInstallation(installation);
     setFormData({
       nome: installation.nome || '',
@@ -198,7 +207,7 @@ const ImpiantiManager = () => {
   };
 
   // Client management functions
-  const loadLinkedClients = async (installation) => {
+  const loadLinkedClients = async (installation, forceRefresh = false) => {
     if (!online) {
       setLinkedClients([]);
       return;
@@ -206,7 +215,7 @@ const ImpiantiManager = () => {
 
     setLoadingClients(true);
     try {
-      const { clients } = await getClients();
+      const { clients } = await getClients(forceRefresh);
       // Filter clients that are linked to this installation
       const linked = clients.filter(client =>
         client.impianto && client.impianto.includes(installation.id || installation.airtableId)
@@ -241,7 +250,8 @@ const ImpiantiManager = () => {
     try {
       await linkInstallationToClient(editingInstallation.id || editingInstallation.airtableId, clientId);
       alert('✅ Cliente collegato con successo!');
-      await loadLinkedClients(editingInstallation);
+      // Force refresh to get updated data from Airtable
+      await loadLinkedClients(editingInstallation, true);
       setShowClientLinking(false);
       setClientSearchQuery('');
     } catch (error) {
@@ -257,7 +267,8 @@ const ImpiantiManager = () => {
     try {
       await unlinkInstallationFromClient(editingInstallation.id || editingInstallation.airtableId, clientId);
       alert('✅ Cliente scollegato con successo!');
-      await loadLinkedClients(editingInstallation);
+      // Force refresh to get updated data from Airtable
+      await loadLinkedClients(editingInstallation, true);
     } catch (error) {
       alert(`❌ Errore: ${error.message}`);
     }
@@ -315,8 +326,8 @@ const ImpiantiManager = () => {
       // Link the new client to the installation
       await linkInstallationToClient(editingInstallation.id || editingInstallation.airtableId, client.airtableId || client.id);
 
-      // Reload linked clients
-      await loadLinkedClients(editingInstallation);
+      // Reload linked clients with force refresh
+      await loadLinkedClients(editingInstallation, true);
 
       // Reset form and hide create client form
       setShowCreateClientForm(false);
@@ -538,6 +549,35 @@ const ImpiantiManager = () => {
             gap: 0.5rem !important;
           }
           .impianti-manager-container .client-search-wrapper .create-client-button {
+            width: 100% !important;
+          }
+          .client-modal {
+            max-height: 90vh !important;
+            width: calc(100% - 1rem) !important;
+            padding: 1rem !important;
+            border-radius: 0.75rem !important;
+          }
+          .client-modal h3 {
+            font-size: 1.125rem !important;
+          }
+          .client-modal h4 {
+            font-size: 1rem !important;
+          }
+          .client-modal .linked-item {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 0.75rem !important;
+          }
+          .client-modal .linked-item-content {
+            margin-bottom: 0 !important;
+          }
+          .client-modal .linked-item button {
+            width: 100% !important;
+          }
+          .client-modal .client-search-wrapper {
+            flex-direction: column !important;
+          }
+          .client-modal .client-search-wrapper .create-client-button {
             width: 100% !important;
           }
         }
@@ -1124,254 +1164,6 @@ const ImpiantiManager = () => {
                   </div>
                 )}
 
-                {/* Client Search and Link Interface */}
-                {showClientLinking && (
-                  <div style={{
-                    marginTop: '0.75rem',
-                    padding: '0.75rem',
-                    backgroundColor: 'white',
-                    borderRadius: '0.375rem',
-                    border: '1px solid #cbd5e1'
-                  }}>
-                    {!showCreateClientForm ? (
-                      <>
-                        <div className="client-search-wrapper" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                          <input
-                            type="text"
-                            className="linked-search"
-                            placeholder="🔍 Cerca cliente per nome o email..."
-                            value={clientSearchQuery}
-                            onChange={(e) => setClientSearchQuery(e.target.value)}
-                            style={{
-                              flex: 1,
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.8125rem',
-                              outline: 'none'
-                            }}
-                            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                            onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
-                          />
-                          <button
-                            type="button"
-                            className="create-client-button"
-                            onClick={() => setShowCreateClientForm(true)}
-                            style={{
-                              padding: '0.5rem 0.75rem',
-                              backgroundColor: '#10b981',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '0.375rem',
-                              fontSize: '0.75rem',
-                              fontWeight: '600',
-                              cursor: 'pointer',
-                              whiteSpace: 'nowrap'
-                            }}
-                          >
-                            + Nuovo
-                          </button>
-                        </div>
-
-                        <div style={{
-                          maxHeight: '250px',
-                          overflowY: 'auto',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '0.5rem'
-                        }}>
-                          {getFilteredClients().length > 0 ? (
-                            getFilteredClients().map(client => (
-                              <div
-                                key={client.id || client.airtableId}
-                                className="linked-item"
-                                style={{
-                                  padding: '0.625rem',
-                                  border: '1px solid #e2e8f0',
-                                  borderRadius: '0.375rem',
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'center',
-                                  backgroundColor: '#f8fafc'
-                                }}
-                              >
-                                <div className="linked-item-content" style={{ flex: 1 }}>
-                                  <div className="linked-item-title" style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155', marginBottom: '0.25rem' }}>
-                                    {client.nome || 'Cliente senza nome'}
-                                  </div>
-                                  <div className="linked-item-text" style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                                    {client.email || 'Email non specificata'}
-                                  </div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => handleLinkClient(client.id || client.airtableId)}
-                                  style={{
-                                    padding: '0.375rem 0.75rem',
-                                    backgroundColor: '#10b981',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '0.375rem',
-                                    fontSize: '0.7rem',
-                                    fontWeight: '600',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  + Collega
-                                </button>
-                              </div>
-                            ))
-                          ) : (
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', padding: '1rem' }}>
-                              {clientSearchQuery ? 'Nessun cliente trovato' : 'Tutti i clienti sono già collegati'}
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <div>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          marginBottom: '0.75rem'
-                        }}>
-                          <h5 style={{
-                            fontSize: '0.8125rem',
-                            fontWeight: '600',
-                            color: '#1f2937',
-                            margin: 0
-                          }}>
-                            ✨ Crea Nuovo Cliente
-                          </h5>
-                          <button
-                            type="button"
-                            onClick={() => setShowCreateClientForm(false)}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              cursor: 'pointer',
-                              fontSize: '1rem',
-                              color: '#6b7280'
-                            }}
-                          >
-                            ✕
-                          </button>
-                        </div>
-
-                        <div className="create-form-grid" style={{
-                          display: 'grid',
-                          gridTemplateColumns: '1fr',
-                          gap: '0.5rem'
-                        }}>
-                          <input
-                            type="text"
-                            className="create-form-input"
-                            placeholder="Nome / Ragione Sociale *"
-                            required
-                            value={newClientData.nome}
-                            onChange={(e) => setNewClientData({ ...newClientData, nome: e.target.value })}
-                            style={{
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.75rem',
-                              outline: 'none'
-                            }}
-                          />
-                          <input
-                            type="text"
-                            className="create-form-input"
-                            placeholder="Cognome"
-                            value={newClientData.cognome}
-                            onChange={(e) => setNewClientData({ ...newClientData, cognome: e.target.value })}
-                            style={{
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.75rem',
-                              outline: 'none'
-                            }}
-                          />
-                          <input
-                            type="email"
-                            className="create-form-input"
-                            placeholder="Email"
-                            value={newClientData.email}
-                            onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
-                            style={{
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.75rem',
-                              outline: 'none'
-                            }}
-                          />
-                          <input
-                            type="tel"
-                            className="create-form-input"
-                            placeholder="Cellulare"
-                            value={newClientData.cellulare}
-                            onChange={(e) => setNewClientData({ ...newClientData, cellulare: e.target.value })}
-                            style={{
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.75rem',
-                              outline: 'none'
-                            }}
-                          />
-                          <input
-                            type="text"
-                            className="create-form-input"
-                            placeholder="Indirizzo Impianto"
-                            value={newClientData.indirizzo_impianto}
-                            onChange={(e) => setNewClientData({ ...newClientData, indirizzo_impianto: e.target.value })}
-                            style={{
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.75rem',
-                              outline: 'none'
-                            }}
-                          />
-                          <input
-                            type="text"
-                            className="create-form-input"
-                            placeholder="Città Impianto"
-                            value={newClientData.citta_impianto}
-                            onChange={(e) => setNewClientData({ ...newClientData, citta_impianto: e.target.value })}
-                            style={{
-                              padding: '0.5rem',
-                              borderRadius: '0.375rem',
-                              border: '1px solid #cbd5e1',
-                              fontSize: '0.75rem',
-                              outline: 'none'
-                            }}
-                          />
-
-                          <button
-                            type="button"
-                            onClick={handleCreateAndLinkClient}
-                            style={{
-                              padding: '0.625rem',
-                              backgroundColor: '#10b981',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '0.375rem',
-                              fontSize: '0.8125rem',
-                              fontWeight: '600',
-                              cursor: 'pointer',
-                              marginTop: '0.25rem'
-                            }}
-                          >
-                            ✓ Crea e Collega
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 
@@ -1689,6 +1481,394 @@ const ImpiantiManager = () => {
           </>
         )}
       </div>
+
+      {/* Client Linking Modal */}
+      {showClientLinking && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem'
+          }}
+          onClick={toggleClientLinking}
+        >
+          <div
+            className="client-modal"
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '1rem',
+              padding: '1.5rem',
+              maxWidth: '600px',
+              width: '100%',
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1rem',
+              paddingBottom: '1rem',
+              borderBottom: '2px solid #e5e7eb'
+            }}>
+              <h3 style={{
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: '#1f2937',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                🔗 Collega Cliente
+              </h3>
+              <button
+                type="button"
+                onClick={toggleClientLinking}
+                style={{
+                  background: '#f3f4f6',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.5rem',
+                  fontSize: '1.25rem',
+                  borderRadius: '0.5rem',
+                  color: '#6b7280',
+                  lineHeight: 1,
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#e5e7eb';
+                  e.target.style.color = '#374151';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#f3f4f6';
+                  e.target.style.color = '#6b7280';
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            {!showCreateClientForm ? (
+              <>
+                <div className="client-search-wrapper" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <input
+                    type="text"
+                    className="linked-search"
+                    placeholder="🔍 Cerca cliente per nome o email..."
+                    value={clientSearchQuery}
+                    onChange={(e) => setClientSearchQuery(e.target.value)}
+                    style={{
+                      flex: 1,
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <button
+                    type="button"
+                    className="create-client-button"
+                    onClick={() => setShowCreateClientForm(true)}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      backgroundColor: '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+                  >
+                    + Nuovo
+                  </button>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem'
+                }}>
+                  {getFilteredClients().length > 0 ? (
+                    getFilteredClients().map(client => (
+                      <div
+                        key={client.id || client.airtableId}
+                        className="linked-item"
+                        style={{
+                          padding: '1rem',
+                          border: '2px solid #e5e7eb',
+                          borderRadius: '0.5rem',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          backgroundColor: '#f9fafb',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = '#3b82f6';
+                          e.currentTarget.style.backgroundColor = '#f0f9ff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = '#e5e7eb';
+                          e.currentTarget.style.backgroundColor = '#f9fafb';
+                        }}
+                      >
+                        <div className="linked-item-content" style={{ flex: 1 }}>
+                          <div className="linked-item-title" style={{ fontSize: '0.9375rem', fontWeight: '600', color: '#1f2937', marginBottom: '0.25rem' }}>
+                            {client.nome || 'Cliente senza nome'}
+                          </div>
+                          <div className="linked-item-text" style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                            {client.email || 'Email non specificata'}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleLinkClient(client.id || client.airtableId)}
+                          style={{
+                            padding: '0.625rem 1rem',
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.5rem',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            flexShrink: 0
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#059669';
+                            e.target.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = '#10b981';
+                            e.target.style.transform = 'scale(1)';
+                          }}
+                        >
+                          + Collega
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ fontSize: '0.875rem', color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>
+                      {clientSearchQuery ? '🔍 Nessun cliente trovato' : 'Tutti i clienti sono già collegati'}
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '1rem'
+                }}>
+                  <h4 style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '600',
+                    color: '#1f2937',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    ✨ Crea Nuovo Cliente
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreateClientForm(false)}
+                    style={{
+                      background: '#f3f4f6',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '0.5rem',
+                      fontSize: '1.25rem',
+                      borderRadius: '0.5rem',
+                      color: '#6b7280',
+                      lineHeight: 1,
+                      width: '2.5rem',
+                      height: '2.5rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = '#e5e7eb';
+                      e.target.style.color = '#374151';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = '#f3f4f6';
+                      e.target.style.color = '#6b7280';
+                    }}
+                  >
+                    ←
+                  </button>
+                </div>
+
+                <div className="create-form-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr',
+                  gap: '0.75rem'
+                }}>
+                  <input
+                    type="text"
+                    className="create-form-input"
+                    placeholder="Nome / Ragione Sociale *"
+                    required
+                    value={newClientData.nome}
+                    onChange={(e) => setNewClientData({ ...newClientData, nome: e.target.value })}
+                    style={{
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <input
+                    type="text"
+                    className="create-form-input"
+                    placeholder="Cognome"
+                    value={newClientData.cognome}
+                    onChange={(e) => setNewClientData({ ...newClientData, cognome: e.target.value })}
+                    style={{
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <input
+                    type="email"
+                    className="create-form-input"
+                    placeholder="Email"
+                    value={newClientData.email}
+                    onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
+                    style={{
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <input
+                    type="tel"
+                    className="create-form-input"
+                    placeholder="Cellulare"
+                    value={newClientData.cellulare}
+                    onChange={(e) => setNewClientData({ ...newClientData, cellulare: e.target.value })}
+                    style={{
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <input
+                    type="text"
+                    className="create-form-input"
+                    placeholder="Indirizzo Impianto"
+                    value={newClientData.indirizzo_impianto}
+                    onChange={(e) => setNewClientData({ ...newClientData, indirizzo_impianto: e.target.value })}
+                    style={{
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+                  <input
+                    type="text"
+                    className="create-form-input"
+                    placeholder="Città Impianto"
+                    value={newClientData.citta_impianto}
+                    onChange={(e) => setNewClientData({ ...newClientData, citta_impianto: e.target.value })}
+                    style={{
+                      padding: '0.75rem',
+                      borderRadius: '0.5rem',
+                      border: '2px solid #e5e7eb',
+                      fontSize: '0.9375rem',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => e.target.style.borderColor = '#10b981'}
+                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={handleCreateAndLinkClient}
+                    style={{
+                      padding: '0.875rem',
+                      backgroundColor: '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontSize: '0.9375rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      marginTop: '0.5rem',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = '#059669';
+                      e.target.style.transform = 'scale(1.02)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = '#10b981';
+                      e.target.style.transform = 'scale(1)';
+                    }}
+                  >
+                    ✓ Crea e Collega
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
