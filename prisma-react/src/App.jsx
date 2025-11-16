@@ -452,6 +452,13 @@ function App() {
               padding: '0 1.5rem 1.5rem 1.5rem',
               animation: 'fadeIn 0.3s ease-in'
             }}>
+              <style>{`
+                @media (max-width: 768px) {
+                  .tab-content {
+                    padding: 0 !important;
+                  }
+                }
+              `}</style>
               {tabs[selectedIndex].component}
             </div>
           </div>

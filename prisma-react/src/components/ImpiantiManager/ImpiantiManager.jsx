@@ -334,14 +334,143 @@ const ImpiantiManager = () => {
   };
 
   return (
-    <div style={{
+    <div className="impianti-manager-container" style={{
       backgroundColor: 'white',
       borderRadius: '1rem',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
       overflow: 'hidden'
     }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .impianti-manager-container {
+            border-radius: 0 !important;
+            margin: 0 -1.5rem !important;
+            width: calc(100% + 3rem) !important;
+            max-width: calc(100% + 3rem) !important;
+          }
+          .impianti-manager-container .header-section {
+            padding: 1rem !important;
+            border-radius: 0 !important;
+          }
+          .impianti-manager-container .header-title {
+            font-size: 1.375rem !important;
+          }
+          .impianti-manager-container .header-subtitle {
+            font-size: 0.875rem !important;
+          }
+          .impianti-manager-container .action-button {
+            padding: 0.625rem 0.875rem !important;
+            font-size: 0.9375rem !important;
+          }
+          .impianti-manager-container .search-input {
+            padding: 0.75rem 0.875rem 0.75rem 2.5rem !important;
+            font-size: 0.9375rem !important;
+          }
+          .impianti-manager-container .content-section {
+            padding: 1rem !important;
+          }
+          .impianti-manager-container .form-container {
+            padding: 1rem !important;
+          }
+          .impianti-manager-container .form-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .impianti-manager-container .cards-grid {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem !important;
+          }
+          .impianti-manager-container .impianto-card {
+            width: 100% !important;
+          }
+          .impianti-manager-container .card-title {
+            font-size: 1rem !important;
+          }
+          .impianti-manager-container .card-text {
+            font-size: 0.875rem !important;
+          }
+          .impianti-manager-container .form-buttons {
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+          }
+          .impianti-manager-container .form-button {
+            width: 100% !important;
+            padding: 0.875rem 1rem !important;
+            font-size: 1rem !important;
+          }
+          .impianti-manager-container .linked-section {
+            padding: 0.75rem !important;
+          }
+          .impianti-manager-container .linked-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.5rem !important;
+          }
+          .impianti-manager-container .linked-header .linked-button {
+            width: 100% !important;
+            text-align: center !important;
+          }
+          .impianti-manager-container .linked-item {
+            padding: 0.75rem !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            min-height: auto !important;
+            height: auto !important;
+          }
+          .impianti-manager-container .linked-item-content {
+            margin-bottom: 0.75rem !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            width: 100% !important;
+            display: block !important;
+          }
+          .impianti-manager-container .linked-item-title {
+            font-size: 0.9375rem !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            line-height: 1.4 !important;
+            margin-bottom: 0.375rem !important;
+          }
+          .impianti-manager-container .linked-item-text {
+            font-size: 0.875rem !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            line-height: 1.5 !important;
+            margin-bottom: 0.25rem !important;
+          }
+          .impianti-manager-container .linked-item button {
+            width: 100% !important;
+            font-size: 0.9375rem !important;
+            padding: 0.75rem 1rem !important;
+            margin-top: 0.25rem !important;
+          }
+          .impianti-manager-container .linked-search {
+            font-size: 0.875rem !important;
+            padding: 0.625rem !important;
+          }
+          .impianti-manager-container .create-form-grid {
+            gap: 0.375rem !important;
+          }
+          .impianti-manager-container .create-form-input {
+            padding: 0.5rem !important;
+            font-size: 0.75rem !important;
+          }
+          .impianti-manager-container .create-client-button {
+            flex-shrink: 0 !important;
+            min-width: auto !important;
+            width: auto !important;
+          }
+          .impianti-manager-container .client-search-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+          }
+          .impianti-manager-container .client-search-wrapper .create-client-button {
+            width: 100% !important;
+          }
+        }
+      `}</style>
       {/* Compact Header */}
-      <div style={{
+      <div className="header-section" style={{
         background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
         padding: '1.5rem',
         color: 'white'
@@ -353,13 +482,13 @@ const ImpiantiManager = () => {
           marginBottom: '1rem'
         }}>
           <div>
-            <h2 style={{
+            <h2 className="header-title" style={{
               fontSize: '1.5rem',
               fontWeight: 'bold',
               margin: 0,
               marginBottom: '0.25rem'
             }}>⚡ Gestione Impianti</h2>
-            <p style={{ fontSize: '0.875rem', opacity: 0.9, margin: 0 }}>
+            <p className="header-subtitle" style={{ fontSize: '0.875rem', opacity: 0.9, margin: 0 }}>
               {!searchQuery && !showAllInstallations && installations.length > 3
                 ? `Ultimi 3 di ${installations.length} impianti`
                 : `${installations.length} impianti`} • {online ? '🟢 Online' : '🔴 Offline'}
@@ -368,6 +497,7 @@ const ImpiantiManager = () => {
 
           <button
             type="button"
+            className="action-button"
             onClick={(e) => {
               e.preventDefault();
               setShowAddForm(!showAddForm);
@@ -403,6 +533,7 @@ const ImpiantiManager = () => {
         <div style={{ position: 'relative' }}>
           <input
             type="text"
+            className="search-input"
             placeholder="Cerca per nome, indirizzo..."
             value={searchQuery}
             onChange={handleSearch}
@@ -449,12 +580,13 @@ const ImpiantiManager = () => {
       </div>
 
       {/* Content Area */}
-      <div style={{ padding: '1.5rem' }}>
+      <div className="content-section" style={{ padding: '1.5rem' }}>
 
         {/* Add/Edit Form - Compact */}
         {(showAddForm || editingInstallation) && (
           <form
             onSubmit={editingInstallation ? handleUpdateInstallation : handleAddInstallation}
+            className="form-container"
             style={{
               backgroundColor: '#f9fafb',
               padding: '1.25rem',
@@ -476,7 +608,7 @@ const ImpiantiManager = () => {
             </h3>
 
             {/* Main Fields - Always Visible */}
-            <div style={{
+            <div className="form-grid" style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(2, 1fr)',
               gap: '0.875rem'
@@ -605,7 +737,7 @@ const ImpiantiManager = () => {
 
             {/* Additional Fields - Conditionally Visible */}
             {showAllFields && (
-              <div style={{
+              <div className="form-grid" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(2, 1fr)',
                 gap: '0.875rem',
@@ -756,14 +888,14 @@ const ImpiantiManager = () => {
 
             {/* Linked Clients Section - Only show when editing an installation */}
             {editingInstallation && online && (
-              <div style={{
+              <div className="linked-section" style={{
                 marginTop: '1rem',
                 padding: '1rem',
                 backgroundColor: '#f0f9ff',
                 border: '2px solid #3b82f6',
                 borderRadius: '0.5rem'
               }}>
-                <div style={{
+                <div className="linked-header" style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -793,6 +925,7 @@ const ImpiantiManager = () => {
                   </div>
                   <button
                     type="button"
+                    className="linked-button"
                     onClick={toggleClientLinking}
                     style={{
                       padding: '0.375rem 0.75rem',
@@ -819,6 +952,7 @@ const ImpiantiManager = () => {
                     {/* Search bar for linked clients */}
                     <input
                       type="text"
+                      className="linked-search"
                       placeholder="🔍 Filtra clienti collegati..."
                       value={linkedClientsFilter}
                       onChange={(e) => setLinkedClientsFilter(e.target.value)}
@@ -846,6 +980,7 @@ const ImpiantiManager = () => {
                         {getFilteredLinkedClients().map(client => (
                           <div
                             key={client.id || client.airtableId}
+                            className="linked-item"
                             style={{
                               backgroundColor: 'white',
                               padding: '0.75rem',
@@ -856,15 +991,15 @@ const ImpiantiManager = () => {
                               alignItems: 'center'
                             }}
                           >
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#1e40af', marginBottom: '0.25rem' }}>
+                            <div className="linked-item-content" style={{ flex: 1 }}>
+                              <div className="linked-item-title" style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#1e40af', marginBottom: '0.25rem' }}>
                                 {client.nome || 'Cliente senza nome'}
                               </div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              <div className="linked-item-text" style={{ fontSize: '0.75rem', color: '#64748b' }}>
                                 {client.email || 'Email non specificata'}
                               </div>
                               {client.cellulare && (
-                                <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                                <div className="linked-item-text" style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '0.25rem' }}>
                                   📱 {client.cellulare}
                                 </div>
                               )}
@@ -911,9 +1046,10 @@ const ImpiantiManager = () => {
                   }}>
                     {!showCreateClientForm ? (
                       <>
-                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                        <div className="client-search-wrapper" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
                           <input
                             type="text"
+                            className="linked-search"
                             placeholder="🔍 Cerca cliente per nome o email..."
                             value={clientSearchQuery}
                             onChange={(e) => setClientSearchQuery(e.target.value)}
@@ -930,6 +1066,7 @@ const ImpiantiManager = () => {
                           />
                           <button
                             type="button"
+                            className="create-client-button"
                             onClick={() => setShowCreateClientForm(true)}
                             style={{
                               padding: '0.5rem 0.75rem',
@@ -958,6 +1095,7 @@ const ImpiantiManager = () => {
                             getFilteredClients().map(client => (
                               <div
                                 key={client.id || client.airtableId}
+                                className="linked-item"
                                 style={{
                                   padding: '0.625rem',
                                   border: '1px solid #e2e8f0',
@@ -968,11 +1106,11 @@ const ImpiantiManager = () => {
                                   backgroundColor: '#f8fafc'
                                 }}
                               >
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155', marginBottom: '0.25rem' }}>
+                                <div className="linked-item-content" style={{ flex: 1 }}>
+                                  <div className="linked-item-title" style={{ fontSize: '0.8125rem', fontWeight: '600', color: '#334155', marginBottom: '0.25rem' }}>
                                     {client.nome || 'Cliente senza nome'}
                                   </div>
-                                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                  <div className="linked-item-text" style={{ fontSize: '0.75rem', color: '#64748b' }}>
                                     {client.email || 'Email non specificata'}
                                   </div>
                                 </div>
@@ -1032,13 +1170,14 @@ const ImpiantiManager = () => {
                           </button>
                         </div>
 
-                        <div style={{
+                        <div className="create-form-grid" style={{
                           display: 'grid',
                           gridTemplateColumns: '1fr',
                           gap: '0.5rem'
                         }}>
                           <input
                             type="text"
+                            className="create-form-input"
                             placeholder="Nome / Ragione Sociale *"
                             required
                             value={newClientData.nome}
@@ -1053,6 +1192,7 @@ const ImpiantiManager = () => {
                           />
                           <input
                             type="text"
+                            className="create-form-input"
                             placeholder="Cognome"
                             value={newClientData.cognome}
                             onChange={(e) => setNewClientData({ ...newClientData, cognome: e.target.value })}
@@ -1066,6 +1206,7 @@ const ImpiantiManager = () => {
                           />
                           <input
                             type="email"
+                            className="create-form-input"
                             placeholder="Email"
                             value={newClientData.email}
                             onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
@@ -1079,6 +1220,7 @@ const ImpiantiManager = () => {
                           />
                           <input
                             type="tel"
+                            className="create-form-input"
                             placeholder="Cellulare"
                             value={newClientData.cellulare}
                             onChange={(e) => setNewClientData({ ...newClientData, cellulare: e.target.value })}
@@ -1092,6 +1234,7 @@ const ImpiantiManager = () => {
                           />
                           <input
                             type="text"
+                            className="create-form-input"
                             placeholder="Indirizzo Impianto"
                             value={newClientData.indirizzo_impianto}
                             onChange={(e) => setNewClientData({ ...newClientData, indirizzo_impianto: e.target.value })}
@@ -1105,6 +1248,7 @@ const ImpiantiManager = () => {
                           />
                           <input
                             type="text"
+                            className="create-form-input"
                             placeholder="Città Impianto"
                             value={newClientData.citta_impianto}
                             onChange={(e) => setNewClientData({ ...newClientData, citta_impianto: e.target.value })}
@@ -1142,9 +1286,10 @@ const ImpiantiManager = () => {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+            <div className="form-buttons" style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
               <button
                 type="submit"
+                className="form-button"
                 style={{
                   background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
                   color: 'white',
@@ -1162,6 +1307,7 @@ const ImpiantiManager = () => {
 
               <button
                 type="button"
+                className="form-button"
                 onClick={() => {
                   setEditingInstallation(null);
                   setShowAddForm(false);
@@ -1225,14 +1371,15 @@ const ImpiantiManager = () => {
           </div>
         ) : (
           <>
-            <div style={{
+            <div className="cards-grid" style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
               gap: '1rem'
             }}>
               {getFilteredInstallations().map(installation => (
                 <div
                   key={installation.id}
+                  className="impianto-card"
                   style={{
                     backgroundColor: selectedInstallation?.id === installation.id ? '#f0fdf4' : 'white',
                     border: selectedInstallation?.id === installation.id ? '3px solid #10b981' : '2px solid #e5e7eb',
@@ -1275,7 +1422,7 @@ const ImpiantiManager = () => {
                     alignItems: 'flex-start',
                     marginBottom: '0.75rem'
                   }}>
-                    <h4 style={{
+                    <h4 className="card-title" style={{
                       fontSize: '0.9375rem',
                       fontWeight: '700',
                       color: '#1f2937',
@@ -1339,7 +1486,7 @@ const ImpiantiManager = () => {
                     </div>
                   </div>
 
-                  <div style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: '1.6' }}>
+                  <div className="card-text" style={{ fontSize: '0.8125rem', color: '#6b7280', lineHeight: '1.6' }}>
                     {installation.indirizzo && (
                       <div style={{
                         marginBottom: '0.375rem',
