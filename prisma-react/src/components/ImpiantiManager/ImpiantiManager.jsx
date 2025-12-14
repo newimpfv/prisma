@@ -30,8 +30,8 @@ const ImpiantiManager = () => {
     coordinate: '',
     dettagli_moduli: '',
     n_moduli_totali: 0,
-    status_offerta: 'in preparazione',
-    status_realizzazione: 'preventivo',
+    status_offerta: 'da mandare',
+    status_realizzazione: 'da montare',
     simulazione_render: 'Da fare',
     impianto_completato: false,
     compenso: 0
@@ -158,8 +158,8 @@ const ImpiantiManager = () => {
       coordinate: installation.coordinate || '',
       dettagli_moduli: installation.dettagli_moduli || '',
       n_moduli_totali: installation.n_moduli_totali || 0,
-      status_offerta: installation.status_offerta || 'in preparazione',
-      status_realizzazione: installation.status_realizzazione || 'preventivo',
+      status_offerta: installation.status_offerta || 'da mandare',
+      status_realizzazione: installation.status_realizzazione || 'da montare',
       simulazione_render: installation.simulazione_render || 'Da fare',
       impianto_completato: installation.impianto_completato || false,
       compenso: installation.compenso || 0
@@ -182,8 +182,8 @@ const ImpiantiManager = () => {
       coordinate: '',
       dettagli_moduli: '',
       n_moduli_totali: 0,
-      status_offerta: 'in preparazione',
-      status_realizzazione: 'preventivo',
+      status_offerta: 'da mandare',
+      status_realizzazione: 'da montare',
       simulazione_render: 'Da fare',
       impianto_completato: false,
       compenso: 0
@@ -897,7 +897,6 @@ const ImpiantiManager = () => {
                     onFocus={(e) => e.target.style.borderColor = '#10b981'}
                     onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                   >
-                    <option value="in preparazione">in preparazione</option>
                     <option value="da mandare">da mandare</option>
                     <option value="in attesa di risposta">in attesa di risposta</option>
                     <option value="mandata">mandata</option>
@@ -924,7 +923,6 @@ const ImpiantiManager = () => {
                     onFocus={(e) => e.target.style.borderColor = '#10b981'}
                     onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
                   >
-                    <option value="preventivo">preventivo</option>
                     <option value="da montare">da montare</option>
                     <option value="in corso">in corso</option>
                     <option value="montato">montato</option>

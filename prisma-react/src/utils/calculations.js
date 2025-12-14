@@ -191,7 +191,32 @@ export const calculateStructuralComponents = (falde, structureData, unitCosts, t
   const tipoTetto = structureData.tipoTetto;
   const lunghezzaGuida = 3.1; // meters per rail
 
-  // Calculate clamps, rails, staffe, and prolunghe based on actual module layout
+  // For "a terra" and "tettoia": guides and clamps are included in structure kit, so only calculate kit costs
+  if (tipoTetto === 'tettoia' || tipoTetto === 'a terra') {
+    // Sum all tettoia/a terra kit costs from falde
+    // Note: Guide, morsetti, staffe e prolunghe sono inclusi nel kit struttura
+    const tettoieFalde = falde.filter(f => f.tettoiaIndex !== undefined);
+    const costoKitStruttura = tettoieFalde.reduce(
+      (sum, tettoia) => sum + (tettoia.costoKitStruttura || 0),
+      0
+    );
+
+    return {
+      morsettiCentrali: 0,
+      morsettiFinali: 0,
+      guideTotali: 0,
+      staffe: 0, // Non presenti nelle tettoie/a terra
+      prolunghe: 0, // Non presenti nelle tettoie/a terra
+      costoMorsetti: 0,
+      costoGuide: 0,
+      costoStaffe: 0,
+      costoProlunghe: 0,
+      costoKitStruttura: costoKitStruttura,
+      totaleCostoStrutturale: costoKitStruttura
+    };
+  }
+
+  // For "lamiera" and "tegole": calculate guides, clamps, brackets as before
   let morsettiCentrali = 0;
   let morsettiFinali = 0;
   let guideTotali = 0;
@@ -258,6 +283,7 @@ export const calculateStructuralComponents = (falde, structureData, unitCosts, t
     costoGuide,
     costoStaffe,
     costoProlunghe,
+    costoKitStruttura: 0,
     totaleCostoStrutturale: costoMorsetti + costoGuide + costoStaffe + costoProlunghe
   };
 };
@@ -295,16 +321,20 @@ export const calculateInstallationDays = (totalPowerKw, tipoTetto, numeroBatteri
   // Base days based on power and roof type
   let giorniBase;
 
+  // Determine installation difficulty factor by roof type
+  // lamiera/tettoia/a terra = easy (1x), tegole = harder (1.6x)
+  const isEasyInstall = tipoTetto === 'lamiera' || tipoTetto === 'tettoia' || tipoTetto === 'a terra';
+
   if (totalPowerKw <= 6) {
-    giorniBase = tipoTetto === 'lamiera' ? 3 : 5;
+    giorniBase = isEasyInstall ? 3 : 5;
   } else if (totalPowerKw <= 15) {
-    giorniBase = tipoTetto === 'lamiera' ? 5 : 8;
+    giorniBase = isEasyInstall ? 5 : 8;
   } else if (totalPowerKw <= 30) {
-    giorniBase = tipoTetto === 'lamiera' ? 10 : 15;
+    giorniBase = isEasyInstall ? 10 : 15;
   } else if (totalPowerKw <= 50) {
-    giorniBase = tipoTetto === 'lamiera' ? 15 : 25;
+    giorniBase = isEasyInstall ? 15 : 25;
   } else {
-    giorniBase = tipoTetto === 'lamiera' ? 25 : 35;
+    giorniBase = isEasyInstall ? 25 : 35;
   }
 
   // Adjustment factors

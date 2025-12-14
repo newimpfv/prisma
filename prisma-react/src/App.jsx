@@ -8,7 +8,7 @@ import ClientManager from './components/ClientManager/ClientManager';
 import ImpiantiManager from './components/ImpiantiManager/ImpiantiManager';
 import ClientData from './components/ClientData/ClientData';
 import StructureData from './components/StructureData/StructureData';
-import Falde from './components/Falde/Falde';
+import ConfigurazioneTetto from './components/ConfigurazioneTetto/ConfigurazioneTetto';
 import Components from './components/Components/Components';
 import LaborSafety from './components/LaborSafety/LaborSafety';
 import UnitCosts from './components/UnitCosts/UnitCosts';
@@ -161,7 +161,7 @@ function App() {
       id: 4,
       name: 'Configurazione Tetto',
       icon: '🏠',
-      component: <Falde />
+      component: <ConfigurazioneTetto />
     },
     {
       id: 5,

@@ -109,7 +109,7 @@ export const populatePrismaTemplate = (templateHTML, formData) => {
     faldeContainer.innerHTML = ''; // Clear existing falde
 
     falde.forEach((falda, index) => {
-      const faldaHTML = createFaldaHTML(falda, index, doc);
+      const faldaHTML = createFaldaHTML(falda, index, doc, structureData.tipoTetto);
       faldeContainer.insertAdjacentHTML('beforeend', faldaHTML);
     });
   }
@@ -247,6 +247,17 @@ export const populatePrismaTemplate = (templateHTML, formData) => {
   if (customText) {
     setInputValue('premessaPersonalizzata', customText.premessaPersonalizzata || '');
     setInputValue('notePersonalizzate', customText.notePersonalizzate || '');
+
+    // Apply bold styling to custom text elements
+    const premessaElement = doc.getElementById('premessaPersonalizzata');
+    if (premessaElement) {
+      premessaElement.style.fontWeight = 'bold';
+    }
+
+    const noteElement = doc.getElementById('notePersonalizzate');
+    if (noteElement) {
+      noteElement.style.fontWeight = 'bold';
+    }
   }
 
   // SECTION 13: Render Images
@@ -486,11 +497,21 @@ export const populatePrismaTemplate = (templateHTML, formData) => {
 /**
  * Helper function to create HTML for a single falda
  */
-const createFaldaHTML = (falda, index, doc) => {
+const createFaldaHTML = (falda, index, doc, tipoTetto) => {
+  // Generate correct name based on type
+  let faldaNome;
+  if (falda.tettoiaIndex !== undefined) {
+    const isATerra = tipoTetto === 'a terra';
+    const baseNome = isATerra ? 'Struttura' : 'Tettoia';
+    faldaNome = `${baseNome} ${falda.tettoiaIndex + 1}`;
+  } else {
+    faldaNome = falda.nome || `Falda ${index + 1}`;
+  }
+
   let html = `
     <div class="falda-item" data-falda-index="${index}" style="background-color: rgba(255, 255, 255, 0.5); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
       <h4 style="color: #1f2937; margin-bottom: 10px; font-weight: 600;">
-        ${falda.nomeFalda || `Falda ${index + 1}`}
+        ${faldaNome}
       </h4>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px;">
         <div>

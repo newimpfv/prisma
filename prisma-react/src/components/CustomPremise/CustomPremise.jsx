@@ -21,7 +21,7 @@ const CustomPremise = () => {
           Testo introduttivo (apparirà all'inizio del preventivo, lasciare vuoto per autogenerazione)
         </label>
         <textarea
-          className="form-input"
+          className="form-input font-bold"
           rows="6"
           style={{ width: '100%' }}
           placeholder="Offerta economica per installazione di un impianto fotovoltaico con accumulo.

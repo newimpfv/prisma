@@ -150,29 +150,43 @@ const Results = () => {
               Dettagli Tecnici Strutturali
             </summary>
             <div className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Morsetti Centrali</span>
-                <span>{results.breakdown.strutturale.morsettiCentrali} pz</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Morsetti Finali</span>
-                <span>{results.breakdown.strutturale.morsettiFinali} pz</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Guide di Fissaggio</span>
-                <span>{results.breakdown.strutturale.guideTotali} pz</span>
-              </div>
-              {results.breakdown.strutturale.staffe > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Staffe per Tegole</span>
-                  <span>{results.breakdown.strutturale.staffe} pz</span>
-                </div>
-              )}
-              {results.breakdown.strutturale.prolunghe > 0 && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Prolunghe Guide</span>
-                  <span>{results.breakdown.strutturale.prolunghe} pz</span>
-                </div>
+              {results.breakdown.strutturale.costoKitStruttura > 0 ? (
+                <>
+                  <div className="flex justify-between p-2 bg-blue-50 rounded">
+                    <span className="text-gray-700 font-medium">Kit Struttura (Tettoie/A Terra)</span>
+                    <span className="font-semibold">€ {results.breakdown.strutturale.costoKitStruttura.toFixed(2)}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 italic">
+                    Il kit struttura include: guide, morsetti, staffe e prolunghe
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Morsetti Centrali</span>
+                    <span>{results.breakdown.strutturale.morsettiCentrali} pz</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Morsetti Finali</span>
+                    <span>{results.breakdown.strutturale.morsettiFinali} pz</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Guide di Fissaggio</span>
+                    <span>{results.breakdown.strutturale.guideTotali} pz</span>
+                  </div>
+                  {results.breakdown.strutturale.staffe > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Staffe per Tegole</span>
+                      <span>{results.breakdown.strutturale.staffe} pz</span>
+                    </div>
+                  )}
+                  {results.breakdown.strutturale.prolunghe > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Prolunghe Guide</span>
+                      <span>{results.breakdown.strutturale.prolunghe} pz</span>
+                    </div>
+                  )}
+                </>
               )}
               <div className="flex justify-between mt-2 pt-2 border-t">
                 <span className="text-gray-600">Lunghezza Cavi DC</span>

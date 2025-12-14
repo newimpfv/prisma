@@ -143,8 +143,8 @@ export const createInstallation = async (installationData, clientId = null, sess
       nome: installationData.nome || '',
       indirizzo: installationData.indirizzo || '',
       'n moduli totali': installationData.n_moduli_totali || 0,
-      'status offerta': installationData.status_offerta || 'in preparazione',
-      'status realizzazione': installationData.status_realizzazione || 'non iniziato',
+      'status offerta': installationData.status_offerta || 'da mandare',
+      'status realizzazione': installationData.status_realizzazione || 'da montare',
       'simulazione/render': installationData.simulazione_render || 'Da fare',
       'impianto completato': installationData.impianto_completato || false,
       Compenso: installationData.compenso || 0
@@ -404,8 +404,8 @@ export const createInstallationFromQuote = async (quoteData, clientId, sessionId
     indirizzo: `${quoteData.clientData?.indirizzo || ''}, ${quoteData.clientData?.comune || ''} ${quoteData.clientData?.provincia || ''}`.trim(),
     dettagli_moduli: `Impianto ${totalModules} moduli - Potenza totale: ${quoteData.structureData?.totale_potenza_kW || 0} kW`,
     n_moduli_totali: totalModules,
-    status_offerta: 'in preparazione',
-    status_realizzazione: 'preventivo',
+    status_offerta: 'da mandare',
+    status_realizzazione: 'da montare',
     simulazione_render: 'Da fare',
     impianto_completato: false,
     compenso: 0

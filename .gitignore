@@ -5,3 +5,5 @@ other/
 */.env.production
 */.env.development
 prisma-react/package-lock.json
+prisma-react/examples/PRISMA.html
+prisma-react/.claude/settings.local.json

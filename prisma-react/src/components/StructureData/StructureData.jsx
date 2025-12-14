@@ -18,7 +18,7 @@ const StructureData = () => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="form-group">
-          <label className="form-label">Tipo di Tetto</label>
+          <label className="form-label">Tipo di Impianto</label>
           <select
             name="tipoTetto"
             value={structureData.tipoTetto}
@@ -27,36 +27,68 @@ const StructureData = () => {
           >
             <option value="lamiera">Lamiera Grecata</option>
             <option value="tegole">Tetto con Tegole</option>
+            <option value="tettoia">Tettoia</option>
+            <option value="a terra">A Terra</option>
           </select>
           <p className="text-xs text-gray-500 mt-1">Influisce sul costo del montaggio</p>
         </div>
-        <div className="form-group">
-          <label className="form-label">Altezza Edificio (m)</label>
-          <input
-            type="number"
-            name="altezzaEdificio"
-            value={structureData.altezzaEdificio}
-            onChange={handleChange}
-            className="form-input"
-            min="0"
-            required
-          />
-          <p className="text-xs text-gray-500 mt-1">Influisce sul totale dei cavi</p>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Lunghezza Edificio (m)</label>
-          <input
-            type="number"
-            name="lunghezzaEdificio"
-            value={structureData.lunghezzaEdificio}
-            onChange={handleChange}
-            className="form-input"
-            min="0"
-            required
-          />
-          <p className="text-xs text-gray-500 mt-1">Influisce sul totale dei cavi</p>
-        </div>
+
+        {/* Show building dimensions only for lamiera and tegole */}
+        {structureData.tipoTetto !== 'tettoia' && structureData.tipoTetto !== 'a terra' && (
+          <>
+            <div className="form-group">
+              <label className="form-label">Altezza Edificio (m)</label>
+              <input
+                type="number"
+                name="altezzaEdificio"
+                value={structureData.altezzaEdificio}
+                onChange={handleChange}
+                className="form-input"
+                min="0"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Influisce sul totale dei cavi</p>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Lunghezza Edificio (m)</label>
+              <input
+                type="number"
+                name="lunghezzaEdificio"
+                value={structureData.lunghezzaEdificio}
+                onChange={handleChange}
+                className="form-input"
+                min="0"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">Influisce sul totale dei cavi</p>
+            </div>
+          </>
+        )}
       </div>
+
+      {/* Info message for "Tettoia" roof type */}
+      {structureData.tipoTetto === 'tettoia' && (
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-blue-800">
+            <strong>✓ Tipo impianto selezionato: Tettoia</strong>
+          </p>
+          <p className="text-sm text-blue-700 mt-2">
+            Vai alla tab <strong>"Configurazione Tetto"</strong> per configurare le tettoie, aggiungerne di nuove e impostare i moduli.
+          </p>
+        </div>
+      )}
+
+      {/* Info message for "A Terra" roof type */}
+      {structureData.tipoTetto === 'a terra' && (
+        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-green-800">
+            <strong>✓ Tipo impianto selezionato: Impianto A Terra</strong>
+          </p>
+          <p className="text-sm text-green-700 mt-2">
+            Vai alla tab <strong>"Configurazione Tetto"</strong> per configurare gli impianti a terra, aggiungerne di nuovi e impostare i moduli.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

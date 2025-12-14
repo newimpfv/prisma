@@ -124,13 +124,23 @@ const ExportButtons = () => {
     }
   };
 
+  const generateRiferimentoPreventivo = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `PRV-${year}${month}${day}-${hours}${minutes}`;
+  };
+
   const generateQuoteHTML = () => {
     const today = new Date().toLocaleDateString('it-IT');
     const clientName = clientData.nome && clientData.cognome
       ? `${clientData.nome} ${clientData.cognome}`.trim()
       : clientData.nome || clientData.nomeCognome || 'Cliente';
     const address = clientData.indirizzo || 'Indirizzo non specificato';
-    const riferimentoPreventivo = quoteData.riferimentoPreventivo || 'N/A';
+    const riferimentoPreventivo = quoteData.riferimentoPreventivo || generateRiferimentoPreventivo();
     const validitaPreventivo = quoteData.validitaPreventivo || 20;
     const potenzaTotale = parseFloat(results?.potenzaTotaleKw || 0);
     const produzioneAnnua = potenzaTotale * economicParams.produzioneAnnuaKw;
@@ -1045,9 +1055,19 @@ const ExportButtons = () => {
       }, 0);
       const totaleModuliFalda = falda.gruppiModuli.reduce((sum, g) => sum + (g.numeroFile * g.moduliPerFila), 0);
 
+      // Generate correct name based on type
+      let faldaNome;
+      if (falda.tettoiaIndex !== undefined) {
+        const isATerra = structureData.tipoTetto === 'a terra';
+        const baseNome = isATerra ? 'Struttura' : 'Tettoia';
+        faldaNome = `${baseNome} ${falda.tettoiaIndex + 1}`;
+      } else {
+        faldaNome = falda.nome || `Falda ${idx + 1}`;
+      }
+
       return `
         <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #2E8B57; page-break-inside: avoid;">
-          <h5 style="color: #0F3460; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">${falda.nomeFalda || `Falda ${idx + 1}`}</h5>
+          <h5 style="color: #0F3460; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">${faldaNome}</h5>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px;">
             <div>
               <span style="color: #718096; font-size: 12px;">Inclinazione:</span>

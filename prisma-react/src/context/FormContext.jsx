@@ -46,7 +46,7 @@ export const FormProvider = ({ children }) => {
 
   // Structure Data
   const [structureData, setStructureData] = useState({
-    tipoTetto: 'lamiera', // 'lamiera' or 'tegole'
+    tipoTetto: 'lamiera', // 'lamiera', 'tegole', 'tettoia', or 'a terra'
     altezzaEdificio: 10,
     lunghezzaEdificio: 40
   });

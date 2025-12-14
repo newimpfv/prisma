@@ -22,7 +22,7 @@ const CustomNotes = () => {
           Note Aggiuntive (appariranno nel preventivo sotto alle note standard)
         </label>
         <textarea
-          className="form-input"
+          className="form-input font-bold"
           rows="4"
           style={{ width: '100%' }}
           placeholder="Inserisci qui eventuali note aggiuntive per il preventivo..."
