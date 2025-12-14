@@ -32,9 +32,9 @@ const LaborSafety = () => {
           />
         </div>
 
-        {/* Costo Fresia */}
+        {/* Spese Legali */}
         <div className="form-group">
-          <label className="form-label">Costo Fresia</label>
+          <label className="form-label">Spese Legali</label>
           <input
             type="number"
             className="form-input"

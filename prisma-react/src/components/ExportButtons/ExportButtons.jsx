@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useForm } from '../../context/FormContext';
+import { useModules } from '../../hooks/useProductData';
 
 const ExportButtons = () => {
   const [saveStatus, setSaveStatus] = useState('');
+  const { modules } = useModules();
   const {
     clientData,
     structureData,
@@ -1047,11 +1049,11 @@ const ExportButtons = () => {
     <h3 class="details-heading">Configurazione Impianto</h3>
 
     <h4 style="color: #0F3460; margin-top: 20px; margin-bottom: 15px; font-size: 16px;">Moduli Fotovoltaici - Dettaglio Falde</h4>
-    ${falde.map((falda, idx) => {
+    ${falde.filter(f => f.gruppiModuli && f.gruppiModuli.length > 0).map((falda, idx) => {
       const totalePotenzaFalda = falda.gruppiModuli.reduce((sum, g) => {
-        const modulo = g.modulo;
+        const moduloObj = modules.find(m => m.id === g.modulo) || modules[0];
         const numeroModuli = g.numeroFile * g.moduliPerFila;
-        return sum + (modulo ? numeroModuli * (modulo.potenza / 1000) : 0);
+        return sum + (moduloObj ? numeroModuli * (moduloObj.potenza / 1000) : 0);
       }, 0);
       const totaleModuliFalda = falda.gruppiModuli.reduce((sum, g) => sum + (g.numeroFile * g.moduliPerFila), 0);
 
@@ -1069,17 +1071,19 @@ const ExportButtons = () => {
         <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #2E8B57; page-break-inside: avoid;">
           <h5 style="color: #0F3460; margin: 0 0 10px 0; font-size: 14px; font-weight: 600;">${faldaNome}</h5>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px;">
-            <div>
-              <span style="color: #718096; font-size: 12px;">Inclinazione:</span>
-              <span style="font-weight: 600; display: block;">${falda.inclinazione || 0}°</span>
-            </div>
-            <div>
-              <span style="color: #718096; font-size: 12px;">Orientamento:</span>
-              <span style="font-weight: 600; display: block;">${falda.orientamento || 0}°</span>
-            </div>
+            ${falda.tettoiaIndex === undefined ? `
+              <div>
+                <span style="color: #718096; font-size: 12px;">Inclinazione:</span>
+                <span style="font-weight: 600; display: block;">${falda.inclinazione || 0}°</span>
+              </div>
+              <div>
+                <span style="color: #718096; font-size: 12px;">Orientamento:</span>
+                <span style="font-weight: 600; display: block;">${falda.orientamento || 0}°</span>
+              </div>
+            ` : ''}
             <div>
               <span style="color: #718096; font-size: 12px;">Dimensioni:</span>
-              <span style="font-weight: 600; display: block;">${falda.lunghezza || 0}m × ${falda.larghezza || 0}m</span>
+              <span style="font-weight: 600; display: block;">${falda.larghezza || 0}m × ${falda.lunghezza || 0}m</span>
             </div>
             <div>
               <span style="color: #718096; font-size: 12px;">N° Moduli:</span>
@@ -1094,12 +1098,12 @@ const ExportButtons = () => {
             <div style="margin-top: 10px;">
               <span style="color: #718096; font-size: 12px; font-weight: 600;">Gruppi Moduli:</span>
               ${falda.gruppiModuli.map((gruppo, gIdx) => {
-                const modulo = gruppo.modulo;
+                const moduloObj = modules.find(m => m.id === gruppo.modulo) || modules[0];
                 const numModuli = gruppo.numeroFile * gruppo.moduliPerFila;
-                const potenzaGruppo = modulo ? (numModuli * modulo.potenza / 1000).toFixed(2) : 0;
+                const potenzaGruppo = moduloObj ? (numModuli * moduloObj.potenza / 1000).toFixed(2) : 0;
                 return `
                   <div style="background-color: white; padding: 8px; margin-top: 8px; border-radius: 4px; font-size: 12px;">
-                    <strong>Gruppo ${gIdx + 1}:</strong> ${modulo?.marca || ''} ${modulo?.modello || ''} (${modulo?.potenza || 0}W)
+                    <strong>Gruppo ${gIdx + 1}:</strong> ${moduloObj?.name || 'Modulo non specificato'} (${moduloObj?.potenza || 0}W)
                     <br><span style="color: #718096;">${gruppo.numeroFile} file × ${gruppo.moduliPerFila} moduli = ${numModuli} moduli → ${potenzaGruppo} kWp</span>
                   </div>
                 `;
@@ -1120,17 +1124,27 @@ const ExportButtons = () => {
         </tr>
       </thead>
       <tbody>
-        ${falde.map((falda, idx) => {
+        ${falde.filter(f => f.gruppiModuli && f.gruppiModuli.length > 0).map((falda, idx) => {
           const totalePotenzaFalda = falda.gruppiModuli.reduce((sum, g) => {
-            const modulo = g.modulo;
+            const moduloObj = modules.find(m => m.id === g.modulo) || modules[0];
             const numeroModuli = g.numeroFile * g.moduliPerFila;
-            return sum + (modulo ? numeroModuli * (modulo.potenza / 1000) : 0);
+            return sum + (moduloObj ? numeroModuli * (moduloObj.potenza / 1000) : 0);
           }, 0);
           const totaleModuliFalda = falda.gruppiModuli.reduce((sum, g) => sum + (g.numeroFile * g.moduliPerFila), 0);
 
+          // Generate correct name based on type
+          let faldaNome;
+          if (falda.tettoiaIndex !== undefined) {
+            const isATerra = structureData.tipoTetto === 'a terra';
+            const baseNome = isATerra ? 'Struttura' : 'Tettoia';
+            faldaNome = `${baseNome} ${falda.tettoiaIndex + 1}`;
+          } else {
+            faldaNome = falda.nome || `Falda ${idx + 1}`;
+          }
+
           return `
             <tr>
-              <td>${falda.nomeFalda || `Falda ${idx + 1}`}</td>
+              <td>${faldaNome}</td>
               <td style="text-align: center; font-weight: 600;">${totaleModuliFalda}</td>
               <td style="text-align: center; font-weight: 600; color: #2E8B57;">${totalePotenzaFalda.toFixed(2)}</td>
             </tr>
@@ -1347,11 +1361,9 @@ const ExportButtons = () => {
         })()}
         <tr><td>Quadri Elettrici</td><td style="text-align: right;">€ ${results?.costoQuadri || '0.00'}</td></tr>
         <tr><td>Manodopera</td><td style="text-align: right;">€ ${results?.costoManodopera || '0.00'}</td></tr>
-        ${parseFloat(results?.costoFresia || 0) > 0 ? `<tr><td>Fresia e Preparazione</td><td style="text-align: right;">€ ${results?.costoFresia || '0.00'}</td></tr>` : ''}
+        ${parseFloat(results?.costoFresia || 0) > 0 ? `<tr><td>Spese Legali</td><td style="text-align: right;">€ ${results?.costoFresia || '0.00'}</td></tr>` : ''}
         ${parseFloat(results?.costoSicurezza || 0) > 0 ? `<tr><td>Sicurezza</td><td style="text-align: right;">€ ${results?.costoSicurezza || '0.00'}</td></tr>` : ''}
         <tr><td>Mezzi e Trasporto</td><td style="text-align: right;">€ ${results?.costoMezzi || '0.00'}</td></tr>
-        <tr class="total-row"><td><strong>TOTALE BASE</strong></td><td style="text-align: right;"><strong>€ ${results?.costoTotaleBase || '0.00'}</strong></td></tr>
-        <tr class="total-row"><td><strong>TOTALE CON MARGINE (${laborSafety?.margineGuadagno || 0}%)</strong></td><td style="text-align: right;"><strong>€ ${results?.costoTotaleConMargine || '0.00'}</strong></td></tr>
         <tr><td>IVA (${economicParams.percentualeIva}%)</td><td style="text-align: right;">€ ${results?.iva || '0.00'}</td></tr>
       </tbody>
     </table>
@@ -1450,7 +1462,7 @@ const ExportButtons = () => {
       <li>L'impianto verrà realizzato in conformità alle normative vigenti in materia di impianti fotovoltaici.</li>
       <li>Copertura assicurativa per eventuali danni provocati in fase di esecuzione lavori con regolare polizza presso la REALE MUTUA ASSICURAZIONI.</li>
       ${customText.notePersonalizzate ? `
-      <li style="border-top: 1px dashed #f9a825; margin-top: 15px; padding-top: 15px; font-style: italic;">
+      <li style="border-top: 1px dashed #f9a825; margin-top: 15px; padding-top: 15px; font-weight: bold;">
         ${customText.notePersonalizzate.replace(/\n/g, '<br>')}
       </li>
       ` : ''}

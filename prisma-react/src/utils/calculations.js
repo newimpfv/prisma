@@ -293,11 +293,22 @@ export const calculateStructuralComponents = (falde, structureData, unitCosts, t
  * DC and AC cables based on building dimensions
  */
 export const calculateCableLengths = (structureData, unitCosts, totalModules) => {
-  const altezza = structureData.altezzaEdificio || 10;
-  const lunghezza = structureData.lunghezzaEdificio || 40;
+  const tipoTetto = structureData.tipoTetto;
+
+  // Per impianti a terra o tettoie, i valori altezza/lunghezza edificio non sono rilevanti
+  const usaValoriEdificio = tipoTetto !== 'a terra' && tipoTetto !== 'tettoia';
+
+  const altezza = usaValoriEdificio ? (structureData.altezzaEdificio || 10) : 0;
+  const lunghezza = usaValoriEdificio ? (structureData.lunghezzaEdificio || 40) : 0;
 
   // AC cable length: height + horizontal distance + safety margin
-  const lunghezzaCaviCA = unitCosts.lunghezzaCaviCA || (altezza + lunghezza * 0.5);
+  // Se lunghezzaCaviCA è definito in unitCosts, usa quello, altrimenti calcola
+  let lunghezzaCaviCA;
+  if (unitCosts.lunghezzaCaviCA !== undefined && unitCosts.lunghezzaCaviCA !== null) {
+    lunghezzaCaviCA = unitCosts.lunghezzaCaviCA;
+  } else {
+    lunghezzaCaviCA = usaValoriEdificio ? (altezza + lunghezza * 0.5) : 0;
+  }
   const costoCaviCA = lunghezzaCaviCA * unitCosts.costoCaviCA;
 
   // DC cable length: approximately 10m per module × 2 for DC+ and DC-

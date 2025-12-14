@@ -69,7 +69,7 @@ const Results = () => {
             <span className="font-semibold">€ {results.costoManodopera}</span>
           </div>
           <div className="flex justify-between py-2 border-b">
-            <span className="text-gray-700">Fresia e Preparazione</span>
+            <span className="text-gray-700">Spese Legali</span>
             <span className="font-semibold">€ {results.costoFresia}</span>
           </div>
           <div className="flex justify-between py-2 border-b">

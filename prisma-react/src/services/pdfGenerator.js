@@ -29,7 +29,7 @@ export const loadPrismaTemplate = async () => {
  * @param {object} formData - All form data from FormContext
  * @returns {string} The populated HTML ready for PDF generation
  */
-export const populatePrismaTemplate = (templateHTML, formData) => {
+export const populatePrismaTemplate = (templateHTML, formData, modules = []) => {
   const {
     clientData,
     structureData,
@@ -109,7 +109,7 @@ export const populatePrismaTemplate = (templateHTML, formData) => {
     faldeContainer.innerHTML = ''; // Clear existing falde
 
     falde.forEach((falda, index) => {
-      const faldaHTML = createFaldaHTML(falda, index, doc, structureData.tipoTetto);
+      const faldaHTML = createFaldaHTML(falda, index, doc, structureData.tipoTetto, modules);
       faldeContainer.insertAdjacentHTML('beforeend', faldaHTML);
     });
   }
@@ -497,7 +497,7 @@ export const populatePrismaTemplate = (templateHTML, formData) => {
 /**
  * Helper function to create HTML for a single falda
  */
-const createFaldaHTML = (falda, index, doc, tipoTetto) => {
+const createFaldaHTML = (falda, index, doc, tipoTetto, modules = []) => {
   // Generate correct name based on type
   let faldaNome;
   if (falda.tettoiaIndex !== undefined) {
@@ -536,8 +536,9 @@ const createFaldaHTML = (falda, index, doc, tipoTetto) => {
   // Add module groups
   if (falda.gruppiModuli && falda.gruppiModuli.length > 0) {
     falda.gruppiModuli.forEach((gruppo, gIndex) => {
-      const moduloNome = gruppo.modulo ? `${gruppo.modulo.marca} ${gruppo.modulo.modello}` : 'Nessun modulo';
-      const potenzaModulo = gruppo.modulo ? gruppo.modulo.potenza : 0;
+      const moduloObj = modules.find(m => m.id === gruppo.modulo) || modules[0] || {};
+      const moduloNome = moduloObj.name || 'Nessun modulo';
+      const potenzaModulo = moduloObj.potenza || 0;
       const numeroModuli = gruppo.numeroFile * gruppo.moduliPerFila;
       const potenzaTotale = ((potenzaModulo / 1000) * numeroModuli).toFixed(2);
 
@@ -558,15 +559,16 @@ const createFaldaHTML = (falda, index, doc, tipoTetto) => {
 /**
  * Generates a PDF using the PRISMA template
  * @param {object} formData - All form data from FormContext
+ * @param {array} modules - Array of available solar modules
  * @returns {Promise<void>} Opens the PDF in a new window for printing
  */
-export const generatePDFFromTemplate = async (formData) => {
+export const generatePDFFromTemplate = async (formData, modules = []) => {
   try {
     // Load the template
     const template = await loadPrismaTemplate();
 
     // Populate it with form data
-    const populatedHTML = populatePrismaTemplate(template, formData);
+    const populatedHTML = populatePrismaTemplate(template, formData, modules);
 
     // Create blob and open in new tab (more reliable than popup)
     const blob = new Blob([populatedHTML], { type: 'text/html' });
