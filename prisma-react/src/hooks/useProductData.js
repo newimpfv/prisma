@@ -80,24 +80,29 @@ export const useBatteriesByCategory = () => {
     t58: [],
     hs: [],
     rack: [],
-    lv: []
+    lv: [],
+    other: []
   };
 
   if (products?.batteries) {
     products.batteries.forEach(battery => {
       const group = battery.group?.toLowerCase() || '';
+      const category = battery.category?.toLowerCase() || '';
 
       // Mapping basato sul gruppo o categoria
-      if (group.includes('t30') || battery.category?.toLowerCase().includes('t30')) {
+      if (group.includes('t30') || category.includes('t30')) {
         batteriesByGroup.t30.push(battery);
-      } else if (group.includes('t58') || group.includes('t-bat h5.8') || battery.category?.toLowerCase().includes('t58')) {
+      } else if (group.includes('t58') || group.includes('t-bat h5.8') || category.includes('t58')) {
         batteriesByGroup.t58.push(battery);
-      } else if (group.includes('hs') || battery.category?.toLowerCase().includes('hs')) {
+      } else if (group.includes('hs') || category.includes('hs')) {
         batteriesByGroup.hs.push(battery);
-      } else if (group.includes('rack') || battery.category?.toLowerCase().includes('rack')) {
+      } else if (group.includes('rack') || category.includes('rack')) {
         batteriesByGroup.rack.push(battery);
-      } else if (group.includes('lv') || group.includes('ld53') || battery.category?.toLowerCase().includes('lv')) {
+      } else if (group.includes('lv') || group.includes('ld53') || group === 'ies' || category.includes('lv')) {
         batteriesByGroup.lv.push(battery);
+      } else {
+        // Cattura tutte le batterie che non corrispondono ai pattern esistenti
+        batteriesByGroup.other.push(battery);
       }
     });
   }

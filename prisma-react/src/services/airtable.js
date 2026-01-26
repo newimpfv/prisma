@@ -25,22 +25,35 @@ export const fetchProductsFromAirtable = async () => {
   }
 
   try {
-    const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${TABLE_NAME}`;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-        'Content-Type': 'application/json'
+    let allRecords = [];
+    let offset = null;
+
+    // Fetch all pages (Airtable returns max 100 records per request)
+    do {
+      const url = offset
+        ? `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${TABLE_NAME}?offset=${offset}`
+        : `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${TABLE_NAME}`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Airtable API error: ${response.status} ${response.statusText}`);
       }
-    });
 
-    if (!response.ok) {
-      throw new Error(`Airtable API error: ${response.status} ${response.statusText}`);
-    }
+      const data = await response.json();
+      allRecords = allRecords.concat(data.records);
+      offset = data.offset; // Will be undefined if no more pages
+    } while (offset);
 
-    const data = await response.json();
+    console.log(`[Airtable] Fetched ${allRecords.length} total records`);
 
     // Transform Airtable records to our app format
-    const products = data.records.map(record => ({
+    const products = allRecords.map(record => ({
       airtableId: record.id, // Always unique Airtable record ID
       id: record.fields.id_component || record.id,
       name: record.fields.nome || '',
@@ -299,7 +312,14 @@ export const organizeProductsByCategory = (products) => {
         category: product.category,
         group: product.group
       });
-    } else if (category === 'batterie' || group === 'batterie') {
+    } else if (
+      category === 'batterie' || group === 'batterie' ||
+      category === 'batteria' || group === 'batteria' ||
+      category === 'battery' || group === 'battery' ||
+      category === 'accumulo' || group === 'accumulo' ||
+      category?.includes('batter') || group?.includes('batter') ||
+      category?.includes('accumul') || group?.includes('accumul')
+    ) {
       // Check for duplicates
       if (seenIds.batteries.has(product.id)) {
         console.warn(`[organizeProductsByCategory] Duplicate battery ID found: ${product.id}`, {
