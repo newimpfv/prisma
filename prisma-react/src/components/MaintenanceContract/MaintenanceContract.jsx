@@ -1,10 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useForm } from '../../context/FormContext';
 import html2pdf from 'html2pdf.js';
 import { generateContractHTML } from '../../utils/maintenanceContractPDF';
 
 function MaintenanceContract() {
-  const { selectedClientRecord } = useForm();
+  const { selectedClientRecord, clientData } = useForm();
+
+  // Use selectedClientRecord if available, otherwise build from clientData
+  const clientInfo = useMemo(() => {
+    if (selectedClientRecord) {
+      return selectedClientRecord;
+    }
+    // Fallback to clientData from "Cliente e Struttura" tab
+    if (clientData && (clientData.nome || clientData.cognome)) {
+      return {
+        nome: clientData.cognome
+          ? `${clientData.nome} ${clientData.cognome}`.trim()
+          : clientData.nome,
+        email: clientData.email,
+        telefono: clientData.telefono,
+        cellulare: clientData.telefono,
+        indirizzo: clientData.indirizzo,
+        id: clientData.airtableClientId
+      };
+    }
+    return null;
+  }, [selectedClientRecord, clientData]);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -37,11 +58,11 @@ function MaintenanceContract() {
 
   // Pre-fill client data if available
   useEffect(() => {
-    if (selectedClientRecord) {
+    if (clientInfo) {
       // Client is already in flattened format from clients.js service
       // You can pre-fill power from installation data if available
     }
-  }, [selectedClientRecord]);
+  }, [clientInfo]);
 
   // Calculate default prices based on power (only if not manually modified)
   const calculateDefaultPrices = (power) => {
@@ -213,7 +234,7 @@ function MaintenanceContract() {
   };
 
   const generatePDF = () => {
-    if (!selectedClientRecord) {
+    if (!clientInfo) {
       alert('⚠️ Seleziona un cliente prima di generare il PDF');
       return;
     }
@@ -224,7 +245,7 @@ function MaintenanceContract() {
     }
 
     // Generate HTML content (pass services and priceItems)
-    const htmlContent = generateContractHTML(selectedClientRecord, { ...formData, services: getSelectedServices(), priceItems });
+    const htmlContent = generateContractHTML(clientInfo, { ...formData, services: getSelectedServices(), priceItems });
 
     // Create a temporary container
     const tempContainer = document.createElement('div');
@@ -234,7 +255,7 @@ function MaintenanceContract() {
     // PDF options
     const options = {
       margin: [10, 10, 10, 10],
-      filename: `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.startDate}.pdf`,
+      filename: `Contratto_Manutenzione_${clientInfo.nome}_${formData.startDate}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -259,7 +280,7 @@ function MaintenanceContract() {
 
   const generatePDFBlob = async () => {
     // Generate HTML content
-    const htmlContent = generateContractHTML(selectedClientRecord, { ...formData, services: getSelectedServices(), priceItems });
+    const htmlContent = generateContractHTML(clientInfo, { ...formData, services: getSelectedServices(), priceItems });
 
     // Create a temporary container
     const tempContainer = document.createElement('div');
@@ -269,7 +290,7 @@ function MaintenanceContract() {
     // PDF options
     const options = {
       margin: [10, 10, 10, 10],
-      filename: `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.startDate}.pdf`,
+      filename: `Contratto_Manutenzione_${clientInfo.nome}_${formData.startDate}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -321,7 +342,7 @@ function MaintenanceContract() {
   };
 
   const saveContract = async () => {
-    if (!selectedClientRecord) {
+    if (!clientInfo) {
       alert('⚠️ Seleziona un cliente prima di salvare il contratto');
       return;
     }
@@ -339,7 +360,7 @@ function MaintenanceContract() {
 
       // Generate PDF
       const pdfBlob = await generatePDFBlob();
-      const pdfFilename = `Contratto_Manutenzione_${selectedClientRecord.nome}_${formData.startDate}.pdf`;
+      const pdfFilename = `Contratto_Manutenzione_${clientInfo.nome}_${formData.startDate}.pdf`;
 
       // Upload PDF to temporary storage to get public URL
       alert('☁️ Caricamento PDF in corso...');
@@ -348,9 +369,9 @@ function MaintenanceContract() {
       // Prepare data for Airtable
       const contractData = {
         fields: {
-          Name: `${selectedClientRecord.nome} - ${selectedServices.join(', ')} - ${formData.startDate}`,
+          Name: `${clientInfo.nome} - ${selectedServices.join(', ')} - ${formData.startDate}`,
           inizio_contratto: formData.startDate,
-          Cliente: [selectedClientRecord.id],
+          Cliente: clientInfo.id ? [clientInfo.id] : undefined,
           tipo_servizio: selectedServices.join(', '),
           durata_anni: parseInt(formData.contractDuration),
           potenza_impianto_kwp: parseFloat(formData.power),
@@ -434,21 +455,21 @@ function MaintenanceContract() {
     }
   };
 
-  if (!selectedClientRecord) {
+  if (!clientInfo) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#6b7280' }}>
           ⚠️ Nessun Cliente Selezionato
         </h2>
         <p style={{ color: '#9ca3af' }}>
-          Vai alla sezione "Gestione Clienti" e seleziona un cliente per creare un contratto di manutenzione.
+          Vai alla sezione "Gestione Clienti" e seleziona un cliente, oppure compila i dati nella tab "Cliente e Struttura".
         </p>
       </div>
     );
   }
 
-  // Client is already in flattened format from clients.js service
-  const client = selectedClientRecord;
+  // Use clientInfo which can come from selectedClientRecord or clientData
+  const client = clientInfo;
 
   return (
     <div style={{ padding: '1rem' }}>

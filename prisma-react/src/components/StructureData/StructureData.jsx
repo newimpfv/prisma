@@ -16,9 +16,23 @@ const StructureData = () => {
         </svg>
         Dati Struttura
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="form-group">
-          <label className="form-label">Tipo di Impianto</label>
+          <label className="form-label">Tipologia Impianto</label>
+          <select
+            name="tipoImpianto"
+            value={structureData.tipoImpianto}
+            onChange={handleChange}
+            className="form-select"
+          >
+            <option value="residenziale">Impianto Residenziale</option>
+            <option value="aziendale">Impianto Aziendale</option>
+          </select>
+          <p className="text-xs text-gray-500 mt-1">Residenziale o aziendale</p>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Tipo di Tetto</label>
           <select
             name="tipoTetto"
             value={structureData.tipoTetto}
