@@ -312,17 +312,35 @@ export const deleteClient = async (clientId) => {
 };
 
 /**
- * Search clients by name or email
+ * Search clients by any field (nome, cognome, email, telefono, indirizzo, etc.)
  */
 export const searchClients = async (query) => {
   const { clients } = await getClients();
 
   const lowerQuery = query.toLowerCase();
   return clients.filter(client =>
-    client.nome.toLowerCase().includes(lowerQuery) ||
-    client.email.toLowerCase().includes(lowerQuery) ||
+    // Nome / Ragione Sociale
+    (client.nome && client.nome.toLowerCase().includes(lowerQuery)) ||
+    // Nome (first name)
+    (client.nome_first && client.nome_first.toLowerCase().includes(lowerQuery)) ||
+    // Cognome
+    (client.cognome && client.cognome.toLowerCase().includes(lowerQuery)) ||
+    // Email
+    (client.email && client.email.toLowerCase().includes(lowerQuery)) ||
+    // Cellulare
     (client.cellulare && client.cellulare.includes(query)) ||
-    (client.citta_impianto && client.citta_impianto.toLowerCase().includes(lowerQuery))
+    // Telefono
+    (client.telefono && client.telefono.includes(query)) ||
+    // Città impianto
+    (client.citta_impianto && client.citta_impianto.toLowerCase().includes(lowerQuery)) ||
+    // Indirizzo impianto
+    (client.indirizzo_impianto && client.indirizzo_impianto.toLowerCase().includes(lowerQuery)) ||
+    // Indirizzo residenza
+    (client.indirizzo_residenza && client.indirizzo_residenza.toLowerCase().includes(lowerQuery)) ||
+    // Città residenza
+    (client.citta_residenza && client.citta_residenza.toLowerCase().includes(lowerQuery)) ||
+    // CAP impianto
+    (client.cap_impianto && client.cap_impianto.includes(query))
   );
 };
 

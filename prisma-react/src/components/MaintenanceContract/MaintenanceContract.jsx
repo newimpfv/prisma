@@ -2,9 +2,147 @@ import { useState, useEffect, useMemo } from 'react';
 import { useForm } from '../../context/FormContext';
 import html2pdf from 'html2pdf.js';
 import { generateContractHTML } from '../../utils/maintenanceContractPDF';
+import { fetchClients } from '../../services/clients';
+import { fetchInstallations } from '../../services/installations';
 
 function MaintenanceContract() {
-  const { selectedClientRecord, clientData } = useForm();
+  const {
+    selectedClientRecord,
+    setSelectedClientRecord,
+    clientData,
+    setClientData,
+    selectedInstallation,
+    setSelectedInstallation
+  } = useForm();
+
+  // Client and Installation selectors state
+  const [clients, setClients] = useState([]);
+  const [installations, setInstallations] = useState([]);
+  const [loadingClients, setLoadingClients] = useState(false);
+  const [loadingInstallations, setLoadingInstallations] = useState(false);
+  const [showClientSelector, setShowClientSelector] = useState(false);
+  const [showInstallationSelector, setShowInstallationSelector] = useState(false);
+  const [clientSearchQuery, setClientSearchQuery] = useState('');
+  const [installationSearchQuery, setInstallationSearchQuery] = useState('');
+  const [online, setOnline] = useState(navigator.onLine);
+
+  // Online status effect
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Load clients function
+  const loadClients = async () => {
+    if (!online) return;
+    setLoadingClients(true);
+    try {
+      const clientsList = await fetchClients();
+      setClients(clientsList);
+    } catch (error) {
+      console.error('Error loading clients:', error);
+    } finally {
+      setLoadingClients(false);
+    }
+  };
+
+  // Load installations function
+  const loadInstallations = async () => {
+    if (!online) return;
+    setLoadingInstallations(true);
+    try {
+      const installationsList = await fetchInstallations();
+      setInstallations(installationsList);
+    } catch (error) {
+      console.error('Error loading installations:', error);
+    } finally {
+      setLoadingInstallations(false);
+    }
+  };
+
+  // Filter clients based on search
+  const filteredClients = clients.filter(client => {
+    const query = clientSearchQuery.toLowerCase();
+    return (
+      (client.nome || '').toLowerCase().includes(query) ||
+      (client.cognome || '').toLowerCase().includes(query) ||
+      (client.email || '').toLowerCase().includes(query) ||
+      (client.cellulare || '').includes(clientSearchQuery) ||
+      (client.telefono || '').includes(clientSearchQuery)
+    );
+  });
+
+  // Filter installations based on search
+  const filteredInstallations = installations.filter(installation => {
+    const query = installationSearchQuery.toLowerCase();
+    return (
+      (installation.nome || '').toLowerCase().includes(query) ||
+      (installation.indirizzo || '').toLowerCase().includes(query)
+    );
+  });
+
+  // Handle client selection
+  const handleSelectClient = async (client) => {
+    setSelectedClientRecord(client);
+    setClientData(prev => ({
+      ...prev,
+      nome: client.nome || '',
+      cognome: client.cognome || '',
+      email: client.email || '',
+      telefono: client.telefono || client.cellulare || '',
+      airtableClientId: client.airtableId || client.id
+    }));
+    setShowClientSelector(false);
+
+    // Check if client has linked installations and auto-select the first one
+    if (client.impianto && client.impianto.length > 0) {
+      try {
+        // Load installations directly to get the latest list
+        let installationsList = installations;
+        if (installationsList.length === 0) {
+          const loadedInstallations = await fetchInstallations();
+          setInstallations(loadedInstallations);
+          installationsList = loadedInstallations;
+        }
+
+        // Find the linked installation
+        const linkedInstallationId = client.impianto[0];
+        const linkedInstallation = installationsList.find(
+          inst => inst.id === linkedInstallationId || inst.airtableId === linkedInstallationId
+        );
+
+        if (linkedInstallation) {
+          setSelectedInstallation(linkedInstallation);
+          setClientData(prev => ({
+            ...prev,
+            nomeImpianto: linkedInstallation.nome || '',
+            indirizzo: linkedInstallation.indirizzo || '',
+            airtableInstallationId: linkedInstallation.airtableId || linkedInstallation.id
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading linked installation:', error);
+      }
+    }
+  };
+
+  // Handle installation selection
+  const handleSelectInstallation = (installation) => {
+    setSelectedInstallation(installation);
+    setClientData(prev => ({
+      ...prev,
+      nomeImpianto: installation.nome || '',
+      indirizzo: installation.indirizzo || '',
+      airtableInstallationId: installation.airtableId || installation.id
+    }));
+    setShowInstallationSelector(false);
+  };
 
   // Use selectedClientRecord if available, otherwise build from clientData
   const clientInfo = useMemo(() => {
@@ -455,50 +593,342 @@ function MaintenanceContract() {
     }
   };
 
-  if (!clientInfo) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#6b7280' }}>
-          ⚠️ Nessun Cliente Selezionato
-        </h2>
-        <p style={{ color: '#9ca3af' }}>
-          Vai alla sezione "Gestione Clienti" e seleziona un cliente, oppure compila i dati nella tab "Cliente e Struttura".
-        </p>
-      </div>
-    );
-  }
-
   // Use clientInfo which can come from selectedClientRecord or clientData
   const client = clientInfo;
 
   return (
     <div style={{ padding: '1rem' }}>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#1f2937' }}>
-        🔧 Contratto di Manutenzione
+      <style>{`
+        @media (max-width: 768px) {
+          .maintenance-header-buttons {
+            flex-direction: column !important;
+            width: 100% !important;
+          }
+          .maintenance-header-buttons button {
+            width: 100% !important;
+          }
+        }
+      `}</style>
+
+      <h2 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#1f2937', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+        <span>🔧 Contratto di Manutenzione</span>
+        {online && (
+          <div className="maintenance-header-buttons" style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setShowClientSelector(!showClientSelector);
+                setShowInstallationSelector(false);
+                if (!showClientSelector && clients.length === 0) {
+                  loadClients();
+                }
+              }}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              {showClientSelector ? '✕ Chiudi' : '👥 Seleziona Cliente'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowInstallationSelector(!showInstallationSelector);
+                setShowClientSelector(false);
+                if (!showInstallationSelector && installations.length === 0) {
+                  loadInstallations();
+                }
+              }}
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#10b981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              {showInstallationSelector ? '✕ Chiudi' : '⚡ Seleziona Impianto'}
+            </button>
+          </div>
+        )}
       </h2>
 
-      {/* Client Info Banner */}
-      <div style={{
-        backgroundColor: '#ecfdf5',
-        border: '2px solid #10b981',
-        borderRadius: '0.5rem',
-        padding: '1rem',
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{ fontWeight: '600', color: '#065f46', marginBottom: '0.5rem' }}>
-          Cliente: {client.nome || 'N/A'}
+      {/* Client Selector */}
+      {showClientSelector && online && (
+        <div style={{
+          marginBottom: '1.5rem',
+          padding: '1rem',
+          backgroundColor: '#eff6ff',
+          border: '2px solid #3b82f6',
+          borderRadius: '0.5rem'
+        }}>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: '700', marginBottom: '0.75rem', color: '#1e40af' }}>
+            👥 Seleziona Cliente Esistente
+          </h3>
+          <input
+            type="text"
+            placeholder="🔍 Cerca cliente per nome, cognome, email, telefono..."
+            value={clientSearchQuery}
+            onChange={(e) => setClientSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: '0.375rem',
+              border: '1px solid #93c5fd',
+              fontSize: '0.875rem',
+              marginBottom: '0.75rem'
+            }}
+          />
+          <div style={{
+            maxHeight: '300px',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem'
+          }}>
+            {loadingClients ? (
+              <div style={{ textAlign: 'center', padding: '1rem' }}>Caricamento...</div>
+            ) : filteredClients.length > 0 ? (
+              filteredClients.map(c => (
+                <div
+                  key={c.id}
+                  onClick={() => handleSelectClient(c)}
+                  style={{
+                    padding: '1rem',
+                    backgroundColor: 'white',
+                    border: '1px solid #93c5fd',
+                    borderRadius: '0.375rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#dbeafe';
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                    e.currentTarget.style.borderColor = '#93c5fd';
+                  }}
+                >
+                  <div style={{ fontWeight: '600', color: '#1e40af', marginBottom: '0.5rem' }}>
+                    {c.nome}{c.cognome && ` ${c.cognome}`}
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                    {c.email && `📧 ${c.email}`}
+                    {c.telefono && ` • 📱 ${c.telefono}`}
+                    {!c.telefono && c.cellulare && ` • 📱 ${c.cellulare}`}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: '1rem', color: '#6b7280' }}>
+                Nessun cliente trovato
+              </div>
+            )}
+          </div>
         </div>
-        {client.email && (
-          <div style={{ fontSize: '0.875rem', color: '#047857' }}>
-            📧 {client.email}
+      )}
+
+      {/* Installation Selector */}
+      {showInstallationSelector && online && (
+        <div style={{
+          marginBottom: '1.5rem',
+          padding: '1rem',
+          backgroundColor: '#f0fdf4',
+          border: '2px solid #10b981',
+          borderRadius: '0.5rem'
+        }}>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: '700', marginBottom: '0.75rem', color: '#047857' }}>
+            ⚡ Seleziona Impianto Esistente
+          </h3>
+          <input
+            type="text"
+            placeholder="🔍 Cerca impianto per nome o indirizzo..."
+            value={installationSearchQuery}
+            onChange={(e) => setInstallationSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              borderRadius: '0.375rem',
+              border: '1px solid #86efac',
+              fontSize: '0.875rem',
+              marginBottom: '0.75rem'
+            }}
+          />
+          <div style={{
+            maxHeight: '300px',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem'
+          }}>
+            {loadingInstallations ? (
+              <div style={{ textAlign: 'center', padding: '1rem' }}>Caricamento...</div>
+            ) : filteredInstallations.length > 0 ? (
+              filteredInstallations.map(inst => (
+                <div
+                  key={inst.id}
+                  onClick={() => handleSelectInstallation(inst)}
+                  style={{
+                    padding: '1rem',
+                    backgroundColor: 'white',
+                    border: '1px solid #86efac',
+                    borderRadius: '0.375rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#dcfce7';
+                    e.currentTarget.style.borderColor = '#10b981';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                    e.currentTarget.style.borderColor = '#86efac';
+                  }}
+                >
+                  <div style={{ fontWeight: '600', color: '#047857', marginBottom: '0.5rem' }}>
+                    {inst.nome || inst.indirizzo}
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: '#64748b' }}>
+                    📍 {inst.indirizzo}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center', padding: '1rem', color: '#6b7280' }}>
+                Nessun impianto trovato
+              </div>
+            )}
           </div>
-        )}
-        {(client.telefono || client.cellulare) && (
-          <div style={{ fontSize: '0.875rem', color: '#047857' }}>
-            📞 {client.cellulare || client.telefono}
+        </div>
+      )}
+
+      {/* Warning if no client selected */}
+      {!client && (
+        <div style={{
+          backgroundColor: '#fef3c7',
+          border: '2px solid #f59e0b',
+          borderRadius: '0.5rem',
+          padding: '1rem',
+          marginBottom: '1.5rem'
+        }}>
+          <div style={{ fontWeight: '600', color: '#92400e', marginBottom: '0.5rem' }}>
+            ⚠️ Nessun Cliente Selezionato
           </div>
-        )}
-      </div>
+          <p style={{ color: '#a16207', fontSize: '0.875rem', margin: 0 }}>
+            Usa il pulsante "Seleziona Cliente" sopra per scegliere un cliente, oppure vai alla tab "Gestione Clienti" o "Cliente e Struttura".
+          </p>
+        </div>
+      )}
+
+      {/* Client Info Banner */}
+      {client && (
+        <div style={{
+          backgroundColor: '#ecfdf5',
+          border: '2px solid #10b981',
+          borderRadius: '0.5rem',
+          padding: '1rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '0.5rem'
+        }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: '600', color: '#065f46', marginBottom: '0.5rem' }}>
+              👤 Cliente: {client.nome || 'N/A'}
+            </div>
+            {client.email && (
+              <div style={{ fontSize: '0.875rem', color: '#047857' }}>
+                📧 {client.email}
+              </div>
+            )}
+            {(client.telefono || client.cellulare) && (
+              <div style={{ fontSize: '0.875rem', color: '#047857' }}>
+                📞 {client.cellulare || client.telefono}
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedClientRecord(null);
+              setClientData(prev => ({ ...prev, airtableClientId: '', nome: '', cognome: '', email: '', telefono: '' }));
+            }}
+            style={{
+              padding: '0.25rem 0.5rem',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.25rem',
+              fontSize: '0.75rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕ Rimuovi
+          </button>
+        </div>
+      )}
+
+      {/* Installation Info Banner */}
+      {selectedInstallation && (
+        <div style={{
+          backgroundColor: '#f0fdf4',
+          border: '2px solid #22c55e',
+          borderRadius: '0.5rem',
+          padding: '1rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '0.5rem'
+        }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: '600', color: '#166534', marginBottom: '0.5rem' }}>
+              ⚡ Impianto: {selectedInstallation.nome || selectedInstallation.indirizzo}
+            </div>
+            {selectedInstallation.indirizzo && (
+              <div style={{ fontSize: '0.875rem', color: '#15803d' }}>
+                📍 {selectedInstallation.indirizzo}
+              </div>
+            )}
+            {selectedInstallation.potenza && (
+              <div style={{ fontSize: '0.875rem', color: '#15803d' }}>
+                ⚡ Potenza: {selectedInstallation.potenza} kWp
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedInstallation(null);
+              setClientData(prev => ({ ...prev, airtableInstallationId: '', nomeImpianto: '', indirizzo: '' }));
+            }}
+            style={{
+              padding: '0.25rem 0.5rem',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.25rem',
+              fontSize: '0.75rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕ Rimuovi
+          </button>
+        </div>
+      )}
 
       {/* Form Section */}
       <div style={{
